@@ -1,20 +1,10 @@
 {
-    "hash": "9da82ee679c8227d310caacf30874b86",
+    "hash": "cbc1ce56854b9458e272590f00769348",
     "packages": [
         {
             "package": "evenement/evenement",
             "version": "dev-master",
             "source-reference": "e9bac9b3cc29bf807c55b26a973090ad7f1eb7e5"
-        },
-        {
-            "package": "igorw/event-source",
-            "version": "dev-master",
-            "source-reference": "55c4f0a20525e834a94c3a277ea794c05d30a4c7"
-        },
-        {
-            "package": "predis/predis",
-            "version": "dev-master",
-            "source-reference": "9426d78b9091a5d6840f25ea7b86ff9bc59bacb0"
         }
     ],
     "aliases": []
