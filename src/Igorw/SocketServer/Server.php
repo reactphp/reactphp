@@ -68,7 +68,7 @@ class Server extends EventEmitter
     {
         $client = new Connection($socket, $this);
 
-        $this->clients[$socket] = $client;
+        $this->clients[(int) $socket] = $client;
         $this->sockets[] = $socket;
 
         $this->emit('connection', array($client));
@@ -93,7 +93,7 @@ class Server extends EventEmitter
 
     public function getClient($socket)
     {
-        return $this->clients[$socket];
+        return $this->clients[(int) $socket];
     }
 
     public function getClients()
@@ -114,7 +114,7 @@ class Server extends EventEmitter
 
         $this->emit('disconnect', array($client));
 
-        unset($this->clients[$socket]);
+        unset($this->clients[(int) $socket]);
         unset($client);
 
         $index = array_search($socket, $this->sockets);
