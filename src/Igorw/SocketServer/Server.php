@@ -66,7 +66,7 @@ class Server extends EventEmitter
 
     private function handleConnection($socket)
     {
-        $client = new Connection($socket, $this);
+        $client = $this->createConnection($socket);
 
         $this->clients[(int) $socket] = $client;
         $this->sockets[] = $socket;
@@ -88,7 +88,7 @@ class Server extends EventEmitter
     {
         $client = $this->getClient($socket);
 
-        $this->emit('data', array($data, $client));
+        $client->emit('data', array($data));
     }
 
     public function getClient($socket)
@@ -112,7 +112,7 @@ class Server extends EventEmitter
     {
         $client = $this->getClient($socket);
 
-        $this->emit('disconnect', array($client));
+        $client->emit('disconnect');
 
         unset($this->clients[(int) $socket]);
         unset($client);
@@ -132,5 +132,10 @@ class Server extends EventEmitter
     public function shutdown()
     {
         stream_socket_shutdown($this->master, STREAM_SHUT_RDWR);
+    }
+
+    public function createConnection($socket)
+    {
+        return new Connection($socket, $this);
     }
 }

@@ -20,12 +20,19 @@ The recommended way to install SocketServer is [through composer](http://getcomp
 
 ### Events
 
-The `Igorw\SocketServer\Server` class extends [événement](https://github.com/igorw/evenement)
-and allows you to bind to events.
+Both `Igorw\SocketServer\Server` and `Igorw\SocketServer\Connection` extend
+[événement](https://github.com/igorw/evenement), allowing you to bind to
+events.
+
+#### Server
 
 * `connection`: Triggered whenever a new client connects to the server. Arguments: $conn.
-* `data`: Triggered whenever a client sends data. Arguments: $data, $conn.
-* `disconnect`: Triggered whenever a client disconnects. Arguments: $conn.
+* `input`: Triggered when custom input stream can be read. Arguments: $stream.
+
+#### Connection
+
+* `data`: Triggered whenever a client sends data. Arguments: $data.
+* `disconnect`: Triggered whenever a client disconnects.
 
 ### Input
 
@@ -48,25 +55,27 @@ Here is an example of a simple HTTP server listening on port 8000:
 
     $i = 1;
 
-    $server->on('data', function ($data, $conn) use (&$i) {
-        $lines = explode("\r\n", $data);
-        $requestLine = reset($lines);
+    $server->on('connection', function ($conn) use (&$i) {
+        $server->on('data', function ($data) use (&$i) {
+            $lines = explode("\r\n", $data);
+            $requestLine = reset($lines);
 
-        if ('GET /favicon.ico HTTP/1.1' === $requestLine) {
-            $response = '';
-            $length = 0;
-        } else {
-            $response = "This is request number $i.\n";
-            $length = strlen($response);
-            $i++;
-        }
+            if ('GET /favicon.ico HTTP/1.1' === $requestLine) {
+                $response = '';
+                $length = 0;
+            } else {
+                $response = "This is request number $i.\n";
+                $length = strlen($response);
+                $i++;
+            }
 
-        $conn->write("HTTP 1.1 200 OK\r\n");
-        $conn->write("Content-Type: text/html\r\n");
-        $conn->write("Content-Length: $length\r\n");
-        $conn->write("\r\n");
-        $conn->write($response);
-        $conn->close();
+            $conn->write("HTTP 1.1 200 OK\r\n");
+            $conn->write("Content-Type: text/html\r\n");
+            $conn->write("Content-Length: $length\r\n");
+            $conn->write("\r\n");
+            $conn->write($response);
+            $conn->close();
+        });
     });
 
     $server->run();

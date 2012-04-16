@@ -2,7 +2,9 @@
 
 namespace Igorw\SocketServer;
 
-class Connection
+use Evenement\EventEmitter;
+
+class Connection extends EventEmitter
 {
     private $socket;
     private $server;

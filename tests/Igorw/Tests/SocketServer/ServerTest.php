@@ -55,9 +55,13 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testDataWithNoData()
     {
         $client = stream_socket_client('tcp://localhost:'.$this->port);
-        $this->server->tick();
 
-        $this->server->on('data', $this->expectCallableNever());
+        $mock = $this->expectCallableNever();
+
+        $this->server->on('connection', function ($conn) use ($mock) {
+            $conn->on('data', $mock);
+        });
+        $this->server->tick();
         $this->server->tick();
     }
 
@@ -68,7 +72,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testData()
     {
         $client = stream_socket_client('tcp://localhost:'.$this->port);
-        $this->server->tick();
 
         fwrite($client, "foo\n");
 
@@ -78,7 +81,10 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->method('__invoke')
             ->with("foo\n");
 
-        $this->server->on('data', $mock);
+        $this->server->on('connection', function ($conn) use ($mock) {
+            $conn->on('data', $mock);
+        });
+        $this->server->tick();
         $this->server->tick();
     }
 
@@ -89,9 +95,13 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testDisconnectWithoutDisconnect()
     {
         $client = stream_socket_client('tcp://localhost:'.$this->port);
-        $this->server->tick();
 
-        $this->server->on('disconnect', $this->expectCallableNever());
+        $mock = $this->expectCallableNever();
+
+        $this->server->on('connection', function ($conn) use ($mock) {
+            $conn->on('disconnect', $mock);
+        });
+        $this->server->tick();
         $this->server->tick();
     }
 
@@ -103,11 +113,15 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testDisconnect()
     {
         $client = stream_socket_client('tcp://localhost:'.$this->port);
-        $this->server->tick();
 
         fclose($client);
 
-        $this->server->on('disconnect', $this->expectCallableOnce());
+        $mock = $this->expectCallableOnce();
+
+        $this->server->on('connection', function ($conn) use ($mock) {
+            $conn->on('disconnect', $mock);
+        });
+        $this->server->tick();
         $this->server->tick();
     }
 
