@@ -23,6 +23,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers Igorw\SocketServer\Server::tick
      * @covers Igorw\SocketServer\Server::handleConnection
+     * @covers Igorw\SocketServer\Server::createConnection
      */
     public function testConnection()
     {
@@ -35,6 +36,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers Igorw\SocketServer\Server::tick
      * @covers Igorw\SocketServer\Server::handleConnection
+     * @covers Igorw\SocketServer\Server::createConnection
      */
     public function testConnectionWithManyClients()
     {
