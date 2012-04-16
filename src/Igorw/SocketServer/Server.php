@@ -41,9 +41,9 @@ class Server extends EventEmitter
 
     public function tick()
     {
-        $changedSockets = $this->sockets;
-        @stream_select($changedSockets, $write = null, $except = null, 0, $this->timeout);
-        foreach ($changedSockets as $socket) {
+        $readySockets = $this->sockets;
+        @stream_select($readySockets, $write = null, $except = null, 0, $this->timeout);
+        foreach ($readySockets as $socket) {
             if ($this->master === $socket) {
                 $newSocket = stream_socket_accept($this->master);
                 if (false === $newSocket) {
