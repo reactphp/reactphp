@@ -71,7 +71,7 @@ class Server extends EventEmitter
         $this->clients[(int) $socket] = $client;
         $this->sockets[] = $socket;
 
-        $this->emit('connection', array($client));
+        $this->emit('connect', array($client));
     }
 
     private function handleInput($input)
@@ -112,7 +112,7 @@ class Server extends EventEmitter
     {
         $client = $this->getClient($socket);
 
-        $client->emit('disconnect');
+        $client->emit('end');
 
         unset($this->clients[(int) $socket]);
         unset($client);

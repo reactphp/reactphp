@@ -26,13 +26,13 @@ events.
 
 #### Server
 
-* `connection`: Triggered whenever a new client connects to the server. Arguments: $conn.
+* `connect`: Triggered whenever a new client connects to the server. Arguments: $conn.
 * `input`: Triggered when custom input stream can be read. Arguments: $stream.
 
 #### Connection
 
 * `data`: Triggered whenever a client sends data. Arguments: $data.
-* `disconnect`: Triggered whenever a client disconnects.
+* `end`: Triggered whenever a client disconnects.
 
 ### Input
 
@@ -55,7 +55,7 @@ Here is an example of a simple HTTP server listening on port 8000:
 
     $i = 1;
 
-    $server->on('connection', function ($conn) use (&$i) {
+    $server->on('connect', function ($conn) use (&$i) {
         $server->on('data', function ($data) use ($conn, &$i) {
             $lines = explode("\r\n", $data);
             $requestLine = reset($lines);

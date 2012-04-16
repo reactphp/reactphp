@@ -29,7 +29,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     {
         $client = stream_socket_client('tcp://localhost:'.$this->port);
 
-        $this->server->on('connection', $this->expectCallableOnce());
+        $this->server->on('connect', $this->expectCallableOnce());
         $this->server->tick();
     }
 
@@ -44,7 +44,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $client2 = stream_socket_client('tcp://localhost:'.$this->port);
         $client3 = stream_socket_client('tcp://localhost:'.$this->port);
 
-        $this->server->on('connection', $this->expectCallableExactly(3));
+        $this->server->on('connect', $this->expectCallableExactly(3));
         $this->server->tick();
         $this->server->tick();
         $this->server->tick();
@@ -60,7 +60,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
         $mock = $this->expectCallableNever();
 
-        $this->server->on('connection', function ($conn) use ($mock) {
+        $this->server->on('connect', function ($conn) use ($mock) {
             $conn->on('data', $mock);
         });
         $this->server->tick();
@@ -83,7 +83,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->method('__invoke')
             ->with("foo\n");
 
-        $this->server->on('connection', function ($conn) use ($mock) {
+        $this->server->on('connect', function ($conn) use ($mock) {
             $conn->on('data', $mock);
         });
         $this->server->tick();
@@ -100,8 +100,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
         $mock = $this->expectCallableNever();
 
-        $this->server->on('connection', function ($conn) use ($mock) {
-            $conn->on('disconnect', $mock);
+        $this->server->on('connect', function ($conn) use ($mock) {
+            $conn->on('end', $mock);
         });
         $this->server->tick();
         $this->server->tick();
@@ -120,8 +120,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
         $mock = $this->expectCallableOnce();
 
-        $this->server->on('connection', function ($conn) use ($mock) {
-            $conn->on('disconnect', $mock);
+        $this->server->on('connect', function ($conn) use ($mock) {
+            $conn->on('end', $mock);
         });
         $this->server->tick();
         $this->server->tick();
