@@ -56,7 +56,7 @@ Here is an example of a simple HTTP server listening on port 8000:
     $i = 1;
 
     $server->on('connection', function ($conn) use (&$i) {
-        $server->on('data', function ($data) use (&$i) {
+        $server->on('data', function ($data) use ($conn, &$i) {
             $lines = explode("\r\n", $data);
             $requestLine = reset($lines);
 
