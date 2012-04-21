@@ -48,38 +48,39 @@ data and input until it dies.
 ### Example
 
 Here is an example of a simple HTTP server listening on port 8000:
+```php
+<?php
+use Igorw\SocketServer\Server;
 
-    use Igorw\SocketServer\Server;
+$server = new Server('localhost', 8000);
 
-    $server = new Server('localhost', 8000);
+$i = 1;
 
-    $i = 1;
+$server->on('connect', function ($conn) use (&$i) {
+    $conn->on('data', function ($data) use ($conn, &$i) {
+        $lines = explode("\r\n", $data);
+        $requestLine = reset($lines);
 
-    $server->on('connect', function ($conn) use (&$i) {
-        $server->on('data', function ($data) use ($conn, &$i) {
-            $lines = explode("\r\n", $data);
-            $requestLine = reset($lines);
+        if ('GET /favicon.ico HTTP/1.1' === $requestLine) {
+            $response = '';
+            $length = 0;
+        } else {
+            $response = "This is request number $i.\n";
+            $length = strlen($response);
+            $i++;
+        }
 
-            if ('GET /favicon.ico HTTP/1.1' === $requestLine) {
-                $response = '';
-                $length = 0;
-            } else {
-                $response = "This is request number $i.\n";
-                $length = strlen($response);
-                $i++;
-            }
-
-            $conn->write("HTTP 1.1 200 OK\r\n");
-            $conn->write("Content-Type: text/html\r\n");
-            $conn->write("Content-Length: $length\r\n");
-            $conn->write("\r\n");
-            $conn->write($response);
-            $conn->close();
-        });
+        $conn->write("HTTP 1.1 200 OK\r\n");
+        $conn->write("Content-Type: text/html\r\n");
+        $conn->write("Content-Length: $length\r\n");
+        $conn->write("\r\n");
+        $conn->write($response);
+        $conn->close();
     });
+});
 
-    $server->run();
-
+$server->run();
+```
 ## Tests
 
 To run the test suite, you need PHPUnit.
