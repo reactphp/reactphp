@@ -164,6 +164,25 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers Igorw\SocketServer\Server::tick
+     * @covers Igorw\SocketServer\Server::close
+     */
+    public function testClose()
+    {
+        $client = stream_socket_client('tcp://localhost:'.$this->port);
+        $this->server->tick();
+
+        $this->assertCount(1, $this->server->getClients());
+
+        $conns = $this->server->getClients();
+        list($key, $conn) = each($conns);
+
+        $conn->close();
+
+        $this->assertCount(0, $this->server->getClients());
+    }
+
+    /**
+     * @covers Igorw\SocketServer\Server::tick
      * @covers Igorw\SocketServer\Server::getClients
      */
     public function testGetClients()
