@@ -7,13 +7,13 @@ use Evenement\EventEmitter;
 class Server extends EventEmitter
 {
     private $master;
-    private $input;
     private $timeout;
+    private $inputs = array();
     private $sockets = array();
     private $clients = array();
 
     // timeout = microseconds
-    public function __construct($host, $port, $input = null, $timeout = 1000000)
+    public function __construct($host, $port, $timeout = 1000000)
     {
         $this->master = stream_socket_server("tcp://$host:$port", $errno, $errstr);
         if (false === $this->master) {
@@ -22,12 +22,13 @@ class Server extends EventEmitter
 
         $this->sockets[] = $this->master;
 
-        $this->input = $input;
-        if (null !== $this->input) {
-            $this->sockets[] = $this->input;
-        }
-
         $this->timeout = $timeout;
+    }
+
+    public function addInput($name, $stream)
+    {
+        $this->inputs[$name] = $stream;
+        $this->sockets[] = $stream;
     }
 
     public function run()
@@ -51,7 +52,7 @@ class Server extends EventEmitter
                     continue;
                 }
                 $this->handleConnection($newSocket);
-            } elseif (null !== $this->input && $this->input === $socket) {
+            } elseif (in_array($socket, $this->inputs)) {
                 $this->handleInput($socket);
             } else {
                 $data = @stream_socket_recvfrom($socket, 4096);
@@ -74,9 +75,12 @@ class Server extends EventEmitter
         $this->emit('connect', array($client));
     }
 
-    private function handleInput($input)
+    private function handleInput($stream)
     {
-        $this->emit('input', array($input));
+        $name = array_search($stream, $this->inputs);
+        if (false !== $name) {
+            $this->emit("input.$name", array($stream));
+        }
     }
 
     private function handleDisconnect($socket)

@@ -15,7 +15,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->server = new Server('localhost', 0, null, 0);
+        $this->server = new Server('localhost', 0, 0);
 
         $this->port = $this->server->getPort();
     }
@@ -144,15 +144,19 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers Igorw\SocketServer\Server::tick
+     * @covers Igorw\SocketServer\Server::addInput
      * @covers Igorw\SocketServer\Server::handleInput
      */
     public function testInput()
     {
         $input = fopen('php://temp', 'r+');
 
-        $this->server = new Server('localhost', 0, $input, 0);
+        $this->server = new Server('localhost', 0, 0);
 
-        $this->server->on('input', $this->expectCallableOnce());
+        $this->server->addInput('foo', $input);
+
+        $this->server->on('input.foo', $this->expectCallableOnce());
+        $this->server->on('input.bar', $this->expectCallableNever());
 
         fwrite($input, "foo\n");
         $this->server->tick();

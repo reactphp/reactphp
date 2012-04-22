@@ -27,7 +27,7 @@ events.
 #### Server
 
 * `connect`: Triggered whenever a new client connects to the server. Arguments: $conn.
-* `input`: Triggered when custom input stream can be read. Arguments: $stream.
+* `input.*`: Triggered when custom input stream can be read. Arguments: $stream.
 
 #### Connection
 
@@ -36,9 +36,9 @@ events.
 
 ### Input
 
-In order to communicate with the server, you can pass an input stream in
-the constructor and bind to the `input` event. This allows you to trigger
-custom events and run custom code when they happen.
+In order to communicate with the server, you can add inputs via `addInput` and
+bind to the `input.$name` event. This allows you to trigger custom events and
+run custom code when they happen.
 
 ### Running
 
