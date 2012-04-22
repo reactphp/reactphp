@@ -48,7 +48,7 @@ class Server extends EventEmitter
             if ($this->master === $socket) {
                 $newSocket = stream_socket_accept($this->master);
                 if (false === $newSocket) {
-                    echo('Socket error');
+                    $this->emit('error', array('Error accepting new connection'));
                     continue;
                 }
                 $this->handleConnection($newSocket);

@@ -28,6 +28,7 @@ events.
 
 * `connect`: Triggered whenever a new client connects to the server. Arguments: $conn.
 * `input.*`: Triggered when custom input stream can be read. Arguments: $stream.
+* `error`: Triggered when an expected error occurs. Arguments: $message.
 
 #### Connection
 
