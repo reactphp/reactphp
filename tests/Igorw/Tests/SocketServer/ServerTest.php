@@ -148,7 +148,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
      * @covers Igorw\SocketServer\Server::addInput
-     * @covers Igorw\SocketServer\Server::handleInput
      */
     public function testInput()
     {
