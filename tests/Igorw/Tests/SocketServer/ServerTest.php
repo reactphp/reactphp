@@ -3,9 +3,11 @@
 namespace Igorw\Tests\SocketServer;
 
 use Igorw\SocketServer\Server;
+use Igorw\SocketServer\EventLoop\StreamSelectLoop;
 
 class ServerTest extends \PHPUnit_Framework_TestCase
 {
+    private $loop;
     private $server;
     private $port;
 
@@ -15,13 +17,14 @@ class ServerTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->server = new Server('localhost', 0, 0);
+        $this->loop = new StreamSelectLoop(0);
+        $this->server = new Server('localhost', 0, $this->loop);
 
         $this->port = $this->server->getPort();
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::tick
+     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
      * @covers Igorw\SocketServer\Server::handleConnection
      * @covers Igorw\SocketServer\Server::createConnection
      */
@@ -30,11 +33,11 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $client = stream_socket_client('tcp://localhost:'.$this->port);
 
         $this->server->on('connect', $this->expectCallableOnce());
-        $this->server->tick();
+        $this->loop->tick();
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::tick
+     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
      * @covers Igorw\SocketServer\Server::handleConnection
      * @covers Igorw\SocketServer\Server::createConnection
      */
@@ -45,13 +48,13 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $client3 = stream_socket_client('tcp://localhost:'.$this->port);
 
         $this->server->on('connect', $this->expectCallableExactly(3));
-        $this->server->tick();
-        $this->server->tick();
-        $this->server->tick();
+        $this->loop->tick();
+        $this->loop->tick();
+        $this->loop->tick();
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::tick
+     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
      * @covers Igorw\SocketServer\Server::handleData
      */
     public function testDataWithNoData()
@@ -63,12 +66,12 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->server->on('connect', function ($conn) use ($mock) {
             $conn->on('data', $mock);
         });
-        $this->server->tick();
-        $this->server->tick();
+        $this->loop->tick();
+        $this->loop->tick();
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::tick
+     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
      * @covers Igorw\SocketServer\Server::handleData
      */
     public function testData()
@@ -86,12 +89,12 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->server->on('connect', function ($conn) use ($mock) {
             $conn->on('data', $mock);
         });
-        $this->server->tick();
-        $this->server->tick();
+        $this->loop->tick();
+        $this->loop->tick();
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::tick
+     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
      * @covers Igorw\SocketServer\Server::handleDisconnect
      */
     public function testDisconnectWithoutDisconnect()
@@ -103,12 +106,12 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->server->on('connect', function ($conn) use ($mock) {
             $conn->on('end', $mock);
         });
-        $this->server->tick();
-        $this->server->tick();
+        $this->loop->tick();
+        $this->loop->tick();
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::tick
+     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
      * @covers Igorw\SocketServer\Server::handleDisconnect
      * @covers Igorw\SocketServer\Server::close
      */
@@ -123,27 +126,27 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->server->on('connect', function ($conn) use ($mock) {
             $conn->on('end', $mock);
         });
-        $this->server->tick();
-        $this->server->tick();
+        $this->loop->tick();
+        $this->loop->tick();
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::tick
+     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
      * @covers Igorw\SocketServer\Server::write
      */
     public function testWrite()
     {
         $client = stream_socket_client('tcp://localhost:'.$this->port);
-        $this->server->tick();
+        $this->loop->tick();
 
         $this->server->write("foo\n");
-        $this->server->tick();
+        $this->loop->tick();
 
         $this->assertEquals("foo\n", fgets($client));
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::tick
+     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
      * @covers Igorw\SocketServer\Server::addInput
      * @covers Igorw\SocketServer\Server::handleInput
      */
@@ -151,7 +154,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     {
         $input = fopen('php://temp', 'r+');
 
-        $this->server = new Server('localhost', 0, 0);
+        $this->loop = new StreamSelectLoop(0);
+        $this->server = new Server('localhost', 0, $this->loop);
 
         $this->server->addInput('foo', $input);
 
@@ -159,17 +163,17 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->server->on('input.bar', $this->expectCallableNever());
 
         fwrite($input, "foo\n");
-        $this->server->tick();
+        $this->loop->tick();
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::tick
+     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
      * @covers Igorw\SocketServer\Server::close
      */
     public function testClose()
     {
         $client = stream_socket_client('tcp://localhost:'.$this->port);
-        $this->server->tick();
+        $this->loop->tick();
 
         $this->assertCount(1, $this->server->getClients());
 
@@ -182,7 +186,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::tick
+     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
      * @covers Igorw\SocketServer\Server::getClients
      */
     public function testGetClients()
@@ -190,19 +194,19 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $this->server->getClients());
 
         $client = stream_socket_client('tcp://localhost:'.$this->port);
-        $this->server->tick();
+        $this->loop->tick();
 
         $this->assertCount(1, $this->server->getClients());
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::tick
+     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
      * @covers Igorw\SocketServer\Server::getClient
      */
     public function testGetClient()
     {
         $client = stream_socket_client('tcp://localhost:'.$this->port);
-        $this->server->tick();
+        $this->loop->tick();
 
         $conns = $this->server->getClients();
         list($key, $conn) = each($conns);
@@ -216,7 +220,9 @@ class ServerTest extends \PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
-        $this->server->shutdown();
+        if ($this->server) {
+            $this->server->shutdown();
+        }
     }
 
     private function expectCallableExactly($amount)
