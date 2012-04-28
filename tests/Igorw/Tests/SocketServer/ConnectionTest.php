@@ -18,6 +18,21 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers Igorw\SocketServer\Connection::isOpen
+     */
+    public function testIsOpen()
+    {
+        $socket = fopen('php://temp', 'r+');
+        $server = $this->createServerMock();
+
+        $conn = new Connection($socket, $server);
+        $this->assertTrue($conn->isOpen());
+
+        fclose($socket);
+        $this->assertFalse($conn->isOpen());
+    }
+
+    /**
      * @covers Igorw\SocketServer\Connection::write
      */
     public function testWrite()

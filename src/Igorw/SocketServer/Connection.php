@@ -15,6 +15,11 @@ class Connection extends EventEmitter
         $this->server = $server;
     }
 
+    public function isOpen()
+    {
+        return is_resource($this->socket);
+    }
+
     public function write($data)
     {
         fwrite($this->socket, $data);
