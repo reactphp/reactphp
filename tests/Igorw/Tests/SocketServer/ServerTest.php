@@ -162,6 +162,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->server->on('input.bar', $this->expectCallableNever());
 
         fwrite($input, "foo\n");
+        rewind($input);
         $this->loop->tick();
     }
 
