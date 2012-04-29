@@ -40,13 +40,15 @@ class StreamSelectLoop implements LoopInterface
 
     public function removeStream($stream)
     {
-        $index = array_search($stream, $this->readStreams);
-        unset($this->readStreams[$index]);
-        unset($this->readListeners[(int) $stream]);
+        if (false !== ($index = array_search($stream, $this->readStreams))) {
+            unset($this->readStreams[$index]);
+            unset($this->readListeners[(int) $stream]);
+        }
 
-        $index = array_search($stream, $this->writeStreams);
-        unset($this->writeStreams[$index]);
-        unset($this->writeListeners[(int) $stream]);
+        if (false !== ($index = array_search($stream, $this->writeStreams))) {
+            unset($this->writeStreams[$index]);
+            unset($this->writeListeners[(int) $stream]);
+        }
     }
 
     public function tick()
