@@ -102,9 +102,11 @@ class Server extends EventEmitter
 
         $client->emit('end');
 
+        $this->loop->removeStream($socket);
         unset($this->clients[(int) $socket]);
         unset($client);
 
+        stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
         fclose($socket);
     }
 
