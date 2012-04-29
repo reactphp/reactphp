@@ -22,7 +22,13 @@ class Connection extends EventEmitter
 
     public function write($data)
     {
-        fwrite($this->socket, $data);
+        $len = strlen($data);
+
+        do {
+            $sent = fwrite($this->socket, $data);
+            $len -= $sent;
+            $data = substr($data, $sent);
+        } while ($len > 0);
     }
 
     public function close()
