@@ -93,6 +93,26 @@ class ServerTest extends TestCase
         $this->loop->tick();
     }
 
+    public function testFragmentedMessage()
+    {
+        $client = stream_socket_client('tcp://localhost:' . $this->port);
+        $this->server->bufferSize = 2;
+
+        fwrite($client, "Hello World!\n");
+
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with("He");
+
+        $this->server->on('connect', function ($conn) use ($mock) {
+            $conn->on('data', $mock);
+        });
+        $this->loop->tick();
+        $this->loop->tick();
+    }
+
     /**
      * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
      * @covers Igorw\SocketServer\Server::handleDisconnect

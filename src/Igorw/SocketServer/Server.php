@@ -12,6 +12,8 @@ class Server extends EventEmitter
     private $clients = array();
     private $loop;
 
+    public $bufferSize = 4096;
+
     public function __construct($host, $port, LoopInterface $loop = null)
     {
         $this->loop = $loop ?: Factory::create();
@@ -54,9 +56,10 @@ class Server extends EventEmitter
         $this->clients[(int) $socket] = $client;
 
         $that = $this;
+        $buffer = $this->bufferSize;
 
-        $this->loop->addReadStream($socket, function ($stream) use ($that) {
-            $data = @stream_socket_recvfrom($stream, 4096);
+        $this->loop->addReadStream($socket, function ($stream) use ($that, $buffer) {
+            $data = @stream_socket_recvfrom($stream, $buffer);
             if ($data === '') {
                 $that->handleDisconnect($stream);
             } else {
