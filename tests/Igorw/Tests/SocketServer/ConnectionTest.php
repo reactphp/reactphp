@@ -48,6 +48,24 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers Igorw\SocketServer\Connection::write
+     */
+    public function testWriteError()
+    {
+        $socket = "Silly developer, you can't write to to a string!";
+        $server = $this->createServerMock();
+
+        $conn = new Connection($socket, $server);
+        $error = false;
+        $conn->on('error', function() use (&$error) {
+            $error = true;
+        });
+        $conn->write('Attempting to write to a string');
+
+        $this->assertTrue($error);
+    }
+
+    /**
      * @covers Igorw\SocketServer\Connection::close
      */
     public function testClose()

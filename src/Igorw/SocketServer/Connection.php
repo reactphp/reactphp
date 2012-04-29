@@ -22,7 +22,9 @@ class Connection extends EventEmitter
 
     public function write($data)
     {
-        fwrite($this->socket, $data);
+        if (false === @fwrite($this->socket, $data)) {
+            $this->emit('error', array('Unable to write to socket', $this));
+        }
     }
 
     public function close()
