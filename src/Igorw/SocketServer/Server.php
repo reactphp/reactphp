@@ -22,6 +22,7 @@ class Server extends EventEmitter
         if (false === $this->master) {
             throw new ConnectionException($errstr, $errno);
         }
+        stream_set_blocking($this->master, 0);
 
         $that = $this;
 
@@ -51,6 +52,7 @@ class Server extends EventEmitter
 
     public function handleConnection($socket)
     {
+        stream_set_blocking($socket, 0);
         $client = $this->createConnection($socket);
 
         $this->clients[(int) $socket] = $client;
