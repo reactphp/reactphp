@@ -5,7 +5,7 @@ namespace Igorw\Tests\SocketServer;
 use Igorw\SocketServer\Server;
 use Igorw\SocketServer\EventLoop\StreamSelectLoop;
 
-class ServerTest extends \PHPUnit_Framework_TestCase
+class ServerTest extends TestCase
 {
     private $loop;
     private $server;
@@ -223,40 +223,5 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         if ($this->server) {
             $this->server->shutdown();
         }
-    }
-
-    private function expectCallableExactly($amount)
-    {
-        $mock = $this->createCallableMock();
-        $mock
-            ->expects($this->exactly($amount))
-            ->method('__invoke');
-
-        return $mock;
-    }
-
-    private function expectCallableOnce()
-    {
-        $mock = $this->createCallableMock();
-        $mock
-            ->expects($this->once())
-            ->method('__invoke');
-
-        return $mock;
-    }
-
-    private function expectCallableNever()
-    {
-        $mock = $this->createCallableMock();
-        $mock
-            ->expects($this->never())
-            ->method('__invoke');
-
-        return $mock;
-    }
-
-    private function createCallableMock()
-    {
-        return $this->getMock('Igorw\Tests\SocketServer\CallableMock');
     }
 }

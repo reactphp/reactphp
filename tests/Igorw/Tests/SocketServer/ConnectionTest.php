@@ -4,7 +4,7 @@ namespace Igorw\Tests\SocketServer;
 
 use Igorw\SocketServer\Connection;
 
-class ConnectionTest extends \PHPUnit_Framework_TestCase
+class ConnectionTest extends TestCase
 {
     /**
      * @covers Igorw\SocketServer\Connection::__construct
@@ -56,13 +56,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $server = $this->createServerMock();
 
         $conn = new Connection($socket, $server);
-        $error = false;
-        $conn->on('error', function() use (&$error) {
-            $error = true;
-        });
+        $conn->on('error', $this->expectCallableOnce());
         $conn->write('Attempting to write to a string');
-
-        $this->assertTrue($error);
     }
 
     /**
