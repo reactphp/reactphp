@@ -15,7 +15,7 @@ class LibEventLoop implements LoopInterface
     public function addReadStream($stream, $listener)
     {
         $event = event_new();
-        event_set($event, $stream, EV_READ | EV_PERSIST, $this->createListener($stream, $listener));
+        event_set($event, $stream, EV_READ | EV_PERSIST, $listener);
         event_base_set($event, $this->base);
         event_add($event);
 
@@ -25,7 +25,7 @@ class LibEventLoop implements LoopInterface
     public function addWriteStream($stream, $listener)
     {
         $event = event_new();
-        event_set($event, $stream, EV_READ | EV_PERSIST, $this->createListener($stream, $listener));
+        event_set($event, $stream, EV_READ | EV_PERSIST, $listener);
         event_base_set($event, $this->base);
         event_add($event);
 
@@ -37,6 +37,7 @@ class LibEventLoop implements LoopInterface
         if (isset($this->events[(int) $stream])) {
             $event = $this->events[(int) $stream];
             event_del($event);
+            event_free($event);
 
             unset($this->events[(int) $stream]);
         }
@@ -52,12 +53,5 @@ class LibEventLoop implements LoopInterface
         // @codeCoverageIgnoreStart
         event_base_loop($this->base);
         // @codeCoverageIgnoreEnd
-    }
-
-    private function createListener($stream, $listener)
-    {
-        return function () use ($listener, $stream) {
-            call_user_func($listener, $stream);
-        };
     }
 }

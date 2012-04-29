@@ -29,7 +29,7 @@ class Server extends EventEmitter
             $newSocket = stream_socket_accept($master);
             if (false === $newSocket) {
                 $that->emit('error', array('Error accepting new connection'));
-                continue;
+                return;
             }
             $that->handleConnection($newSocket);
         });
@@ -55,17 +55,7 @@ class Server extends EventEmitter
 
         $this->clients[(int) $socket] = $client;
 
-        $that = $this;
-        $buffer = $this->bufferSize;
-
-        $this->loop->addReadStream($socket, function ($stream) use ($that, $buffer) {
-            $data = @stream_socket_recvfrom($stream, $buffer);
-            if ($data === '') {
-                $that->handleDisconnect($stream);
-            } else {
-                $that->handleData($stream, $data);
-            }
-        });
+        $this->loop->addReadStream($socket, array($this, 'handleData'));
 
         $this->emit('connect', array($client));
     }
@@ -75,11 +65,16 @@ class Server extends EventEmitter
         $this->close($socket);
     }
 
-    public function handleData($socket, $data)
+    public function handleData($socket)
     {
-        $client = $this->getClient($socket);
-
-        $client->emit('data', array($data));
+        $data = @stream_socket_recvfrom($socket, $this->bufferSize);
+        if ('' === $data || false === $data) {
+            $this->handleDisconnect($socket);
+            $this->loop->removeStream($socket);
+        } else {
+            $client = $this->getClient($socket);
+            $client->emit('data', array($data));
+        }
     }
 
     public function getClient($socket)
