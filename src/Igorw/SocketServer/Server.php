@@ -4,7 +4,7 @@ namespace Igorw\SocketServer;
 
 use Evenement\EventEmitter;
 use Igorw\SocketServer\EventLoop\LoopInterface;
-use Igorw\SocketServer\EventLoop\StreamSelectLoop;
+use Igorw\SocketServer\EventLoop\Factory;
 
 class Server extends EventEmitter
 {
@@ -14,7 +14,7 @@ class Server extends EventEmitter
 
     public function __construct($host, $port, LoopInterface $loop = null)
     {
-        $this->loop = $loop ?: new StreamSelectLoop();
+        $this->loop = $loop ?: Factory::create();
 
         $this->master = stream_socket_server("tcp://$host:$port", $errno, $errstr);
         if (false === $this->master) {
