@@ -1,6 +1,6 @@
 <?php
 
-namespace Igorw\SocketServer;
+namespace Igorw\SocketServer\EventLoop;
 
 use Igorw\SocketServer\EventLoop\StreamSelectLoop;
 use Igorw\SocketServer\EventLoop\LibEventLoop;
