@@ -1,6 +1,6 @@
 <?php
 
-namespace Igorw\EventLoop;
+namespace React\EventLoop;
 
 class StreamSelectLoop implements LoopInterface
 {

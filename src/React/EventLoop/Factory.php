@@ -1,9 +1,9 @@
 <?php
 
-namespace Igorw\EventLoop;
+namespace React\EventLoop;
 
-use Igorw\EventLoop\StreamSelectLoop;
-use Igorw\EventLoop\LibEventLoop;
+use React\EventLoop\StreamSelectLoop;
+use React\EventLoop\LibEventLoop;
 
 class Factory
 {

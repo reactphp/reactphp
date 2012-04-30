@@ -1,7 +1,7 @@
 {
-    "name": "igorw/socket-server",
-    "description": "Stream-powered library for creating a socket server in PHP.",
-    "keywords": ["socket", "stream", "server"],
+    "name": "react/react",
+    "description": "Nuclear Reactor written in PHP.",
+    "keywords": ["event", "event-loop", "async", "socket", "server"],
     "license": "MIT",
     "require": {
         "php": ">=5.3.2",
@@ -9,7 +9,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Igorw": "src"
+            "React": "src"
         }
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace Igorw\Socket;
+namespace React\Socket;
 
 use Evenement\EventEmitter;
-use Igorw\EventLoop\LoopInterface;
-use Igorw\EventLoop\Factory;
+use React\EventLoop\LoopInterface;
+use React\EventLoop\Factory;
 
 class Server extends EventEmitter
 {
