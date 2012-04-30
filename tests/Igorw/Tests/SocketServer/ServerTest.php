@@ -11,13 +11,18 @@ class ServerTest extends TestCase
     private $server;
     private $port;
 
+    private function createLoop()
+    {
+        return new StreamSelectLoop(0);
+    }
+
     /**
      * @covers Igorw\SocketServer\Server::__construct
      * @covers Igorw\SocketServer\Server::getPort
      */
     public function setUp()
     {
-        $this->loop = new StreamSelectLoop(0);
+        $this->loop = $this->createLoop();
         $this->server = new Server('localhost', 0, $this->loop);
 
         $this->port = $this->server->getPort();
@@ -172,9 +177,6 @@ class ServerTest extends TestCase
     public function testInput()
     {
         $input = fopen('php://temp', 'r+');
-
-        $this->loop = new StreamSelectLoop(0);
-        $this->server = new Server('localhost', 0, $this->loop);
 
         $this->server->addInput('foo', $input);
 
