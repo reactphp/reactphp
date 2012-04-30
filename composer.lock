@@ -1,11 +1,14 @@
 {
-    "hash": "cbc1ce56854b9458e272590f00769348",
+    "hash": "86b0d17de935f0ba276ea5bb3fedd8c8",
     "packages": [
         {
             "package": "evenement/evenement",
             "version": "dev-master",
-            "source-reference": "e9bac9b3cc29bf807c55b26a973090ad7f1eb7e5"
+            "source-reference": "ae059c4441835787c6e6d9c08f71127d33b1cb32"
         }
     ],
-    "aliases": []
+    "packages-dev": null,
+    "aliases": [
+
+    ]
 }

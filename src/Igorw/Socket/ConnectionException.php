@@ -1,6 +1,6 @@
 <?php
 
-namespace Igorw\SocketServer;
+namespace Igorw\Socket;
 
 class ConnectionException extends \ErrorException
 {

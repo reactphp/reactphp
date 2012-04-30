@@ -1,13 +1,13 @@
 <?php
 
-namespace Igorw\Tests\SocketServer;
+namespace Igorw\Tests\Socket;
 
-use Igorw\SocketServer\Connection;
+use Igorw\Socket\Connection;
 
 class ConnectionTest extends TestCase
 {
     /**
-     * @covers Igorw\SocketServer\Connection::__construct
+     * @covers Igorw\Socket\Connection::__construct
      */
     public function testConstructor()
     {
@@ -18,7 +18,7 @@ class ConnectionTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\Connection::isOpen
+     * @covers Igorw\Socket\Connection::isOpen
      */
     public function testIsOpen()
     {
@@ -33,7 +33,7 @@ class ConnectionTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\Connection::write
+     * @covers Igorw\Socket\Connection::write
      */
     public function testWrite()
     {
@@ -48,7 +48,7 @@ class ConnectionTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\Connection::write
+     * @covers Igorw\Socket\Connection::write
      */
     public function testWriteError()
     {
@@ -61,7 +61,7 @@ class ConnectionTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\Connection::close
+     * @covers Igorw\Socket\Connection::close
      */
     public function testClose()
     {
@@ -78,7 +78,7 @@ class ConnectionTest extends TestCase
 
     private function createServerMock()
     {
-        $mock = $this->getMockBuilder('Igorw\SocketServer\Server')
+        $mock = $this->getMockBuilder('Igorw\Socket\Server')
             ->disableOriginalConstructor()
             ->getMock();
 

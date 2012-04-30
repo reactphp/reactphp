@@ -1,9 +1,9 @@
 <?php
 
-namespace Igorw\SocketServer\EventLoop;
+namespace Igorw\EventLoop;
 
-use Igorw\SocketServer\EventLoop\StreamSelectLoop;
-use Igorw\SocketServer\EventLoop\LibEventLoop;
+use Igorw\EventLoop\StreamSelectLoop;
+use Igorw\EventLoop\LibEventLoop;
 
 class Factory
 {

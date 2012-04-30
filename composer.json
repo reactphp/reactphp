@@ -9,7 +9,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Igorw\\SocketServer": "src"
+            "Igorw": "src"
         }
     }
 }

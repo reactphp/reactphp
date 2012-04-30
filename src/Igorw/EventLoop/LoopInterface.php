@@ -1,6 +1,6 @@
 <?php
 
-namespace Igorw\SocketServer\EventLoop;
+namespace Igorw\EventLoop;
 
 interface LoopInterface
 {

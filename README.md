@@ -20,7 +20,7 @@ The recommended way to install SocketServer is [through composer](http://getcomp
 
 ### Events
 
-Both `Igorw\SocketServer\Server` and `Igorw\SocketServer\Connection` extend
+Both `Igorw\Socket\Server` and `Igorw\Socket\Connection` extend
 [événement](https://github.com/igorw/evenement), allowing you to bind to
 events.
 
@@ -52,7 +52,7 @@ data and input until it dies.
 Here is an example of a simple HTTP server listening on port 8000:
 ```php
 <?php
-use Igorw\SocketServer\Server;
+use Igorw\Socket\Server;
 
 $server = new Server('localhost', 8000);
 

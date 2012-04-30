@@ -1,10 +1,10 @@
 <?php
 
-namespace Igorw\SocketServer;
+namespace Igorw\Socket;
 
 use Evenement\EventEmitter;
-use Igorw\SocketServer\EventLoop\LoopInterface;
-use Igorw\SocketServer\EventLoop\Factory;
+use Igorw\EventLoop\LoopInterface;
+use Igorw\EventLoop\Factory;
 
 class Server extends EventEmitter
 {

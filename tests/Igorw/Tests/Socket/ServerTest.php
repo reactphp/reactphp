@@ -1,9 +1,9 @@
 <?php
 
-namespace Igorw\Tests\SocketServer;
+namespace Igorw\Tests\Socket;
 
-use Igorw\SocketServer\Server;
-use Igorw\SocketServer\EventLoop\StreamSelectLoop;
+use Igorw\Socket\Server;
+use Igorw\EventLoop\StreamSelectLoop;
 
 class ServerTest extends TestCase
 {
@@ -17,8 +17,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::__construct
-     * @covers Igorw\SocketServer\Server::getPort
+     * @covers Igorw\Socket\Server::__construct
+     * @covers Igorw\Socket\Server::getPort
      */
     public function setUp()
     {
@@ -29,9 +29,9 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::handleConnection
-     * @covers Igorw\SocketServer\Server::createConnection
+     * @covers Igorw\EventLoop\StreamSelectLoop::tick
+     * @covers Igorw\Socket\Server::handleConnection
+     * @covers Igorw\Socket\Server::createConnection
      */
     public function testConnection()
     {
@@ -42,9 +42,9 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::handleConnection
-     * @covers Igorw\SocketServer\Server::createConnection
+     * @covers Igorw\EventLoop\StreamSelectLoop::tick
+     * @covers Igorw\Socket\Server::handleConnection
+     * @covers Igorw\Socket\Server::createConnection
      */
     public function testConnectionWithManyClients()
     {
@@ -59,8 +59,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::handleData
+     * @covers Igorw\EventLoop\StreamSelectLoop::tick
+     * @covers Igorw\Socket\Server::handleData
      */
     public function testDataWithNoData()
     {
@@ -76,8 +76,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::handleData
+     * @covers Igorw\EventLoop\StreamSelectLoop::tick
+     * @covers Igorw\Socket\Server::handleData
      */
     public function testData()
     {
@@ -119,8 +119,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::handleDisconnect
+     * @covers Igorw\EventLoop\StreamSelectLoop::tick
+     * @covers Igorw\Socket\Server::handleDisconnect
      */
     public function testDisconnectWithoutDisconnect()
     {
@@ -136,9 +136,9 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::handleDisconnect
-     * @covers Igorw\SocketServer\Server::close
+     * @covers Igorw\EventLoop\StreamSelectLoop::tick
+     * @covers Igorw\Socket\Server::handleDisconnect
+     * @covers Igorw\Socket\Server::close
      */
     public function testDisconnect()
     {
@@ -156,8 +156,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::write
+     * @covers Igorw\EventLoop\StreamSelectLoop::tick
+     * @covers Igorw\Socket\Server::write
      */
     public function testWrite()
     {
@@ -171,8 +171,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::addInput
+     * @covers Igorw\EventLoop\StreamSelectLoop::tick
+     * @covers Igorw\Socket\Server::addInput
      */
     public function testInput()
     {
@@ -189,8 +189,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::close
+     * @covers Igorw\EventLoop\StreamSelectLoop::tick
+     * @covers Igorw\Socket\Server::close
      */
     public function testClose()
     {
@@ -208,8 +208,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::getClients
+     * @covers Igorw\EventLoop\StreamSelectLoop::tick
+     * @covers Igorw\Socket\Server::getClients
      */
     public function testGetClients()
     {
@@ -222,8 +222,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::getClient
+     * @covers Igorw\EventLoop\StreamSelectLoop::tick
+     * @covers Igorw\Socket\Server::getClient
      */
     public function testGetClient()
     {
@@ -233,12 +233,12 @@ class ServerTest extends TestCase
         $conns = $this->server->getClients();
         list($key, $conn) = each($conns);
 
-        $this->assertInstanceOf('Igorw\SocketServer\Connection', $conn);
+        $this->assertInstanceOf('Igorw\Socket\Connection', $conn);
         $this->assertSame($conn, $this->server->getClient($key));
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::shutdown
+     * @covers Igorw\Socket\Server::shutdown
      */
     public function tearDown()
     {
