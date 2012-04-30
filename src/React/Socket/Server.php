@@ -6,7 +6,7 @@ use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory;
 
-class Server extends EventEmitter
+class Server extends EventEmitter implements ServerInterface
 {
     private $master;
     private $clients = array();
@@ -14,9 +14,9 @@ class Server extends EventEmitter
 
     public $bufferSize = 4096;
 
-    public function __construct($host, $port, LoopInterface $loop = null)
+    public function __construct($host, $port, LoopInterface $loop)
     {
-        $this->loop = $loop ?: Factory::create();
+        $this->loop = $loop;
 
         $this->master = stream_socket_server("tcp://$host:$port", $errno, $errstr);
         if (false === $this->master) {
@@ -34,20 +34,6 @@ class Server extends EventEmitter
             }
             $that->handleConnection($newSocket);
         });
-    }
-
-    public function addInput($name, $stream)
-    {
-        $that = $this;
-
-        $this->loop->addReadStream($stream, function ($stream) use ($name, $that) {
-            $that->emit("input.$name", array($stream));
-        });
-    }
-
-    public function run()
-    {
-        $this->loop->run();
     }
 
     public function handleConnection($socket)

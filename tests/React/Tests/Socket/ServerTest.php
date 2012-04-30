@@ -172,24 +172,6 @@ class ServerTest extends TestCase
 
     /**
      * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\Socket\Server::addInput
-     */
-    public function testInput()
-    {
-        $input = fopen('php://temp', 'r+');
-
-        $this->server->addInput('foo', $input);
-
-        $this->server->on('input.foo', $this->expectCallableOnce());
-        $this->server->on('input.bar', $this->expectCallableNever());
-
-        fwrite($input, "foo\n");
-        rewind($input);
-        $this->loop->tick();
-    }
-
-    /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
      * @covers React\Socket\Server::close
      */
     public function testClose()
