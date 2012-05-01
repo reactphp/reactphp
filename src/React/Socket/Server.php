@@ -4,7 +4,6 @@ namespace React\Socket;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
-use React\EventLoop\Factory;
 
 class Server extends EventEmitter implements ServerInterface
 {
