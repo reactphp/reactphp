@@ -1,14 +1,35 @@
 {
-    "hash": "92d2b4302f2a109a79bfca416d42f892",
+    "hash": "f55254780d1f1ebc5a167b8b53e37ab5",
     "packages": [
         {
             "package": "evenement/evenement",
             "version": "dev-master",
             "source-reference": "ae059c4441835787c6e6d9c08f71127d33b1cb32"
+        },
+        {
+            "package": "guzzle/guzzle",
+            "version": "v2.0.2"
+        },
+        {
+            "package": "symfony/symfony",
+            "version": "dev-output-stream",
+            "source-reference": "a2f32a9fc555ea0d2aef80d3c52cd5ef17935a0e",
+            "alias": "2.1.9999999.9999999-dev"
+        },
+        {
+            "package": "twig/twig",
+            "version": "dev-master",
+            "source-reference": "f3491b5cbfd03a31538b6e8c82d65cd54996e870",
+            "alias": "1.8.9999999.9999999-dev"
         }
     ],
     "packages-dev": null,
     "aliases": [
-
+        {
+            "package": "symfony/symfony",
+            "version": "dev-output-stream",
+            "alias": "2.1.x-dev",
+            "alias_normalized": "2.1.9999999.9999999-dev"
+        }
     ]
 }

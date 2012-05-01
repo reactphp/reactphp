@@ -1,11 +1,20 @@
 {
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/igorw/symfony"
+        }
+    ],
+
     "name": "react/react",
     "description": "Nuclear Reactor written in PHP.",
     "keywords": ["event", "event-loop", "async", "socket", "server"],
     "license": "MIT",
     "require": {
         "php": ">=5.3.2",
-        "evenement/evenement": "dev-master"
+        "symfony/symfony": "dev-output-stream as 2.1.x-dev",
+        "evenement/evenement": "dev-master",
+        "guzzle/guzzle": "2.0.2"
     },
     "autoload": {
         "psr-0": {
