@@ -13,10 +13,13 @@ class Server extends EventEmitter implements ServerInterface
 
     public $bufferSize = 4096;
 
-    public function __construct($host, $port, LoopInterface $loop)
+    public function __construct(LoopInterface $loop)
     {
         $this->loop = $loop;
+    }
 
+    public function listen($port, $host = '127.0.0.1')
+    {
         $this->master = stream_socket_server("tcp://$host:$port", $errno, $errstr);
         if (false === $this->master) {
             throw new ConnectionException($errstr, $errno);

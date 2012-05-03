@@ -23,7 +23,8 @@ class ServerTest extends TestCase
     public function setUp()
     {
         $this->loop = $this->createLoop();
-        $this->server = new Server('localhost', 0, $this->loop);
+        $this->server = new Server($this->loop);
+        $this->server->listen(0);
 
         $this->port = $this->server->getPort();
     }

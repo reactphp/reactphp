@@ -5,19 +5,19 @@ namespace React\Http;
 use Evenement\EventEmitter;
 use React\Socket\ServerInterface as SocketServerInterface;
 use React\Socket\Connection;
-use React\Http\OutputStream\SocketOutputStream;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
+/**
+ * Events:
+ *  * request
+ *  * upgrade
+ */
 class Server extends EventEmitter implements ServerInterface
 {
     private $io;
-    private $kernel;
 
-    public function __construct(SocketServerInterface $io, HttpKernelInterface $kernel)
+    public function __construct(SocketServerInterface $io)
     {
         $this->io = $io;
-        $this->kernel = $kernel;
 
         $server = $this;
 
@@ -28,36 +28,42 @@ class Server extends EventEmitter implements ServerInterface
             // also for outgoing data (custom OutputStream?)
 
             $parser = new RequestHeaderParser();
-            $parser->on('headers', function (StreamedRequest $request, $bodyBuffer) use ($server, $conn) {
+            $parser->on('headers', function (Request $request, $bodyBuffer) use ($server, $conn, $parser) {
                 $server->handleRequest($conn, $request, $bodyBuffer);
-            });
 
-            $parser->on('headers', function () use ($conn, $parser) {
                 $conn->removeListener('data', array($parser, 'feed'));
+                $conn->on('data', function ($data) use ($request) {
+                    $request->emit('data', array($data));
+                });
             });
 
             $conn->on('data', array($parser, 'feed'));
         });
     }
 
-    public function handleRequest(Connection $conn, StreamedRequest $request, $bodyBuffer)
+    public function handleRequest(Connection $conn, Request $request, $bodyBuffer)
     {
-        $response = $this->kernel->handle($request);
+        $response = new Response($conn);
 
-        // write headers
-        // if response is set, also write response
-        $conn->write((string) $response);
-
-        if ($response instanceof StreamedResponse) {
-            $outputStream = new SocketOutputStream($conn);
-            $response->setOutputStream($outputStream);
-            $response->sendContent();
-
-            $request->emitData($bodyBuffer);
-            $conn->on('data', array($request, 'emitData'));
-        } else {
-            // TODO: do not close for keep-alive
-            $conn->close();
+        if (!$this->listeners('request')) {
+            $response->end();
+            return;
         }
+
+        $this->emit('request', array($request, $response));
+        $request->emit('data', array($bodyBuffer));
+    }
+
+    public function handleUpgrade(Connection $conn, Request $request, $bodyBuffer)
+    {
+        $response = new Response($conn);
+
+        if (!$this->listeners('request')) {
+            $response->end();
+            return;
+        }
+
+        $this->emit('request', array($request, $response));
+        $request->emit('data', array($bodyBuffer));
     }
 }

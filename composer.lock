@@ -1,35 +1,33 @@
 {
-    "hash": "f55254780d1f1ebc5a167b8b53e37ab5",
+    "hash": "914a424b6753b24b02303641a8a4017c",
     "packages": [
+        {
+            "package": "doctrine/common",
+            "version": "2.2.x-dev",
+            "source-reference": "1e0aa60d109c630d19543d999f12e2852ef8f932"
+        },
         {
             "package": "evenement/evenement",
             "version": "dev-master",
-            "source-reference": "ae059c4441835787c6e6d9c08f71127d33b1cb32"
+            "source-reference": "808e3aaea8d4f908e455b0e047cc1acc46b38d44"
         },
         {
             "package": "guzzle/guzzle",
             "version": "v2.0.2"
         },
         {
-            "package": "symfony/symfony",
-            "version": "dev-output-stream",
-            "source-reference": "a2f32a9fc555ea0d2aef80d3c52cd5ef17935a0e",
-            "alias": "2.1.9999999.9999999-dev"
+            "package": "symfony/event-dispatcher",
+            "version": "dev-master",
+            "source-reference": "0c1ae4898196f5e96b79028d8d2f35de4b584659"
         },
         {
-            "package": "twig/twig",
+            "package": "symfony/validator",
             "version": "dev-master",
-            "source-reference": "f3491b5cbfd03a31538b6e8c82d65cd54996e870",
-            "alias": "1.8.9999999.9999999-dev"
+            "source-reference": "dac248b43b62d30023dd9b73ad7e5b7bc1128e5e"
         }
     ],
     "packages-dev": null,
     "aliases": [
-        {
-            "package": "symfony/symfony",
-            "version": "dev-output-stream",
-            "alias": "2.1.x-dev",
-            "alias_normalized": "2.1.9999999.9999999-dev"
-        }
+
     ]
 }

@@ -34,11 +34,12 @@ class RequestHeaderParser extends EventEmitter
         $factory = new RequestFactory();
         $guzzleRequest = $factory->fromMessage($headers."\r\n\r\n");
 
-        $request = StreamedRequest::create(
-            $guzzleRequest->getUrl(),
+        $request = new Request(
             $guzzleRequest->getMethod(),
+            $guzzleRequest->getPath(),
             $guzzleRequest->getQuery()->getAll(),
-            $guzzleRequest->getCookie()->getAll()
+            $guzzleRequest->getProtocolVersion(),
+            $guzzleRequest->getHeaders()->getAll()
         );
 
         return array($request, $bodyBuffer);
