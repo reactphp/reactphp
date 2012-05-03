@@ -6,7 +6,8 @@
     "require": {
         "php": ">=5.3.2",
         "evenement/evenement": "dev-master",
-        "guzzle/guzzle": "2.0.2"
+        "guzzle/guzzle": "2.0.2",
+        "silex/silex": "1.0.*"
     },
     "autoload": {
         "psr-0": {

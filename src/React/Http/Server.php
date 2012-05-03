@@ -53,17 +53,4 @@ class Server extends EventEmitter implements ServerInterface
         $this->emit('request', array($request, $response));
         $request->emit('data', array($bodyBuffer));
     }
-
-    public function handleUpgrade(Connection $conn, Request $request, $bodyBuffer)
-    {
-        $response = new Response($conn);
-
-        if (!$this->listeners('request')) {
-            $response->end();
-            return;
-        }
-
-        $this->emit('request', array($request, $response));
-        $request->emit('data', array($bodyBuffer));
-    }
 }
