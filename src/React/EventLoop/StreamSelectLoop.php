@@ -53,18 +53,22 @@ class StreamSelectLoop implements LoopInterface
 
     public function tick()
     {
-        $read = $this->readStreams;
-        $write = $this->writeStreams;
+        $read = $this->readStreams ?: null;
+        $write = $this->writeStreams ?: null;
         @stream_select($read, $write, $except = null, 0, $this->timeout);
-        foreach ($read as $stream) {
-            foreach ($this->readListeners[(int) $stream] as $listener) {
-                call_user_func($listener, $stream);
+        if ($read) {
+            foreach ($read as $stream) {
+                foreach ($this->readListeners[(int) $stream] as $listener) {
+                    call_user_func($listener, $stream);
+                }
             }
         }
-        foreach ($write as $stream) {
-            foreach ($this->writeListeners[(int) $stream] as $listeners) {
-                foreach ($listeners as $listener) {
-                    call_user_func($listener, $stream);
+        if ($write) {
+            foreach ($write as $stream) {
+                foreach ($this->writeListeners[(int) $stream] as $listeners) {
+                    foreach ($listeners as $listener) {
+                        call_user_func($listener, $stream);
+                    }
                 }
             }
         }

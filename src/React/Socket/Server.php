@@ -87,7 +87,6 @@ class Server extends EventEmitter implements ServerInterface
     public function close($socket)
     {
         $client = $this->getClient($socket);
-
         $client->emit('end');
 
         $this->loop->removeStream($socket);
