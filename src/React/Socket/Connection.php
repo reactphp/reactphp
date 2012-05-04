@@ -1,6 +1,6 @@
 <?php
 
-namespace Igorw\SocketServer;
+namespace React\Socket;
 
 use Evenement\EventEmitter;
 

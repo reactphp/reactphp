@@ -1,6 +1,6 @@
 <?php
 
-namespace Igorw\Tests\SocketServer;
+namespace React\Tests\Socket;
 
 class CallableMock
 {

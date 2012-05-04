@@ -1,12 +1,11 @@
 <?php
 
-namespace Igorw\SocketServer;
+namespace React\Socket;
 
 use Evenement\EventEmitter;
-use Igorw\SocketServer\EventLoop\LoopInterface;
-use Igorw\SocketServer\EventLoop\Factory;
+use React\EventLoop\LoopInterface;
 
-class Server extends EventEmitter
+class Server extends EventEmitter implements ServerInterface
 {
     private $master;
     private $clients = array();
@@ -14,10 +13,13 @@ class Server extends EventEmitter
 
     public $bufferSize = 4096;
 
-    public function __construct($host, $port, LoopInterface $loop = null)
+    public function __construct(LoopInterface $loop)
     {
-        $this->loop = $loop ?: Factory::create();
+        $this->loop = $loop;
+    }
 
+    public function listen($port, $host = '127.0.0.1')
+    {
         $this->master = stream_socket_server("tcp://$host:$port", $errno, $errstr);
         if (false === $this->master) {
             throw new ConnectionException($errstr, $errno);
@@ -34,20 +36,6 @@ class Server extends EventEmitter
             }
             $that->handleConnection($newSocket);
         });
-    }
-
-    public function addInput($name, $stream)
-    {
-        $that = $this;
-
-        $this->loop->addReadStream($stream, function ($stream) use ($name, $that) {
-            $that->emit("input.$name", array($stream));
-        });
-    }
-
-    public function run()
-    {
-        $this->loop->run();
     }
 
     public function handleConnection($socket)
@@ -99,7 +87,6 @@ class Server extends EventEmitter
     public function close($socket)
     {
         $client = $this->getClient($socket);
-
         $client->emit('end');
 
         $this->loop->removeStream($socket);

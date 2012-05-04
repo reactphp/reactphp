@@ -1,6 +1,6 @@
 <?php
 
-namespace Igorw\SocketServer;
+namespace React\Socket;
 
 class ConnectionException extends \ErrorException
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Igorw\Tests\SocketServer;
+namespace React\Tests\Socket;
 
 class TestCase extends \PHPUnit_Framework_TestCase
 {
@@ -36,6 +36,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
     protected function createCallableMock()
     {
-        return $this->getMock('Igorw\Tests\SocketServer\CallableMock');
+        return $this->getMock('React\Tests\Socket\CallableMock');
     }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace Igorw\Tests\SocketServer;
+namespace React\Tests\Socket;
 
-use Igorw\SocketServer\Server;
-use Igorw\SocketServer\EventLoop\StreamSelectLoop;
+use React\Socket\Server;
+use React\EventLoop\StreamSelectLoop;
 
 class ServerTest extends TestCase
 {
@@ -17,21 +17,22 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::__construct
-     * @covers Igorw\SocketServer\Server::getPort
+     * @covers React\Socket\Server::__construct
+     * @covers React\Socket\Server::getPort
      */
     public function setUp()
     {
         $this->loop = $this->createLoop();
-        $this->server = new Server('localhost', 0, $this->loop);
+        $this->server = new Server($this->loop);
+        $this->server->listen(0);
 
         $this->port = $this->server->getPort();
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::handleConnection
-     * @covers Igorw\SocketServer\Server::createConnection
+     * @covers React\EventLoop\StreamSelectLoop::tick
+     * @covers React\Socket\Server::handleConnection
+     * @covers React\Socket\Server::createConnection
      */
     public function testConnection()
     {
@@ -42,9 +43,9 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::handleConnection
-     * @covers Igorw\SocketServer\Server::createConnection
+     * @covers React\EventLoop\StreamSelectLoop::tick
+     * @covers React\Socket\Server::handleConnection
+     * @covers React\Socket\Server::createConnection
      */
     public function testConnectionWithManyClients()
     {
@@ -59,8 +60,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::handleData
+     * @covers React\EventLoop\StreamSelectLoop::tick
+     * @covers React\Socket\Server::handleData
      */
     public function testDataWithNoData()
     {
@@ -76,8 +77,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::handleData
+     * @covers React\EventLoop\StreamSelectLoop::tick
+     * @covers React\Socket\Server::handleData
      */
     public function testData()
     {
@@ -119,8 +120,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::handleDisconnect
+     * @covers React\EventLoop\StreamSelectLoop::tick
+     * @covers React\Socket\Server::handleDisconnect
      */
     public function testDisconnectWithoutDisconnect()
     {
@@ -136,9 +137,9 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::handleDisconnect
-     * @covers Igorw\SocketServer\Server::close
+     * @covers React\EventLoop\StreamSelectLoop::tick
+     * @covers React\Socket\Server::handleDisconnect
+     * @covers React\Socket\Server::close
      */
     public function testDisconnect()
     {
@@ -156,8 +157,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::write
+     * @covers React\EventLoop\StreamSelectLoop::tick
+     * @covers React\Socket\Server::write
      */
     public function testWrite()
     {
@@ -171,26 +172,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::addInput
-     */
-    public function testInput()
-    {
-        $input = fopen('php://temp', 'r+');
-
-        $this->server->addInput('foo', $input);
-
-        $this->server->on('input.foo', $this->expectCallableOnce());
-        $this->server->on('input.bar', $this->expectCallableNever());
-
-        fwrite($input, "foo\n");
-        rewind($input);
-        $this->loop->tick();
-    }
-
-    /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::close
+     * @covers React\EventLoop\StreamSelectLoop::tick
+     * @covers React\Socket\Server::close
      */
     public function testClose()
     {
@@ -208,8 +191,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::getClients
+     * @covers React\EventLoop\StreamSelectLoop::tick
+     * @covers React\Socket\Server::getClients
      */
     public function testGetClients()
     {
@@ -222,8 +205,8 @@ class ServerTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\EventLoop\StreamSelectLoop::tick
-     * @covers Igorw\SocketServer\Server::getClient
+     * @covers React\EventLoop\StreamSelectLoop::tick
+     * @covers React\Socket\Server::getClient
      */
     public function testGetClient()
     {
@@ -233,12 +216,12 @@ class ServerTest extends TestCase
         $conns = $this->server->getClients();
         list($key, $conn) = each($conns);
 
-        $this->assertInstanceOf('Igorw\SocketServer\Connection', $conn);
+        $this->assertInstanceOf('React\Socket\Connection', $conn);
         $this->assertSame($conn, $this->server->getClient($key));
     }
 
     /**
-     * @covers Igorw\SocketServer\Server::shutdown
+     * @covers React\Socket\Server::shutdown
      */
     public function tearDown()
     {

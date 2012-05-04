@@ -1,13 +1,13 @@
 <?php
 
-namespace Igorw\Tests\SocketServer;
+namespace React\Tests\Socket;
 
-use Igorw\SocketServer\Connection;
+use React\Socket\Connection;
 
 class ConnectionTest extends TestCase
 {
     /**
-     * @covers Igorw\SocketServer\Connection::__construct
+     * @covers React\Socket\Connection::__construct
      */
     public function testConstructor()
     {
@@ -18,7 +18,7 @@ class ConnectionTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\Connection::isOpen
+     * @covers React\Socket\Connection::isOpen
      */
     public function testIsOpen()
     {
@@ -33,7 +33,7 @@ class ConnectionTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\Connection::write
+     * @covers React\Socket\Connection::write
      */
     public function testWrite()
     {
@@ -48,7 +48,7 @@ class ConnectionTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\Connection::write
+     * @covers React\Socket\Connection::write
      */
     public function testWriteError()
     {
@@ -61,7 +61,7 @@ class ConnectionTest extends TestCase
     }
 
     /**
-     * @covers Igorw\SocketServer\Connection::close
+     * @covers React\Socket\Connection::close
      */
     public function testClose()
     {
@@ -78,7 +78,7 @@ class ConnectionTest extends TestCase
 
     private function createServerMock()
     {
-        $mock = $this->getMockBuilder('Igorw\SocketServer\Server')
+        $mock = $this->getMockBuilder('React\Socket\Server')
             ->disableOriginalConstructor()
             ->getMock();
 

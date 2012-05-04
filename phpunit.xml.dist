@@ -12,8 +12,8 @@
          bootstrap="tests/bootstrap.php"
 >
     <testsuites>
-        <testsuite name="SocketServer Test Suite">
-            <directory>./tests/Igorw/</directory>
+        <testsuite name="React Test Suite">
+            <directory>./tests/React/</directory>
         </testsuite>
     </testsuites>
 
