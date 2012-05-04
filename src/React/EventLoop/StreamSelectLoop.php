@@ -38,35 +38,44 @@ class StreamSelectLoop implements LoopInterface
         $this->writeListeners[(int) $stream][] = $listener;
     }
 
-    public function removeStream($stream)
+    public function removeReadStream($stream)
     {
         if (false !== ($index = array_search($stream, $this->readStreams))) {
             unset($this->readStreams[$index]);
             unset($this->readListeners[(int) $stream]);
         }
+    }
 
+    public function removeWriteStream($stream)
+    {
         if (false !== ($index = array_search($stream, $this->writeStreams))) {
             unset($this->writeStreams[$index]);
             unset($this->writeListeners[(int) $stream]);
         }
     }
 
+    public function removeStream($stream)
+    {
+        $this->removeReadStream($stream);
+        $this->removeWriteStream($stream);
+    }
+
     public function tick()
     {
         $read = $this->readStreams ?: null;
         $write = $this->writeStreams ?: null;
-        @stream_select($read, $write, $except = null, 0, $this->timeout);
-        if ($read) {
-            foreach ($read as $stream) {
-                foreach ($this->readListeners[(int) $stream] as $listener) {
-                    call_user_func($listener, $stream);
+
+        if (($ready = @stream_select($read, $write, $except = null, 0, $this->timeout)) > 0) {
+            if ($read) {
+                foreach ($read as $stream) {
+                    foreach ($this->readListeners[(int) $stream] as $listener) {
+                        call_user_func($listener, $stream);
+                    }
                 }
             }
-        }
-        if ($write) {
-            foreach ($write as $stream) {
-                foreach ($this->writeListeners[(int) $stream] as $listeners) {
-                    foreach ($listeners as $listener) {
+            if ($write) {
+                foreach ($write as $stream) {
+                    foreach ($this->writeListeners[(int) $stream] as $listener) {
                         call_user_func($listener, $stream);
                     }
                 }
