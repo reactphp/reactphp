@@ -11,4 +11,5 @@ interface LoopInterface
 
     public function tick();
     public function run();
+    public function stop();
 }

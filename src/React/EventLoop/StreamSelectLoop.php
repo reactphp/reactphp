@@ -12,6 +12,8 @@ class StreamSelectLoop implements LoopInterface
     private $writeStreams = array();
     private $writeListeners = array();
 
+    private $stopped = false;
+
     // timeout = microseconds
     public function __construct($timeout = 1000000)
     {
@@ -103,9 +105,18 @@ class StreamSelectLoop implements LoopInterface
     public function run()
     {
         // @codeCoverageIgnoreStart
-        while ($this->tick() === true) {
+        $this->stopped = false;
+
+        while ($this->tick() === true && !$this->stopped) {
             // NOOP
         }
+        // @codeCoverageIgnoreEnd
+    }
+
+    public function stop()
+    {
+        // @codeCoverageIgnoreStart
+        $this->stopped = true;
         // @codeCoverageIgnoreEnd
     }
 }
