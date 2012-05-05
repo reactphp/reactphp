@@ -54,4 +54,11 @@ class LibEventLoop implements LoopInterface
         event_base_loop($this->base);
         // @codeCoverageIgnoreEnd
     }
+
+    public function stop()
+    {
+        // @codeCoverageIgnoreStart
+        event_base_loopexit($this->base);
+        // @codeCoverageIgnoreEnd
+    }
 }
