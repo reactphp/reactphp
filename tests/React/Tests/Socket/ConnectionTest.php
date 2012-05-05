@@ -12,24 +12,9 @@ class ConnectionTest extends TestCase
     public function testConstructor()
     {
         $socket = fopen('php://temp', 'r+');
-        $server = $this->createServerMock();
+        $loop = $this->createLoopMock();
 
-        $conn = new Connection($socket, $server);
-    }
-
-    /**
-     * @covers React\Socket\Connection::isOpen
-     */
-    public function testIsOpen()
-    {
-        $socket = fopen('php://temp', 'r+');
-        $server = $this->createServerMock();
-
-        $conn = new Connection($socket, $server);
-        $this->assertTrue($conn->isOpen());
-
-        fclose($socket);
-        $this->assertFalse($conn->isOpen());
+        $conn = new Connection($socket, $loop);
     }
 
     /**
@@ -38,9 +23,9 @@ class ConnectionTest extends TestCase
     public function testWrite()
     {
         $socket = fopen('php://temp', 'r+');
-        $server = $this->createServerMock();
+        $loop = $this->createLoopMock();
 
-        $conn = new Connection($socket, $server);
+        $conn = new Connection($socket, $loop);
         $conn->write("foo\n");
 
         rewind($socket);
@@ -53,9 +38,9 @@ class ConnectionTest extends TestCase
     public function testWriteError()
     {
         $socket = "Silly developer, you can't write to to a string!";
-        $server = $this->createServerMock();
+        $loop = $this->createLoopMock();
 
-        $conn = new Connection($socket, $server);
+        $conn = new Connection($socket, $loop);
         $conn->on('error', $this->expectCallableOnce());
         $conn->write('Attempting to write to a string');
     }
@@ -66,22 +51,16 @@ class ConnectionTest extends TestCase
     public function testClose()
     {
         $socket = fopen('php://temp', 'r+');
+        $loop = $this->createLoopMock();
 
-        $server = $this->createServerMock();
-        $server
-            ->expects($this->once())
-            ->method('close');
-
-        $conn = new Connection($socket, $server);
+        $conn = new Connection($socket, $loop);
         $conn->close();
+
+        $this->assertFalse(is_resource($socket));
     }
 
-    private function createServerMock()
+    private function createLoopMock()
     {
-        $mock = $this->getMockBuilder('React\Socket\Server')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        return $mock;
+        return $this->getMock('React\EventLoop\LoopInterface');
     }
 }

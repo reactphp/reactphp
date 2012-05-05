@@ -61,7 +61,7 @@ class ServerTest extends TestCase
 
     /**
      * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\Socket\Server::handleData
+     * @covers React\Socket\Connection::handleData
      */
     public function testDataWithNoData()
     {
@@ -78,7 +78,7 @@ class ServerTest extends TestCase
 
     /**
      * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\Socket\Server::handleData
+     * @covers React\Socket\Connection::handleData
      */
     public function testData()
     {
@@ -102,7 +102,6 @@ class ServerTest extends TestCase
     public function testFragmentedMessage()
     {
         $client = stream_socket_client('tcp://localhost:' . $this->port);
-        $this->server->bufferSize = 2;
 
         fwrite($client, "Hello World!\n");
 
@@ -113,6 +112,7 @@ class ServerTest extends TestCase
             ->with("He");
 
         $this->server->on('connect', function ($conn) use ($mock) {
+            $conn->bufferSize = 2;
             $conn->on('data', $mock);
         });
         $this->loop->tick();
@@ -121,7 +121,6 @@ class ServerTest extends TestCase
 
     /**
      * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\Socket\Server::handleDisconnect
      */
     public function testDisconnectWithoutDisconnect()
     {
@@ -138,8 +137,7 @@ class ServerTest extends TestCase
 
     /**
      * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\Socket\Server::handleDisconnect
-     * @covers React\Socket\Server::close
+     * @covers React\Socket\Connection::close
      */
     public function testDisconnect()
     {
@@ -154,70 +152,6 @@ class ServerTest extends TestCase
         });
         $this->loop->tick();
         $this->loop->tick();
-    }
-
-    /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\Socket\Server::write
-     */
-    public function testWrite()
-    {
-        $client = stream_socket_client('tcp://localhost:'.$this->port);
-        $this->loop->tick();
-
-        $this->server->write("foo\n");
-        $this->loop->tick();
-
-        $this->assertEquals("foo\n", fgets($client));
-    }
-
-    /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\Socket\Server::close
-     */
-    public function testClose()
-    {
-        $client = stream_socket_client('tcp://localhost:'.$this->port);
-        $this->loop->tick();
-
-        $this->assertCount(1, $this->server->getClients());
-
-        $conns = $this->server->getClients();
-        list($key, $conn) = each($conns);
-
-        $conn->close();
-
-        $this->assertCount(0, $this->server->getClients());
-    }
-
-    /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\Socket\Server::getClients
-     */
-    public function testGetClients()
-    {
-        $this->assertCount(0, $this->server->getClients());
-
-        $client = stream_socket_client('tcp://localhost:'.$this->port);
-        $this->loop->tick();
-
-        $this->assertCount(1, $this->server->getClients());
-    }
-
-    /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\Socket\Server::getClient
-     */
-    public function testGetClient()
-    {
-        $client = stream_socket_client('tcp://localhost:'.$this->port);
-        $this->loop->tick();
-
-        $conns = $this->server->getClients();
-        list($key, $conn) = each($conns);
-
-        $this->assertInstanceOf('React\Socket\Connection', $conn);
-        $this->assertSame($conn, $this->server->getClient($key));
     }
 
     /**
