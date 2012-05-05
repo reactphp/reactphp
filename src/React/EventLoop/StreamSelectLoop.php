@@ -68,8 +68,13 @@ class StreamSelectLoop implements LoopInterface
     {
         $read = $this->readStreams ?: null;
         $write = $this->writeStreams ?: null;
+        $excepts = null;
 
-        if (($ready = @stream_select($read, $write, $except = null, 0, $this->timeout)) > 0) {
+        if (!$read && !$write) {
+            return false;
+        }
+
+        if (($ready = stream_select($read, $write, $except, 0, $this->timeout)) > 0) {
             if ($read) {
                 foreach ($read as $stream) {
                     foreach ($this->readListeners[(int) $stream] as $listener) {
@@ -91,13 +96,15 @@ class StreamSelectLoop implements LoopInterface
                 }
             }
         }
+
+        return true;
     }
 
     public function run()
     {
         // @codeCoverageIgnoreStart
-        while (true) {
-            $this->tick();
+        while ($this->tick() === true) {
+            // NOOP
         }
         // @codeCoverageIgnoreEnd
     }
