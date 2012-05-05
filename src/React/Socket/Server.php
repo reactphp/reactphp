@@ -8,10 +8,7 @@ use React\EventLoop\LoopInterface;
 class Server extends EventEmitter implements ServerInterface
 {
     private $master;
-    private $clients = array();
     private $loop;
-
-    public $bufferSize = 4096;
 
     public function __construct(LoopInterface $loop)
     {
@@ -41,60 +38,11 @@ class Server extends EventEmitter implements ServerInterface
     public function handleConnection($socket)
     {
         stream_set_blocking($socket, 0);
+
         $client = $this->createConnection($socket);
-
-        $this->clients[(int) $socket] = $client;
-
-        $this->loop->addReadStream($socket, array($this, 'handleData'));
+        $this->loop->addReadStream($socket, array($client, 'handleData'));
 
         $this->emit('connect', array($client));
-    }
-
-    public function handleDisconnect($socket)
-    {
-        $this->close($socket);
-    }
-
-    public function handleData($socket)
-    {
-        $data = @stream_socket_recvfrom($socket, $this->bufferSize);
-        if ('' === $data || false === $data) {
-            $this->handleDisconnect($socket);
-            $this->loop->removeStream($socket);
-        } else {
-            $client = $this->getClient($socket);
-            $client->emit('data', array($data));
-        }
-    }
-
-    public function getClient($socket)
-    {
-        return $this->clients[(int) $socket];
-    }
-
-    public function getClients()
-    {
-        return $this->clients;
-    }
-
-    public function write($data)
-    {
-        foreach ($this->clients as $conn) {
-            $conn->write($data);
-        }
-    }
-
-    public function close($socket)
-    {
-        $client = $this->getClient($socket);
-        $client->emit('end');
-
-        $this->loop->removeStream($socket);
-        unset($this->clients[(int) $socket]);
-        unset($client);
-
-        stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
-        fclose($socket);
     }
 
     public function getPort()
@@ -106,11 +54,11 @@ class Server extends EventEmitter implements ServerInterface
     public function shutdown()
     {
         $this->loop->removeStream($this->master);
-        stream_socket_shutdown($this->master, STREAM_SHUT_RDWR);
+        fclose($this->master);
     }
 
     public function createConnection($socket)
     {
-        return new Connection($socket, $this);
+        return new Connection($socket, $this->loop);
     }
 }

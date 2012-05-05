@@ -3,16 +3,19 @@
 namespace React\Socket;
 
 use Evenement\EventEmitter;
+use React\EventLoop\LoopInterface;
 
 class Connection extends EventEmitter
 {
-    private $socket;
-    private $server;
+    public $bufferSize = 4096;
 
-    public function __construct($socket, $server)
+    private $socket;
+    private $loop;
+
+    public function __construct($socket, LoopInterface $loop)
     {
         $this->socket = $socket;
-        $this->server = $server;
+        $this->loop = $loop;
     }
 
     public function isOpen()
@@ -37,6 +40,18 @@ class Connection extends EventEmitter
 
     public function close()
     {
-        $this->server->close($this->socket);
+        $this->emit('end');
+        $this->loop->removeStream($this->socket);
+        fclose($this->socket);
+    }
+
+    public function handleData($socket)
+    {
+        $data = @stream_socket_recvfrom($socket, $this->bufferSize);
+        if ('' === $data || false === $data) {
+            $this->close();
+        } else {
+            $this->emit('data', array($data));
+        }
     }
 }
