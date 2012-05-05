@@ -8,19 +8,13 @@ use React\EventLoop\LoopInterface;
 class Connection extends EventEmitter
 {
     public $bufferSize = 4096;
-
-    private $socket;
+    public $socket;
     private $loop;
 
     public function __construct($socket, LoopInterface $loop)
     {
         $this->socket = $socket;
         $this->loop = $loop;
-    }
-
-    public function isOpen()
-    {
-        return is_resource($this->socket);
     }
 
     public function write($data)
