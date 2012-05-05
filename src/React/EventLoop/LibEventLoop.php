@@ -24,17 +24,17 @@ class LibEventLoop implements LoopInterface
         $writeCbks = &$this->writeCallbacks;
 
         return function($stream, $flags, $loop) use(&$readCbks, &$writeCbks) {
-            $streamID = (int) $stream;
+            $id = (int) $stream;
 
             try {
-                if (($flags & EV_READ) === EV_READ && isset($readCbks[$streamID])) {
-                    if (call_user_func($readCbks[$streamID], $stream, $loop) === false) {
+                if (($flags & EV_READ) === EV_READ && isset($readCbks[$id])) {
+                    if (call_user_func($readCbks[$id], $stream, $loop) === false) {
                         $loop->removeReadStream($stream);
                     }
                 }
 
-                if (($flags & EV_WRITE) === EV_WRITE && isset($writeCbks[$streamID])) {
-                    if (call_user_func($writeCbks[$streamID], $stream, $loop) === false) {
+                if (($flags & EV_WRITE) === EV_WRITE && isset($writeCbks[$id])) {
+                    if (call_user_func($writeCbks[$id], $stream, $loop) === false) {
                         $loop->removeWriteStream($stream);
                     }
                 }
@@ -60,19 +60,19 @@ class LibEventLoop implements LoopInterface
 
     protected function addStreamEvent($stream, $eventClass, $eventCallbacks, $listener)
     {
-        $streamID = (int) $stream;
+        $id = (int) $stream;
 
-        if ($existing = isset($this->events[$streamID])) {
-            if (($this->flags[$streamID] & $eventClass) === $eventClass) {
+        if ($existing = isset($this->events[$id])) {
+            if (($this->flags[$id] & $eventClass) === $eventClass) {
                 return;
             }
-            $event = $this->events[$streamID];
+            $event = $this->events[$id];
             event_del($event);
         } else {
             $event = event_new();
         }
 
-        $flags = isset($this->flags[$streamID]) ? $this->flags[$streamID] | $eventClass : $eventClass;
+        $flags = isset($this->flags[$id]) ? $this->flags[$id] | $eventClass : $eventClass;
         event_set($event, $stream, $flags | EV_PERSIST, $this->callback, $this);
 
         if (!$existing) {
@@ -82,9 +82,9 @@ class LibEventLoop implements LoopInterface
 
         event_add($event);
 
-        $this->events[$streamID] = $event;
-        $this->flags[$streamID] = $flags;
-        $this->{"{$eventCallbacks}Callbacks"}[$streamID] = $listener;
+        $this->events[$id] = $event;
+        $this->flags[$id] = $flags;
+        $this->{"{$eventCallbacks}Callbacks"}[$id] = $listener;
     }
 
     public function removeReadStream($stream)
@@ -99,42 +99,42 @@ class LibEventLoop implements LoopInterface
 
     protected function removeStreamEvent($stream, $eventClass, $eventCallbacks)
     {
-        $streamID = (int) $stream;
+        $id = (int) $stream;
 
-        if (isset($this->events[$streamID])) {
-            $flags = $this->flags[$streamID] & ~$eventClass;
+        if (isset($this->events[$id])) {
+            $flags = $this->flags[$id] & ~$eventClass;
 
             if ($flags === 0) {
                 // Remove if stream is not subscribed to any event at this point.
                 return $this->removeStream($stream);
             }
 
-            $event = $this->events[$streamID];
+            $event = $this->events[$id];
 
             event_del($event);
             event_set($event, $stream, $flags | EV_PERSIST, $this->callback, $this);
             event_add($event);
 
-            $this->flags[$streamID] = $flags;
-            unset($this->{"{$eventCallbacks}Callbacks"}[$streamID]);
+            $this->flags[$id] = $flags;
+            unset($this->{"{$eventCallbacks}Callbacks"}[$id]);
         }
     }
 
     public function removeStream($stream)
     {
-        $streamID = (int) $stream;
+        $id = (int) $stream;
 
-        if (isset($this->events[$streamID])) {
-            $event = $this->events[$streamID];
+        if (isset($this->events[$id])) {
+            $event = $this->events[$id];
 
             event_del($event);
             event_free($event);
 
             unset(
-                $this->events[$streamID],
-                $this->flags[$streamID],
-                $this->readCallbacks[$streamID],
-                $this->writeCallbacks[$streamID]
+                $this->events[$id],
+                $this->flags[$id],
+                $this->readCallbacks[$id],
+                $this->writeCallbacks[$id]
             );
         }
     }
