@@ -20,42 +20,42 @@ class StreamSelectLoop implements LoopInterface
 
     public function addReadStream($stream, $listener)
     {
-        $streamID = (int) $stream;
+        $id = (int) $stream;
 
-        if (!isset($this->readStreams[$streamID])) {
-            $this->readStreams[$streamID] = $stream;
-            $this->readListeners[$streamID] = array();
+        if (!isset($this->readStreams[$id])) {
+            $this->readStreams[$id] = $stream;
+            $this->readListeners[$id] = array();
         }
 
-        $this->readListeners[$streamID][] = $listener;
+        $this->readListeners[$id][] = $listener;
     }
 
     public function addWriteStream($stream, $listener)
     {
-        $streamID = (int) $stream;
+        $id = (int) $stream;
 
-        if (!isset($this->writeStreams[$streamID])) {
-            $this->writeStreams[$streamID] = $stream;
-            $this->writeListeners[$streamID] = array();
+        if (!isset($this->writeStreams[$id])) {
+            $this->writeStreams[$id] = $stream;
+            $this->writeListeners[$id] = array();
         }
 
-        $this->writeListeners[$streamID][] = $listener;
+        $this->writeListeners[$id][] = $listener;
     }
 
     public function removeReadStream($stream)
     {
-        $streamID = (int) $stream;
+        $id = (int) $stream;
 
-        unset($this->readStreams[$streamID]);
-        unset($this->readListeners[$streamID]);
+        unset($this->readStreams[$id]);
+        unset($this->readListeners[$id]);
     }
 
     public function removeWriteStream($stream)
     {
-        $streamID = (int) $stream;
+        $id = (int) $stream;
 
-        unset($this->writeStreams[$streamID]);
-        unset($this->writeListeners[$streamID]);
+        unset($this->writeStreams[$id]);
+        unset($this->writeListeners[$id]);
     }
 
     public function removeStream($stream)
@@ -69,7 +69,7 @@ class StreamSelectLoop implements LoopInterface
         $read = $this->readStreams ?: null;
         $write = $this->writeStreams ?: null;
 
-        if (($ready = @stream_select($read, $write, $except = null, 0, $this->timeout)) > 0) {
+        if (@stream_select($read, $write, $except = null, 0, $this->timeout) > 0) {
             if ($read) {
                 foreach ($read as $stream) {
                     foreach ($this->readListeners[(int) $stream] as $listener) {
