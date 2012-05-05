@@ -121,7 +121,6 @@ class ServerTest extends TestCase
 
     /**
      * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\Socket\Server::handleDisconnect
      */
     public function testDisconnectWithoutDisconnect()
     {
@@ -138,8 +137,7 @@ class ServerTest extends TestCase
 
     /**
      * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\Socket\Server::handleDisconnect
-     * @covers React\Socket\Server::close
+     * @covers React\Socket\Connection::close
      */
     public function testDisconnect()
     {
