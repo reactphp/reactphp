@@ -5,7 +5,7 @@ namespace React\Socket;
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
 
-class Connection extends EventEmitter
+class Connection extends EventEmitter implements ConnectionInterface
 {
     public $bufferSize = 4096;
     public $socket;
@@ -46,7 +46,7 @@ class Connection extends EventEmitter
         } while ($len > 0);
     }
 
-    public function close()
+    public function end()
     {
         $this->emit('end');
         $this->loop->removeStream($this->socket);
@@ -58,7 +58,7 @@ class Connection extends EventEmitter
     {
         $data = @stream_socket_recvfrom($socket, $this->bufferSize);
         if ('' === $data || false === $data) {
-            $this->close();
+            $this->end();
         } else {
             $this->emit('data', array($data));
         }
