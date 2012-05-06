@@ -4,14 +4,14 @@ namespace React\Http;
 
 use Evenement\EventEmitter;
 use Guzzle\Http\Message\Response as GuzzleResponse;
-use React\Socket\Connection;
+use React\Socket\ConnectionInterface;
 
 class Response extends EventEmitter
 {
     private $conn;
     private $headWritten = false;
 
-    public function __construct(Connection $conn)
+    public function __construct(ConnectionInterface $conn)
     {
         $this->conn = $conn;
     }
