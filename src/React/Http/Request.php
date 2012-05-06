@@ -45,4 +45,10 @@ class Request extends EventEmitter
     {
         return $this->headers;
     }
+
+    public function end()
+    {
+        $this->emit('end');
+        $this->removeAllListeners();
+    }
 }

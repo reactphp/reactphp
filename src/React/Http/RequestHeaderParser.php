@@ -24,6 +24,7 @@ class RequestHeaderParser extends EventEmitter
             list($request, $bodyBuffer) = $this->parseRequest($this->buffer);
 
             $this->emit('headers', array($request, $bodyBuffer));
+            $this->removeAllListeners();
         }
     }
 

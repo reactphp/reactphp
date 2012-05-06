@@ -43,6 +43,7 @@ class Server extends EventEmitter implements ServerInterface
     public function handleRequest(ConnectionInterface $conn, Request $request, $bodyBuffer)
     {
         $response = new Response($conn);
+        $response->on('end', array($request, 'end'));
 
         if (!$this->listeners('request')) {
             $response->end();

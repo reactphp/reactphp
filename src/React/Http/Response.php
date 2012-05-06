@@ -43,6 +43,8 @@ class Response extends EventEmitter
         if (null !== $data) {
             $this->write($data);
         }
+        $this->emit('end');
+        $this->removeAllListeners();
         $this->conn->end();
     }
 }
