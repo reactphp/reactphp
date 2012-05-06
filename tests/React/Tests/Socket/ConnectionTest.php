@@ -46,9 +46,9 @@ class ConnectionTest extends TestCase
     }
 
     /**
-     * @covers React\Socket\Connection::close
+     * @covers React\Socket\Connection::end
      */
-    public function testClose()
+    public function testEnd()
     {
         $socket = fopen('php://temp', 'r+');
         $loop = $this->createLoopMock();
