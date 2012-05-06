@@ -4,7 +4,7 @@ namespace React\Http;
 
 use Evenement\EventEmitter;
 use React\Socket\ServerInterface as SocketServerInterface;
-use React\Socket\Connection;
+use React\Socket\ConnectionInterface;
 
 /**
  * Events:
@@ -40,7 +40,7 @@ class Server extends EventEmitter implements ServerInterface
         });
     }
 
-    public function handleRequest(Connection $conn, Request $request, $bodyBuffer)
+    public function handleRequest(ConnectionInterface $conn, Request $request, $bodyBuffer)
     {
         $response = new Response($conn);
 
