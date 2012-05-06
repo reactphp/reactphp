@@ -23,6 +23,7 @@ class Response extends EventEmitter
         }
 
         $response = new GuzzleResponse($status, $headers);
+        $response->setHeader('X-Powered-By', 'React/alpha');
         $data = (string) $response;
         $this->conn->write($data);
 
