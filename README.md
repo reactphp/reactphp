@@ -77,7 +77,7 @@ $server->on('connect', function ($conn) use (&$i) {
         $conn->write("Content-Length: $length\r\n");
         $conn->write("\r\n");
         $conn->write($response);
-        $conn->close();
+        $conn->end();
     });
 });
 

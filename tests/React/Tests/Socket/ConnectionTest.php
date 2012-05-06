@@ -54,7 +54,7 @@ class ConnectionTest extends TestCase
         $loop = $this->createLoopMock();
 
         $conn = new Connection($socket, $loop);
-        $conn->close();
+        $conn->end();
 
         $this->assertFalse(is_resource($socket));
     }
