@@ -36,7 +36,7 @@ class Connection extends EventEmitter implements ConnectionInterface
         $this->buffer->write($data);
     }
 
-    public function end()
+    public function close()
     {
         if ($this->closed) {
             return;
@@ -52,7 +52,7 @@ class Connection extends EventEmitter implements ConnectionInterface
         $this->closed = true;
     }
 
-    public function closeAfterWriting()
+    public function end()
     {
         if ($this->closed) {
             return;
