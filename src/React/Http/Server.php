@@ -23,9 +23,8 @@ class Server extends EventEmitter implements ServerInterface
 
         $this->io->on('connect', function ($conn) use ($server) {
             // TODO: http 1.1 keep-alive
-            // TODO: chunked transfer encoding
+            // TODO: chunked transfer encoding (also for outgoing data)
             // TODO: multipart parsing
-            // also for outgoing data (custom OutputStream?)
 
             $parser = new RequestHeaderParser();
             $parser->on('headers', function (Request $request, $bodyBuffer) use ($server, $conn, $parser) {

@@ -50,6 +50,7 @@ class Connection extends EventEmitter
     {
         $this->emit('end');
         $this->loop->removeStream($this->socket);
+        $this->removeAllListeners();
         fclose($this->socket);
     }
 
