@@ -8,7 +8,7 @@ use React\Http\Server as HttpServer;
 
 class Stack extends \Pimple
 {
-    public function __construct(Application $app)
+    public function __construct($app)
     {
         $this['loop'] = $this->share(function () {
             return Factory::create();
@@ -22,7 +22,7 @@ class Stack extends \Pimple
             return new HttpServer($stack['socket']);
         });
 
-        $this['app'] = $app;
+        $this['app'] = $this->protect($app);
     }
 
     public function listen($port, $host = '127.0.0.1')
