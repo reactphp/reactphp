@@ -62,6 +62,11 @@ $socket->on('connect', function ($conn) use ($loop, &$i) {
 $socket->listen(8000);
 $loop->run();
 ```
+
+## Community
+
+Check out #reactphp on irc.freenode.net.
+
 ## Tests
 
 To run the test suite, you need PHPUnit.
