@@ -1,5 +1,5 @@
 {
-    "hash": "dba8cae2332b17eebab89647b2ec24c5",
+    "hash": "846ef0db234c3519a50b84a2853efca5",
     "packages": [
         {
             "package": "doctrine/common",
@@ -89,6 +89,12 @@
         {
             "package": "symfony/validator",
             "version": "v2.0.10"
+        },
+        {
+            "package": "twig/twig",
+            "version": "dev-master",
+            "source-reference": "f3491b5cbfd03a31538b6e8c82d65cd54996e870",
+            "alias": "1.8.9999999.9999999-dev"
         }
     ],
     "packages-dev": null,
