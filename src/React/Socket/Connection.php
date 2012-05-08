@@ -48,7 +48,7 @@ class Connection extends EventEmitter implements ConnectionInterface
 
     public function end()
     {
-        $this->emit('end');
+        $this->emit('end', array($this));
         $this->loop->removeStream($this->socket);
         $this->removeAllListeners();
         fclose($this->socket);
@@ -60,7 +60,7 @@ class Connection extends EventEmitter implements ConnectionInterface
         if ('' === $data || false === $data) {
             $this->end();
         } else {
-            $this->emit('data', array($data));
+            $this->emit('data', array($data, $this));
         }
     }
 }
