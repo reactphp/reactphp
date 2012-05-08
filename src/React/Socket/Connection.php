@@ -9,54 +9,67 @@ class Connection extends EventEmitter implements ConnectionInterface
 {
     public $bufferSize = 4096;
     public $socket;
+    public $closed = false;
     private $loop;
+    private $buffer;
 
     public function __construct($socket, LoopInterface $loop)
     {
         $this->socket = $socket;
         $this->loop = $loop;
+        $this->buffer = new Buffer($this->socket, $this->loop);
+
+        $that = $this;
+
+        $this->buffer->on('error', function ($error) use ($that) {
+            $that->emit('error', array($error, $that));
+            $that->close();
+        });
     }
 
     public function write($data)
     {
-        $len = strlen($data);
+        if ($this->closed) {
+            return;
+        }
 
-        do {
-            set_error_handler(function ($errno, $errstr, $errfile, $errline) {
-                throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
-                return false;
-            });
+        $this->buffer->write($data);
+    }
 
-            try {
-                $sent = fwrite($this->socket, $data);
-            } catch (\ErrorException $e) {
-                $sent = false;
-                $error = $e->getMessage();
-            }
+    public function close()
+    {
+        if ($this->closed) {
+            return;
+        }
 
-            restore_error_handler();
-
-            if (false === $sent) {
-                $error = $error ?: 'Unable to write to socket';
-                $this->emit('error', array($error, $this));
-                return;
-            }
-            $len -= $sent;
-            $data = substr($data, $sent);
-        } while ($len > 0);
+        $this->emit('end', array($this));
+        $this->loop->removeStream($this->socket);
+        $this->buffer->removeAllListeners();
+        $this->removeAllListeners();
+        if (is_resource($this->socket)) {
+            fclose($this->socket);
+        }
+        $this->closed = true;
     }
 
     public function end()
     {
-        $this->emit('end', array($this));
-        $this->loop->removeStream($this->socket);
-        $this->removeAllListeners();
-        fclose($this->socket);
+        if ($this->closed) {
+            return;
+        }
+
+        $that = $this;
+
+        $this->buffer->on('end', function () use ($that) {
+            $that->close();
+        });
+
+        $this->buffer->end();
     }
 
     public function handleData($socket)
     {
-        $data = @stream_socket_recvfrom($socket, $this->bufferSize);
+        $data = stream_socket_recvfrom($socket, $this->bufferSize);
         if ('' === $data || false === $data) {
             $this->end();
         } else {

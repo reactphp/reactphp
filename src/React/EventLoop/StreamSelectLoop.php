@@ -87,8 +87,12 @@ class StreamSelectLoop implements LoopInterface
                     }
                 }
             }
+
             if ($write) {
                 foreach ($write as $stream) {
+                    if (!isset($this->writeListeners[(int) $stream])) {
+                        continue;
+                    }
                     foreach ($this->writeListeners[(int) $stream] as $listener) {
                         if (call_user_func($listener, $stream, $this) === false) {
                             $this->removeWriteStream($stream);
