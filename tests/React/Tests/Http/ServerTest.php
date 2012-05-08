@@ -50,6 +50,25 @@ class ServerTest extends TestCase
         $this->assertSame(1, $i);
     }
 
+    public function testResponseContainsPoweredByHeader()
+    {
+        $io = new ServerMock();
+
+        $server = new Server($io);
+        $server->on('request', function ($request, $response) {
+            $response->writeHead();
+            $response->end();
+        });
+
+        $conn = new ConnectionMock();
+        $io->emit('connect', array($conn));
+
+        $data = $this->createGetRequest();
+        $conn->emit('data', array($data));
+
+        $this->assertContains("\r\nX-Powered-By: React/alpha\r\n", $conn->getData());
+    }
+
     private function createGetRequest()
     {
         $data = "GET / HTTP/1.1\r\n";
