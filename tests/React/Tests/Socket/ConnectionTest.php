@@ -23,7 +23,7 @@ class ConnectionTest extends TestCase
     public function testWrite()
     {
         $socket = fopen('php://temp', 'r+');
-        $loop = $this->createLoopMock();
+        $loop = $this->createWriteableLoopMock();
 
         $conn = new Connection($socket, $loop);
         $conn->write("foo\n");
@@ -38,7 +38,7 @@ class ConnectionTest extends TestCase
     public function testWriteError()
     {
         $socket = "Silly developer, you can't write to to a string!";
-        $loop = $this->createLoopMock();
+        $loop = $this->createWriteableLoopMock();
 
         $conn = new Connection($socket, $loop);
         $conn->on('error', $this->expectCallableOnce());
@@ -57,6 +57,19 @@ class ConnectionTest extends TestCase
         $conn->end();
 
         $this->assertFalse(is_resource($socket));
+    }
+
+    private function createWriteableLoopMock()
+    {
+        $loop = $this->createLoopMock();
+        $loop
+            ->expects($this->once())
+            ->method('addWriteStream')
+            ->will($this->returnCallback(function ($socket, $listener) {
+                call_user_func($listener, $socket);
+            }));
+
+        return $loop;
     }
 
     private function createLoopMock()
