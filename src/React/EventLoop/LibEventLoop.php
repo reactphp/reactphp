@@ -23,7 +23,7 @@ class LibEventLoop implements LoopInterface
         $readCbks = &$this->readCallbacks;
         $writeCbks = &$this->writeCallbacks;
 
-        return function($stream, $flags, $loop) use(&$readCbks, &$writeCbks) {
+        return function ($stream, $flags, $loop) use (&$readCbks, &$writeCbks) {
             $id = (int) $stream;
 
             try {
