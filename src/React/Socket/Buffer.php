@@ -63,13 +63,13 @@ class Buffer extends EventEmitter
             $sent = fwrite($this->socket, $this->data);
         } catch (\ErrorException $e) {
             $sent = false;
-            $error = $e->getMessage();
+            $error = $e;
         }
 
         restore_error_handler();
 
         if (false === $sent) {
-            $error = $error ?: 'Unable to write to socket';
+            $error = $error ?: new \RuntimeException('Unable to write to socket');
             $this->emit('error', array($error));
             return;
         }
