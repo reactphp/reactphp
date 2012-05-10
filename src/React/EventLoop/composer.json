@@ -1,0 +1,13 @@
+{
+    "name": "react/event-loop",
+    "description": "Event loop abstraction layer that libraries can use for evented I/O.",
+    "keywords": ["event-loop"],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.2"
+    },
+    "autoload": {
+        "psr-0": { "React\\EventLoop": "" }
+    },
+    "target-dir": "React/EventLoop"
+}

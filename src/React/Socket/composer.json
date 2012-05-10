@@ -1,0 +1,15 @@
+{
+    "name": "react/socket",
+    "description": "Library for building an evented socket server.",
+    "keywords": ["socket"],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.2",
+        "evenement/evenement": "dev-master",
+        "react/event-loop": "dev-master"
+    },
+    "autoload": {
+        "psr-0": { "React\\Socket": "" }
+    },
+    "target-dir": "React/Socket"
+}

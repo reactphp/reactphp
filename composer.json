@@ -1,7 +1,7 @@
 {
     "name": "react/react",
     "description": "Nuclear Reactor written in PHP.",
-    "keywords": ["event", "event-loop", "async", "socket", "server"],
+    "keywords": ["event-loop", "reactor"],
     "license": "MIT",
     "require": {
         "php": ">=5.3.2",
@@ -9,9 +9,13 @@
         "guzzle/guzzle": "2.5.*",
         "silex/silex": "1.0.*"
     },
+    "replace": {
+        "react/event-loop": "self.version",
+        "react/socket": "self.version",
+        "react/http": "self.version",
+        "react/espresso": "self.version"
+    },
     "autoload": {
-        "psr-0": {
-            "React": "src"
-        }
+        "psr-0": { "React": "src" }
     }
 }
