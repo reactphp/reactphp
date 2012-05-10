@@ -97,6 +97,22 @@ class RequestHeaderParserTest extends TestCase
         $this->assertSame($headers, $request->getHeaders());
     }
 
+    public function testHeaderOverflow()
+    {
+        $error = null;
+
+        $parser = new RequestHeaderParser();
+        $parser->on('headers', $this->expectCallableNever());
+        $parser->on('error', function ($message) use (&$error) {
+            $error = $message;
+        });
+
+        $data = str_repeat('A', 4097);
+        $parser->feed($data);
+
+        $this->assertSame('Maximum header size of 4096 exceeded.', $error);
+    }
+
     private function createGetRequest()
     {
         $data = "GET / HTTP/1.1\r\n";
