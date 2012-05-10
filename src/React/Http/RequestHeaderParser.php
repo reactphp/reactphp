@@ -33,14 +33,20 @@ class RequestHeaderParser extends EventEmitter
         list($headers, $bodyBuffer) = explode("\r\n\r\n", $data, 2);
 
         $factory = new RequestFactory();
-        $guzzleRequest = $factory->fromMessage($headers."\r\n\r\n");
+        $parsed = $factory->parseMessage($headers."\r\n\r\n");
+
+        $parsedQuery = array();
+        if (0 === strpos($parsed['parts']['query'], '?')) {
+            $query = substr($parsed['parts']['query'], 1);
+            parse_str($query, $parsedQuery);
+        }
 
         $request = new Request(
-            $guzzleRequest->getMethod(),
-            $guzzleRequest->getPath(),
-            $guzzleRequest->getQuery()->getAll(),
-            $guzzleRequest->getProtocolVersion(),
-            $guzzleRequest->getHeaders()->getAll()
+            $parsed['method'],
+            $parsed['parts']['path'],
+            $parsedQuery,
+            $parsed['protocol_version'],
+            $parsed['headers']
         );
 
         return array($request, $bodyBuffer);
