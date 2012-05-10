@@ -68,7 +68,7 @@ class BufferTest extends TestCase
         });
 
         $buffer->write('Attempting to write to bad socket');
-        $this->assertSame('fwrite() expects parameter 1 to be resource, null given', $error);
+        $this->assertInstanceOf('Exception', $error);
     }
 
     private function createWriteableLoopMock()

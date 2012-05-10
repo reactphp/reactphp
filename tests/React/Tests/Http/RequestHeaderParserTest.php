@@ -110,7 +110,7 @@ class RequestHeaderParserTest extends TestCase
         $data = str_repeat('A', 4097);
         $parser->feed($data);
 
-        $this->assertSame('Maximum header size of 4096 exceeded.', $error);
+        $this->assertInstanceOf('OverflowException', $error);
     }
 
     private function createGetRequest()
