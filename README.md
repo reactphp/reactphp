@@ -2,11 +2,11 @@
 
 Nuclear Reactor written in PHP.
 
-[![Build Status](https://secure.travis-ci.org/igorw/SocketServer.png)](http://travis-ci.org/igorw/SocketServer)
+[![Build Status](https://secure.travis-ci.org/react-php/react.png)](http://travis-ci.org/react-php/react)
 
 ## Install
 
-The recommended way to install SocketServer is [through composer](http://getcomposer.org).
+The recommended way to install react is [through composer](http://getcomposer.org).
 
 ```JSON
 {
