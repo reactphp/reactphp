@@ -1,11 +1,11 @@
 <?php
 
-namespace React\Tests\Socket;
+namespace React\Tests\Socket\Stub;
 
 use Evenement\EventEmitter;
 use React\Socket\ServerInterface;
 
-class ServerMock extends EventEmitter implements ServerInterface
+class ServerStub extends EventEmitter implements ServerInterface
 {
     public function listen($port, $host = '127.0.0.1')
     {

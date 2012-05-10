@@ -1,8 +1,8 @@
 <?php
 
-namespace React\Tests\Socket;
+namespace React\Tests\Socket\Stub;
 
-class CallableMock
+class CallableStub
 {
     public function __invoke()
     {

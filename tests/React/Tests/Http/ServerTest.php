@@ -4,19 +4,19 @@ namespace React\Tests\Http;
 
 use React\Http\Server;
 use React\Tests\Socket\TestCase;
-use React\Tests\Socket\ServerMock;
-use React\Tests\Socket\ConnectionMock;
+use React\Tests\Socket\Stub\ServerStub;
+use React\Tests\Socket\Stub\ConnectionStub;
 
 class ServerTest extends TestCase
 {
     public function testRequestEventIsEmitted()
     {
-        $io = new ServerMock();
+        $io = new ServerStub();
 
         $server = new Server($io);
         $server->on('request', $this->expectCallableOnce());
 
-        $conn = new ConnectionMock();
+        $conn = new ConnectionStub();
         $io->emit('connect', array($conn));
 
         $data = $this->createGetRequest();
@@ -25,7 +25,7 @@ class ServerTest extends TestCase
 
     public function testRequestEvent()
     {
-        $io = new ServerMock();
+        $io = new ServerStub();
 
         $test = $this;
         $i = 0;
@@ -41,7 +41,7 @@ class ServerTest extends TestCase
             $test->assertInstanceOf('React\Http\Response', $response);
         });
 
-        $conn = new ConnectionMock();
+        $conn = new ConnectionStub();
         $io->emit('connect', array($conn));
 
         $data = $this->createGetRequest();
@@ -52,7 +52,7 @@ class ServerTest extends TestCase
 
     public function testResponseContainsPoweredByHeader()
     {
-        $io = new ServerMock();
+        $io = new ServerStub();
 
         $server = new Server($io);
         $server->on('request', function ($request, $response) {
@@ -60,7 +60,7 @@ class ServerTest extends TestCase
             $response->end();
         });
 
-        $conn = new ConnectionMock();
+        $conn = new ConnectionStub();
         $io->emit('connect', array($conn));
 
         $data = $this->createGetRequest();

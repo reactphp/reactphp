@@ -1,12 +1,12 @@
 <?php
 
-namespace React\Tests\Socket;
+namespace React\Tests\Socket\Stub;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
 
-class ConnectionMock extends EventEmitter implements ConnectionInterface
+class ConnectionStub extends EventEmitter implements ConnectionInterface
 {
     private $data = '';
 
