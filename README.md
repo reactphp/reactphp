@@ -1,6 +1,6 @@
 # React
 
-Nuclear Reactor written in PHP.
+Event-driven, non-blocking I/O with PHP.
 
 [![Build Status](https://secure.travis-ci.org/react-php/react.png)](http://travis-ci.org/react-php/react)
 
@@ -15,6 +15,14 @@ The recommended way to install react is [through composer](http://getcomposer.or
     }
 }
 ```
+
+## Design goals
+
+* Usable with a bare minimum of PHP extensions, add more extensions to get better performance.
+* Provide a standalone event-loop component that can be re-used by other libraries.
+* Decouple parts so they can be replaced by alternate implementations.
+
+React is non-blocking by default. Use workers for blocking I/O.
 
 ## Usage
 
