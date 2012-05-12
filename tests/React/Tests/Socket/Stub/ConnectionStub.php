@@ -27,4 +27,9 @@ class ConnectionStub extends EventEmitter implements ConnectionInterface
     {
         return $this->data;
     }
+
+    public function getRemoteAddress()
+    {
+        return '127.0.0.1';
+    }
 }

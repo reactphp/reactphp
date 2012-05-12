@@ -76,4 +76,14 @@ class Connection extends EventEmitter implements ConnectionInterface
             $this->emit('data', array($data, $this));
         }
     }
+
+    public function getRemoteAddress()
+    {
+        return $this->parseAddress(stream_socket_get_name($this->socket, true));
+    }
+
+    private function parseAddress($address)
+    {
+        return trim(substr($address, 0, strrpos($address, ':')), '[]');
+    }
 }
