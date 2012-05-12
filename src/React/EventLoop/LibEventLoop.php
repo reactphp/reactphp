@@ -112,11 +112,16 @@ class LibEventLoop implements LoopInterface
             $event = $this->events[$id];
 
             event_del($event);
+            event_free($event);
+            unset($this->{"{$eventCallbacks}Callbacks"}[$id]);
+
+            $event = event_new();
             event_set($event, $stream, $flags | EV_PERSIST, $this->callback, $this);
+            event_base_set($event, $this->base);
             event_add($event);
 
+            $this->events[$id] = $event;
             $this->flags[$id] = $flags;
-            unset($this->{"{$eventCallbacks}Callbacks"}[$id]);
         }
     }
 
@@ -127,15 +132,15 @@ class LibEventLoop implements LoopInterface
         if (isset($this->events[$id])) {
             $event = $this->events[$id];
 
-            event_del($event);
-            event_free($event);
-
             unset(
                 $this->events[$id],
                 $this->flags[$id],
                 $this->readCallbacks[$id],
                 $this->writeCallbacks[$id]
             );
+
+            event_del($event);
+            event_free($event);
         }
     }
 
