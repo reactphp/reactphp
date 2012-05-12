@@ -61,6 +61,40 @@ class ConnectionTest extends TestCase
         $this->assertFalse(is_resource($socket));
     }
 
+    /**
+     * @covers React\Socket\Connection::getRemoteAddress
+     */
+    public function testGetRemoteAddress()
+    {
+        $loop   = new StreamSelectLoop(0);
+        $server = new Server($loop);
+        $server->listen(0);
+
+        $class  = new \ReflectionClass('React\\Socket\\Server');
+        $master = $class->getProperty('master');
+        $master->setAccessible(true);
+
+        $client = stream_socket_client('tcp://localhost:' . $server->getPort());
+
+        $class  = new \ReflectionClass('React\\Socket\\Connection');
+        $method = $class->getMethod('parseAddress');
+        $method->setAccessible(true);
+
+        $servConn = new Connection($server, $loop);
+
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($method->invokeArgs($servConn, array(stream_socket_get_name($master->getValue($server), false))))
+        ;
+
+        $server->on('connect', function ($conn) use ($mock) {
+            $mock($conn->getRemoteAddress());
+        });
+        $loop->tick();
+    }
+
     public function remoteAddressProvider()
     {
         return array(
