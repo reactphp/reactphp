@@ -10,4 +10,5 @@ interface ConnectionInterface extends EventEmitterInterface
     public function write($data);
     public function end();
     public function handleData($socket);
+    public function getRemoteAddress();
 }
