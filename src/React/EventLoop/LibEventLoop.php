@@ -4,8 +4,13 @@ namespace React\EventLoop;
 
 class LibEventLoop implements LoopInterface
 {
+    const MIN_TIMER_RESOLUTION = 0.001;
+
     private $base;
     private $callback;
+
+    private $timers = array();
+    private $timersGC = array();
 
     private $events = array();
     private $flags = array();
@@ -20,11 +25,19 @@ class LibEventLoop implements LoopInterface
 
     protected function createLibeventCallback()
     {
+        $timersGC = &$this->timersGC;
         $readCbks = &$this->readCallbacks;
         $writeCbks = &$this->writeCallbacks;
 
-        return function ($stream, $flags, $loop) use (&$readCbks, &$writeCbks) {
+        return function ($stream, $flags, $loop) use (&$timersGC, &$readCbks, &$writeCbks) {
             $id = (int) $stream;
+
+            if ($timersGC) {
+                foreach ($timersGC as $signature => $resource) {
+                   event_free($resource);
+                   unset($timersGC[$signature]);
+                }
+            }
 
             try {
                 if (($flags & EV_READ) === EV_READ && isset($readCbks[$id])) {
@@ -141,6 +154,64 @@ class LibEventLoop implements LoopInterface
 
             event_del($event);
             event_free($event);
+        }
+    }
+
+    protected function addTimerInternal($interval, $callback, $periodic = false)
+    {
+        if ($interval < self::MIN_TIMER_RESOLUTION) {
+            throw new \InvalidArgumentException('Timer events do not support sub-millisecond timeouts.');
+        }
+
+        if (!is_callable($callback)) {
+            throw new \InvalidArgumentException('The callback must be a callable object.');
+        }
+
+        $timer = (object) array(
+            'loop' => $this,
+            'resource' => $resource = event_new(),
+            'callback' => $callback,
+            'interval' => $interval * 1000000,
+            'periodic' => $periodic,
+        );
+
+        $timer->signature = $signature = spl_object_hash($timer);
+
+        $callback = function () use ($timer) {
+            $rearm = call_user_func($timer->callback);
+
+            if ($timer->periodic && $rearm !== false) {
+                event_add($timer->resource, $timer->interval);
+            } else {
+                $timer->loop->cancelTimer($timer->signature);
+            }
+        };
+
+        event_timer_set($resource, $callback);
+        event_base_set($resource, $this->base);
+        event_add($resource, $interval * 1000000);
+
+        $this->timers[$signature] = $timer;
+
+        return $signature;
+    }
+
+    public function addTimer($interval, $callback)
+    {
+        return $this->addTimerInternal($interval, $callback);
+    }
+
+    public function addPeriodicTimer($interval, $callback)
+    {
+        return $this->addTimerInternal($interval, $callback, true);
+    }
+
+    public function cancelTimer($signature)
+    {
+        if (isset($this->timers[$signature])) {
+            event_del($resource = $this->timers[$signature]->resource);
+            $this->timersGC[$signature] = $resource;
+            unset($this->timers[$signature]);
         }
     }
 
