@@ -22,7 +22,7 @@ class Stack extends \Pimple
             return new HttpServer($stack['socket']);
         });
 
-        $this['app'] = $this->protect($app);
+        $this['app'] = $app instanceof \Closure ? $this->protect($app) : $app;
     }
 
     public function listen($port, $host = '127.0.0.1')
