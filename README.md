@@ -38,37 +38,24 @@ Here is an example of a simple HTTP server listening on port 8000:
 ```php
 <?php
 
-$loop = new React\EventLoop\StreamSelectLoop();
-$socket = new React\Socket\Server($loop);
-
 $i = 1;
 
-$socket->on('connect', function ($conn) use ($loop, &$i) {
-    $conn->on('data', function ($data) use ($conn, &$i) {
-        $lines = explode("\r\n", $data);
-        $requestLine = reset($lines);
+$app = new React\Espresso\Application();
 
-        if ('GET /favicon.ico HTTP/1.1' === $requestLine) {
-            $response = '';
-            $length = 0;
-        } else {
-            $response = "This is request number $i.\n";
-            $length = strlen($response);
-            $i++;
-        }
-
-        $conn->write("HTTP/1.1 200 OK\r\n");
-        $conn->write("Content-Type: text/plain\r\n");
-        $conn->write("Content-Length: $length\r\n");
-        $conn->write("Connection: close\r\n");
-        $conn->write("\r\n");
-        $conn->write($response);
-        $conn->end();
-    });
+$app->get('/favicon.ico', function ($request, $response) {
+    $response->writeHead(204);
+    $response->end();
 });
 
-$socket->listen(8000);
-$loop->run();
+$app->get('/', function ($request, $response) use (&$i) {
+    $i++;
+    $response->writeHead(200, array('Content-Type' => 'text/plain'));
+    $response->end("This is request number $i.\n");
+});
+
+$stack = new React\Espresso\Stack($app);
+$stack->listen(1337);
+echo "Server running at http://127.0.0.1:1337\n";
 ```
 
 ## Community
