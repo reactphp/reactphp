@@ -34,7 +34,7 @@ events.
 
 ### Example
 
-Here is an example of a simple HTTP server listening on port 8000:
+Here is an example of a simple HTTP server listening on port 1337:
 ```php
 <?php
 
@@ -49,13 +49,16 @@ $app->get('/favicon.ico', function ($request, $response) {
 
 $app->get('/', function ($request, $response) use (&$i) {
     $i++;
-    $response->writeHead(200, array('Content-Type' => 'text/plain'));
-    $response->end("This is request number $i.\n");
+
+    $text = "This is request number $i.\n";
+    $headers = array('Content-Type' => 'text/plain', 'Content-Length' => strlen($text));
+
+    $response->writeHead(200, $headers);
+    $response->end($text);
 });
 
 $stack = new React\Espresso\Stack($app);
 $stack->listen(1337);
-echo "Server running at http://127.0.0.1:1337\n";
 ```
 
 ## Community
