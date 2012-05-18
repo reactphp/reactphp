@@ -60,7 +60,7 @@ echo "Server running at http://127.0.0.1:1337\n";
 
 ## Community
 
-Check out #reactphp on irc.freenode.net.
+Check out #reactphp on irc.freenode.net. Also follow [@reactphp](https://twitter.com/#!/reactphp) on twitter.
 
 ## Tests
 
