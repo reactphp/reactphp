@@ -2,22 +2,22 @@
 
 namespace React\EventLoop;
 
+use React\EventLoop\Timer\Timers;
+
 class StreamSelectLoop implements LoopInterface
 {
-    private $timeout;
+    const QUANTUM_INTERVAL = 1000000;
 
+    private $timers;
+    private $running = false;
     private $readStreams = array();
     private $readListeners = array();
-
     private $writeStreams = array();
     private $writeListeners = array();
 
-    private $stopped = false;
-
-    // timeout = microseconds
-    public function __construct($timeout = 1000000)
+    public function __construct()
     {
-        $this->timeout = $timeout;
+        $this->timers = new Timers();
     }
 
     public function addReadStream($stream, $listener)
@@ -66,17 +66,61 @@ class StreamSelectLoop implements LoopInterface
         $this->removeWriteStream($stream);
     }
 
-    public function tick()
+    public function addTimer($interval, $callback)
+    {
+        return $this->timers->add($interval, $callback);
+    }
+
+    public function addPeriodicTimer($interval, $callback)
+    {
+        return $this->timers->add($interval, $callback, true);
+    }
+
+    public function cancelTimer($signature)
+    {
+        $this->timers->cancel($signature);
+    }
+
+    protected function getNextEventTime()
+    {
+        $nextEvent = $this->timers->getFirst();
+
+        if ($nextEvent === -1) {
+            return self::QUANTUM_INTERVAL;
+        }
+
+        $currentTime = microtime(true);
+        if ($nextEvent > $currentTime) {
+            return ($nextEvent - $currentTime) * 1000000;
+        }
+
+        return 0;
+    }
+
+    protected function sleepOnPendingTimers()
+    {
+        if ($this->timers->isEmpty()) {
+            $this->running = false;
+        } else {
+            // We use usleep() instead of stream_select() to emulate timeouts
+            // since the latter fails when there are no streams registered for
+            // read / write events. Blame PHP for us needing this hack.
+            usleep($this->getNextEventTime());
+        }
+    }
+
+    protected function runStreamSelect()
     {
         $read = $this->readStreams ?: null;
         $write = $this->writeStreams ?: null;
-        $excepts = null;
+        $except = null;
 
         if (!$read && !$write) {
-            return false;
+            $this->sleepOnPendingTimers();
+            return;
         }
 
-        if (stream_select($read, $write, $except, 0, $this->timeout) > 0) {
+        if (stream_select($read, $write, $except, 0, $this->getNextEventTime()) > 0) {
             if ($read) {
                 foreach ($read as $stream) {
                     $listener = $this->readListeners[(int) $stream];
@@ -99,16 +143,22 @@ class StreamSelectLoop implements LoopInterface
                 }
             }
         }
+    }
 
-        return true;
+    public function tick()
+    {
+        $this->timers->run();
+        $this->runStreamSelect();
+
+        return $this->running;
     }
 
     public function run()
     {
         // @codeCoverageIgnoreStart
-        $this->stopped = false;
+        $this->running = true;
 
-        while ($this->tick() === true && !$this->stopped) {
+        while ($this->tick()) {
             // NOOP
         }
         // @codeCoverageIgnoreEnd
@@ -117,7 +167,7 @@ class StreamSelectLoop implements LoopInterface
     public function stop()
     {
         // @codeCoverageIgnoreStart
-        $this->stopped = true;
+        $this->running = false;
         // @codeCoverageIgnoreEnd
     }
 }
