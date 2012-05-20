@@ -81,7 +81,7 @@ class StreamSelectLoop implements LoopInterface
         $this->timers->cancel($signature);
     }
 
-    protected function getNextEventTime()
+    protected function getNextEventTimeInMicroSeconds()
     {
         $nextEvent = $this->timers->getFirst();
 
@@ -105,7 +105,7 @@ class StreamSelectLoop implements LoopInterface
             // We use usleep() instead of stream_select() to emulate timeouts
             // since the latter fails when there are no streams registered for
             // read / write events. Blame PHP for us needing this hack.
-            usleep($this->getNextEventTime());
+            usleep($this->getNextEventTimeInMicroSeconds());
         }
     }
 
@@ -120,7 +120,7 @@ class StreamSelectLoop implements LoopInterface
             return;
         }
 
-        if (stream_select($read, $write, $except, 0, $this->getNextEventTime()) > 0) {
+        if (stream_select($read, $write, $except, 0, $this->getNextEventTimeInMicroSeconds()) > 0) {
             if ($read) {
                 foreach ($read as $stream) {
                     $listener = $this->readListeners[(int) $stream];
