@@ -10,7 +10,7 @@ class LibEventLoop implements LoopInterface
     private $callback;
 
     private $timers = array();
-    private $timersGC = array();
+    private $timersGc = array();
 
     private $events = array();
     private $flags = array();
@@ -25,17 +25,17 @@ class LibEventLoop implements LoopInterface
 
     protected function createLibeventCallback()
     {
-        $timersGC = &$this->timersGC;
+        $timersGc = &$this->timersGc;
         $readCbks = &$this->readCallbacks;
         $writeCbks = &$this->writeCallbacks;
 
-        return function ($stream, $flags, $loop) use (&$timersGC, &$readCbks, &$writeCbks) {
+        return function ($stream, $flags, $loop) use (&$timersGc, &$readCbks, &$writeCbks) {
             $id = (int) $stream;
 
-            if ($timersGC) {
-                foreach ($timersGC as $signature => $resource) {
+            if ($timersGc) {
+                foreach ($timersGc as $signature => $resource) {
                    event_free($resource);
-                   unset($timersGC[$signature]);
+                   unset($timersGc[$signature]);
                 }
             }
 
@@ -210,7 +210,7 @@ class LibEventLoop implements LoopInterface
     {
         if (isset($this->timers[$signature])) {
             event_del($resource = $this->timers[$signature]->resource);
-            $this->timersGC[$signature] = $resource;
+            $this->timersGc[$signature] = $resource;
             unset($this->timers[$signature]);
         }
     }
