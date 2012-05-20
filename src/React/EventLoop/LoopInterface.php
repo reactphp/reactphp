@@ -4,18 +4,18 @@ namespace React\EventLoop;
 
 interface LoopInterface
 {
-    public function addReadStream($stream, $listener);
-    public function addWriteStream($stream, $listener);
+    function addReadStream($stream, $listener);
+    function addWriteStream($stream, $listener);
 
-    public function removeReadStream($stream);
-    public function removeWriteStream($stream);
-    public function removeStream($stream);
+    function removeReadStream($stream);
+    function removeWriteStream($stream);
+    function removeStream($stream);
 
-    public function addTimer($interval, $callback);
-    public function addPeriodicTimer($interval, $callback);
-    public function cancelTimer($signature);
+    function addTimer($interval, $callback);
+    function addPeriodicTimer($interval, $callback);
+    function cancelTimer($signature);
 
-    public function tick();
-    public function run();
-    public function stop();
+    function tick();
+    function run();
+    function stop();
 }
