@@ -70,7 +70,7 @@ class Timers
         return !$this->active;
     }
 
-    public function run()
+    public function tick()
     {
         $time = $this->updateTime();
         $timers = $this->timers;
