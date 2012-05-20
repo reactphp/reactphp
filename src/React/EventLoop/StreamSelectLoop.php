@@ -85,7 +85,7 @@ class StreamSelectLoop implements LoopInterface
     {
         $nextEvent = $this->timers->getFirst();
 
-        if ($nextEvent === -1) {
+        if (null === $nextEvent) {
             return self::QUANTUM_INTERVAL;
         }
 

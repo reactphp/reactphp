@@ -7,13 +7,11 @@ class Timers
     const MIN_RESOLUTION = 0.001;
 
     private $time;
-    private $active;
+    private $active = array();
     private $timers;
 
     public function __construct()
     {
-        $this->time = 0;
-        $this->active = array();
         $this->timers = new \SplPriorityQueue();
     }
 
@@ -61,7 +59,7 @@ class Timers
     public function getFirst()
     {
         if ($this->timers->isEmpty()) {
-            return -1;
+            return null;
         }
 
         return $this->timers->top()->scheduled;
