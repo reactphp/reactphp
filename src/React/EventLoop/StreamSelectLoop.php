@@ -70,7 +70,7 @@ class StreamSelectLoop implements LoopInterface
     {
         $read = $this->readStreams ?: null;
         $write = $this->writeStreams ?: null;
-        $excepts = null;
+        $except = null;
 
         if (!$read && !$write) {
             return false;
