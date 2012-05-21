@@ -26,10 +26,10 @@ class LibEventLoop implements LoopInterface
     protected function createLibeventCallback()
     {
         $timersGc = &$this->timersGc;
-        $readCbks = &$this->readCallbacks;
-        $writeCbks = &$this->writeCallbacks;
+        $readCallbacks = &$this->readCallbacks;
+        $writeCallbacks = &$this->writeCallbacks;
 
-        return function ($stream, $flags, $loop) use (&$timersGc, &$readCbks, &$writeCbks) {
+        return function ($stream, $flags, $loop) use (&$timersGc, &$readCallbacks, &$writeCallbacks) {
             $id = (int) $stream;
 
             if ($timersGc) {
@@ -40,14 +40,14 @@ class LibEventLoop implements LoopInterface
             }
 
             try {
-                if (($flags & EV_READ) === EV_READ && isset($readCbks[$id])) {
-                    if (call_user_func($readCbks[$id], $stream, $loop) === false) {
+                if (($flags & EV_READ) === EV_READ && isset($readCallbacks[$id])) {
+                    if (call_user_func($readCallbacks[$id], $stream, $loop) === false) {
                         $loop->removeReadStream($stream);
                     }
                 }
 
-                if (($flags & EV_WRITE) === EV_WRITE && isset($writeCbks[$id])) {
-                    if (call_user_func($writeCbks[$id], $stream, $loop) === false) {
+                if (($flags & EV_WRITE) === EV_WRITE && isset($writeCallbacks[$id])) {
+                    if (call_user_func($writeCallbacks[$id], $stream, $loop) === false) {
                         $loop->removeWriteStream($stream);
                     }
                 }
@@ -71,7 +71,7 @@ class LibEventLoop implements LoopInterface
         $this->addStreamEvent($stream, EV_WRITE, 'write', $listener);
     }
 
-    protected function addStreamEvent($stream, $eventClass, $eventCallbacks, $listener)
+    protected function addStreamEvent($stream, $eventClass, $type, $listener)
     {
         $id = (int) $stream;
 
@@ -97,7 +97,7 @@ class LibEventLoop implements LoopInterface
 
         $this->events[$id] = $event;
         $this->flags[$id] = $flags;
-        $this->{"{$eventCallbacks}Callbacks"}[$id] = $listener;
+        $this->{"{$type}Callbacks"}[$id] = $listener;
     }
 
     public function removeReadStream($stream)
@@ -110,7 +110,7 @@ class LibEventLoop implements LoopInterface
         $this->removeStreamEvent($stream, EV_WRITE, 'write');
     }
 
-    protected function removeStreamEvent($stream, $eventClass, $eventCallbacks)
+    protected function removeStreamEvent($stream, $eventClass, $type)
     {
         $id = (int) $stream;
 
@@ -126,7 +126,7 @@ class LibEventLoop implements LoopInterface
 
             event_del($event);
             event_free($event);
-            unset($this->{"{$eventCallbacks}Callbacks"}[$id]);
+            unset($this->{"{$type}Callbacks"}[$id]);
 
             $event = event_new();
             event_set($event, $stream, $flags | EV_PERSIST, $this->callback, $this);
@@ -175,7 +175,7 @@ class LibEventLoop implements LoopInterface
             'periodic' => $periodic,
         );
 
-        $timer->signature = $signature = spl_object_hash($timer);
+        $timer->signature = spl_object_hash($timer);
 
         $callback = function () use ($timer) {
             $rearm = call_user_func($timer->callback);
@@ -191,9 +191,9 @@ class LibEventLoop implements LoopInterface
         event_base_set($resource, $this->base);
         event_add($resource, $interval * 1000000);
 
-        $this->timers[$signature] = $timer;
+        $this->timers[$timer->signature] = $timer;
 
-        return $signature;
+        return $timer->signature;
     }
 
     public function addTimer($interval, $callback)
