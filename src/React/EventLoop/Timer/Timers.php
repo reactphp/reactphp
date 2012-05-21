@@ -44,11 +44,11 @@ class Timers
             'scheduled' => $interval + $this->getTime(),
         );
 
-        $signature = $timer->signature = spl_object_hash($timer);
+        $timer->signature = spl_object_hash($timer);
         $this->timers->insert($timer, -$timer->scheduled);
-        $this->active[$signature] = $timer;
+        $this->active[$timer->signature] = $timer;
 
-        return $signature;
+        return $timer->signature;
     }
 
     public function cancel($signature)
