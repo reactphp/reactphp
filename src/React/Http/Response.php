@@ -13,6 +13,7 @@ class Response extends EventEmitter implements WritableStreamInterface
     private $conn;
     private $headWritten = false;
     private $chunkedEncoding = true;
+    private $keepAlive = true;
 
     public function __construct(ConnectionInterface $conn)
     {
@@ -75,7 +76,10 @@ class Response extends EventEmitter implements WritableStreamInterface
 
         $this->emit('end');
         $this->removeAllListeners();
-        $this->conn->end();
+
+        if (!$this->keepAlive) {
+            $this->conn->end();
+        }
     }
 
     public function close()
