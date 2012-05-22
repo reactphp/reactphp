@@ -2,6 +2,8 @@
 
 // a simple, single-process, horizontal scalable http server listening on 10 ports
 
+require __DIR__.'/../vendor/autoload.php';
+
 $loop = React\EventLoop\Factory::create();
 
 for($i=0;$i<10;++$i){

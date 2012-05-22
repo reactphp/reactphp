@@ -2,6 +2,8 @@
 
 // downloading the two best technologies ever in parallel
 
+require __DIR__.'/../vendor/autoload.php';
+
 $loop = React\EventLoop\Factory::create();
 
 $files = array(
