@@ -7,8 +7,8 @@ use React\EventLoop\LoopInterface;
 
 interface ConnectionInterface extends EventEmitterInterface
 {
-    public function write($data);
-    public function end();
-    public function handleData($socket);
-    public function getRemoteAddress();
+    function write($data);
+    function end();
+    function handleData($socket);
+    function getRemoteAddress();
 }
