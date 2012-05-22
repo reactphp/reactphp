@@ -27,8 +27,9 @@ class Response extends EventEmitter
             $this->chunkedEncoding = false;
         }
 
-        $response = new GuzzleResponse($status, $headers);
+        $response = new GuzzleResponse($status);
         $response->setHeader('X-Powered-By', 'React/alpha');
+        $response->addHeaders($headers);
         if ($this->chunkedEncoding) {
             $response->setHeader('Transfer-Encoding', 'chunked');
         }
