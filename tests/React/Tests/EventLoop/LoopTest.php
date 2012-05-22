@@ -6,8 +6,6 @@ use React\EventLoop\StreamSelectLoop;
 
 class LoopTest extends TestCase
 {
-    private $loop;
-
     private function createLoop()
     {
         return new StreamSelectLoop(0);
