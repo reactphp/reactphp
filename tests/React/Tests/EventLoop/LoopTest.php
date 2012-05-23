@@ -8,7 +8,7 @@ class LoopTest extends TestCase
 {
     private function createLoop()
     {
-        return new StreamSelectLoop(0);
+        return new StreamSelectLoop();
     }
 
     /**

@@ -66,7 +66,7 @@ class ConnectionTest extends TestCase
      */
     public function testGetRemoteAddress()
     {
-        $loop   = new StreamSelectLoop(0);
+        $loop   = new StreamSelectLoop();
         $server = new Server($loop);
         $server->listen(0);
 
