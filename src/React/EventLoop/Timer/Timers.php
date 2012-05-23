@@ -88,6 +88,8 @@ class Timers
                 if ($timer->periodic === true) {
                     $timer->scheduled = $timer->interval + $time;
                     $timers->insert($timer, -$timer->scheduled);
+                } else {
+                    unset($this->active[$timer->signature]);
                 }
             }
         }
