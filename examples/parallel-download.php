@@ -19,10 +19,11 @@ foreach ($files as $file => $url) {
 
     $buffers[$file] = new React\Socket\Buffer($writeStream, $loop);
 
-    $loop->addReadStream($readStream, function ($readStream) use (&$buffers, $loop, $file, $writeStream) {
+    $loop->addReadStream($readStream, function ($readStream) use (&$buffers, $loop, $file, $writeStream, &$files) {
         if (feof($readStream)) {
             $loop->removeStream($readStream);
             $loop->removeStream($writeStream);
+            unset($files[$file]);
             echo "Finished downloading $file\n";
 
             return;
@@ -30,5 +31,17 @@ foreach ($files as $file => $url) {
         $buffers[$file]->write(fread($readStream, 1024));
     });
 }
+
+$loop->addPeriodicTimer(5, function () use (&$files) {
+    if (!count($files)) {
+        return false;
+    }
+
+    foreach ($files as $file => $url) {
+        echo "$file: ".filesize($file)." bytes\n";
+    }
+});
+
+echo "This script will show the download status every 5 second.\n";
 
 $loop->run();

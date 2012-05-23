@@ -16,6 +16,6 @@ for ($i=0;$i<10;++$i) {
     });
 }
 
-echo "Access your brand new HTTP server on 127.0.0.1:800x. Replace x with any number from 1-9\n";
+echo "Access your brand new HTTP server on 127.0.0.1:800x. Replace x with any number from 0-9\n";
 
 $loop->run();
