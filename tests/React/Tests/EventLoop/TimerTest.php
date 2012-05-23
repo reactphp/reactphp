@@ -79,11 +79,11 @@ class TimerTest extends TestCase
 
         $loop = $this->createLoop();
 
-        $timer = $loop->addPeriodicTimer(0.001, function () use (&$i) {
+        $loop->addPeriodicTimer(0.001, function ($timer, $loop) use (&$i) {
             $i++;
 
             if ($i == 2) {
-                return false;
+                $loop->cancelTimer($timer);
             }
         });
 
