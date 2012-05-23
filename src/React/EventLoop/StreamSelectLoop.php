@@ -17,7 +17,7 @@ class StreamSelectLoop implements LoopInterface
 
     public function __construct()
     {
-        $this->timers = new Timers();
+        $this->timers = new Timers($this);
     }
 
     public function addReadStream($stream, $listener)
