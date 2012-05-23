@@ -2,16 +2,20 @@
 
 namespace React\EventLoop\Timer;
 
+use React\EventLoop\LoopInterface;
+
 class Timers
 {
     const MIN_RESOLUTION = 0.001;
 
+    private $loop;
     private $time;
     private $active = array();
     private $timers;
 
-    public function __construct()
+    public function __construct(LoopInterface $loop)
     {
+        $this->loop = $loop;
         $this->timers = new \SplPriorityQueue();
     }
 
@@ -79,13 +83,11 @@ class Timers
             $timer = $timers->extract();
 
             if (isset($this->active[$timer->signature])) {
-                $rearm = call_user_func($timer->callback);
+                call_user_func($timer->callback, $timer->signature, $this->loop);
 
-                if ($timer->periodic === true && $rearm !== false) {
+                if ($timer->periodic === true) {
                     $timer->scheduled = $timer->interval + $time;
-                    $this->timers->insert($timer, -$timer->scheduled);
-                } else {
-                    unset($this->active[$timer->signature]);
+                    $timers->insert($timer, -$timer->scheduled);
                 }
             }
         }

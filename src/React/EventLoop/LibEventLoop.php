@@ -178,12 +178,10 @@ class LibEventLoop implements LoopInterface
         $timer->signature = spl_object_hash($timer);
 
         $callback = function () use ($timer) {
-            $rearm = call_user_func($timer->callback);
+            call_user_func($timer->callback, $timer->signature, $timer->loop);
 
-            if ($timer->periodic && $rearm !== false) {
+            if ($timer->periodic === true) {
                 event_add($timer->resource, $timer->interval);
-            } else {
-                $timer->loop->cancelTimer($timer->signature);
             }
         };
 
