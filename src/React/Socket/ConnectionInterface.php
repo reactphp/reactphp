@@ -3,12 +3,11 @@
 namespace React\Socket;
 
 use Evenement\EventEmitterInterface;
-use React\EventLoop\LoopInterface;
 
 interface ConnectionInterface extends EventEmitterInterface
 {
-    function write($data);
-    function end();
-    function handleData($socket);
-    function getRemoteAddress();
+    public function write($data);
+    public function end();
+    public function handleData($socket);
+    public function getRemoteAddress();
 }

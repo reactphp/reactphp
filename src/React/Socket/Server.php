@@ -29,6 +29,7 @@ class Server extends EventEmitter implements ServerInterface
             $newSocket = stream_socket_accept($master);
             if (false === $newSocket) {
                 $that->emit('error', array(new \RuntimeException('Error accepting new connection')));
+
                 return;
             }
             $that->handleConnection($newSocket);
@@ -48,6 +49,7 @@ class Server extends EventEmitter implements ServerInterface
     public function getPort()
     {
         $name = stream_socket_get_name($this->master, false);
+
         return (int) substr(strrchr($name, ':'), 1);
     }
 

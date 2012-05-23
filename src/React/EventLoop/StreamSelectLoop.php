@@ -117,6 +117,7 @@ class StreamSelectLoop implements LoopInterface
 
         if (!$read && !$write) {
             $this->sleepOnPendingTimers();
+
             return;
         }
 

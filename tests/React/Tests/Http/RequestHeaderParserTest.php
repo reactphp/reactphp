@@ -120,6 +120,7 @@ class RequestHeaderParserTest extends TestCase
         $data .= "Host: example.com:80\r\n";
         $data .= "Connection: close\r\n";
         $data .= "\r\n";
+
         return $data;
     }
 
@@ -130,6 +131,7 @@ class RequestHeaderParserTest extends TestCase
         $data .= "User-Agent: Guzzle/2.0 (Language=PHP/5.3.8; curl=7.21.4; Host=universal-apple-darwin11.0)\r\n";
         $data .= "Connection: close\r\n";
         $data .= "\r\n";
+
         return $data;
     }
 }

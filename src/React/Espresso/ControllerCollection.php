@@ -13,6 +13,7 @@ class ControllerCollection extends BaseControllerCollection
     public function match($pattern, $to)
     {
         $wrapped = $this->wrapController($to);
+
         return parent::match($pattern, $wrapped);
     }
 

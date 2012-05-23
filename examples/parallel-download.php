@@ -24,6 +24,7 @@ foreach ($files as $file => $url) {
             $loop->removeStream($readStream);
             $loop->removeStream($writeStream);
             echo "Finished downloading $file\n";
+
             return;
         }
         $buffers[$file]->write(fread($readStream, 1024));

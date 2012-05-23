@@ -29,6 +29,7 @@ class Application extends BaseApplication
         $sfRequest = SymfonyRequest::create($request->getPath(), $request->getMethod());
         $sfRequest->attributes->set('react.espresso.request', $request);
         $sfRequest->attributes->set('react.espresso.response', $response);
+
         return $sfRequest;
     }
 }

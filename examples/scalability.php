@@ -6,7 +6,7 @@ require __DIR__.'/../vendor/autoload.php';
 
 $loop = React\EventLoop\Factory::create();
 
-for($i=0;$i<10;++$i){
+for ($i=0;$i<10;++$i) {
     $s=stream_socket_server('tcp://127.0.0.1:'.(8000+$i));
     $loop->addReadStream($s, function ($s) use ($i) {
         $c=stream_socket_accept($s);

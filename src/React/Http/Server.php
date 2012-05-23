@@ -47,6 +47,7 @@ class Server extends EventEmitter implements ServerInterface
 
         if (!$this->listeners('request')) {
             $response->end();
+
             return;
         }
 

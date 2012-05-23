@@ -4,7 +4,6 @@ namespace React\Http;
 
 use Evenement\EventEmitter;
 use Guzzle\Http\Message\RequestFactory;
-use React\Socket\ServerInterface as SocketServerInterface;
 
 class RequestHeaderParser extends EventEmitter
 {
@@ -15,6 +14,7 @@ class RequestHeaderParser extends EventEmitter
     {
         if (strlen($this->buffer) + strlen($data) > $this->maxSize) {
             $this->emit('error', array(new \OverflowException("Maximum header size of {$this->maxSize} exceeded."), $this));
+
             return;
         }
 

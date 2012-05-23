@@ -3,7 +3,6 @@
 namespace React\Tests\Socket\Stub;
 
 use Evenement\EventEmitter;
-use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface;
 
 class ConnectionStub extends EventEmitter implements ConnectionInterface

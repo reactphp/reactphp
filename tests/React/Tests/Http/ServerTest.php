@@ -75,6 +75,7 @@ class ServerTest extends TestCase
         $data .= "Host: example.com:80\r\n";
         $data .= "Connection: close\r\n";
         $data .= "\r\n";
+
         return $data;
     }
 }
