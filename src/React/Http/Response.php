@@ -10,6 +10,7 @@ class Response extends EventEmitter
 {
     private $conn;
     private $headWritten = false;
+    private $chunkedEncoding = true;
 
     public function __construct(ConnectionInterface $conn)
     {
@@ -22,8 +23,16 @@ class Response extends EventEmitter
             throw new \Exception('Response head has already been written.');
         }
 
-        $response = new GuzzleResponse($status, $headers);
+        if (isset($headers['Content-Length'])) {
+            $this->chunkedEncoding = false;
+        }
+
+        $response = new GuzzleResponse($status);
         $response->setHeader('X-Powered-By', 'React/alpha');
+        $response->addHeaders($headers);
+        if ($this->chunkedEncoding) {
+            $response->setHeader('Transfer-Encoding', 'chunked');
+        }
         $data = (string) $response;
         $this->conn->write($data);
 
@@ -36,7 +45,13 @@ class Response extends EventEmitter
             throw new \Exception('Response head has not yet been written.');
         }
 
-        $this->conn->write($data);
+        if ($this->chunkedEncoding) {
+            $len = strlen($data);
+            $chunk = dechex($len)."\r\n".$data."\r\n";
+            $this->conn->write($chunk);
+        } else {
+            $this->conn->write($data);
+        }
     }
 
     public function end($data = null)
@@ -44,6 +59,11 @@ class Response extends EventEmitter
         if (null !== $data) {
             $this->write($data);
         }
+
+        if ($this->chunkedEncoding) {
+            $this->conn->write("0\r\n\r\n");
+        }
+
         $this->emit('end');
         $this->removeAllListeners();
         $this->conn->end();
