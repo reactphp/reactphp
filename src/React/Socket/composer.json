@@ -9,7 +9,10 @@
         "react/event-loop": "dev-master"
     },
     "autoload": {
-        "psr-0": { "React\\Socket": "" }
+        "psr-0": {
+            "React\\Socket": "",
+            "ext-mbstring": "*"
+        }
     },
     "target-dir": "React/Socket"
 }

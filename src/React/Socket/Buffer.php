@@ -76,7 +76,7 @@ class Buffer extends EventEmitter
             return;
         }
 
-        $this->data = substr($this->data, $sent);
+        $this->data = mb_substr($this->data, $sent, mb_strlen($this->data, '8bit'), '8bit');
 
         if (0 === strlen($this->data)) {
             $this->emit('end');
