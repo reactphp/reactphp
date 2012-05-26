@@ -9,7 +9,10 @@
         "react/socket": "dev-master"
     },
     "autoload": {
-        "psr-0": { "React\\Http": "" }
+        "psr-0": {
+            "React\\Http": "",
+            "ext-mbstring": "*"
+        }
     },
     "target-dir": "React/Http"
 }

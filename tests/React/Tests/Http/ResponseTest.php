@@ -61,6 +61,10 @@ class ResponseTest extends TestCase
         $conn
             ->expects($this->at(4))
             ->method('write')
+            ->with("3\r\n✓\r\n");
+        $conn
+            ->expects($this->at(5))
+            ->method('write')
             ->with("0\r\n\r\n");
 
         $response = new Response($conn);
@@ -69,6 +73,7 @@ class ResponseTest extends TestCase
         $response->write('Hello');
         $response->write(' ');
         $response->write("World\n");
+        $response->write('✓');
         $response->end();
     }
 }

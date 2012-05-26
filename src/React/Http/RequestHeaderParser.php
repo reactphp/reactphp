@@ -12,7 +12,7 @@ class RequestHeaderParser extends EventEmitter
 
     public function feed($data)
     {
-        if (strlen($this->buffer) + strlen($data) > $this->maxSize) {
+        if (mb_strlen($this->buffer, '8bit') + mb_strlen($data, '8bit') > $this->maxSize) {
             $this->emit('error', array(new \OverflowException("Maximum header size of {$this->maxSize} exceeded."), $this));
 
             return;
@@ -20,7 +20,7 @@ class RequestHeaderParser extends EventEmitter
 
         $this->buffer .= $data;
 
-        if (false !== strpos($this->buffer, "\r\n\r\n")) {
+        if (false !== mb_strpos($this->buffer, "\r\n\r\n", 0, 'ASCII')) {
             list($request, $bodyBuffer) = $this->parseRequest($this->buffer);
 
             $this->emit('headers', array($request, $bodyBuffer));
@@ -36,9 +36,9 @@ class RequestHeaderParser extends EventEmitter
         $parsed = $factory->parseMessage($headers."\r\n\r\n");
 
         $parsedQuery = array();
-        if (0 === strpos($parsed['parts']['query'], '?')) {
-            $query = substr($parsed['parts']['query'], 1);
-            parse_str($query, $parsedQuery);
+        if (0 === mb_strpos($parsed['parts']['query'], '?', 0, 'ASCII')) {
+            $query = mb_substr($parsed['parts']['query'], 1, mb_strlen($parsed['parts']['query'], 'ASCII'), 'ASCII');
+            mb_parse_str($query, $parsedQuery);
         }
 
         $request = new Request(

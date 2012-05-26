@@ -16,6 +16,9 @@
         "react/espresso": "self.version"
     },
     "autoload": {
-        "psr-0": { "React": "src" }
+        "psr-0": {
+            "React": "src",
+            "ext-mbstring": "*"
+        }
     }
 }

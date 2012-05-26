@@ -46,7 +46,7 @@ class Response extends EventEmitter
         }
 
         if ($this->chunkedEncoding) {
-            $len = strlen($data);
+            $len = mb_strlen($data, '8bit');
             $chunk = dechex($len)."\r\n".$data."\r\n";
             $this->conn->write($chunk);
         } else {
