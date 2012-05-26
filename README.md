@@ -28,7 +28,7 @@ React is non-blocking by default. Use workers for blocking I/O.
 
 ### Events
 
-Both `React\Socket\Server` and `React\Socket\Connection` extend
+Most classes extend
 [événement](https://github.com/igorw/evenement), allowing you to bind to
 events.
 
@@ -51,7 +51,7 @@ $app->get('/', function ($request, $response) use (&$i) {
     $i++;
 
     $text = "This is request number $i.\n";
-    $headers = array('Content-Type' => 'text/plain', 'Content-Length' => strlen($text));
+    $headers = array('Content-Type' => 'text/plain');
 
     $response->writeHead(200, $headers);
     $response->end($text);
