@@ -47,6 +47,7 @@ class Connection extends EventEmitter implements ConnectionInterface
         $this->buffer->removeAllListeners();
         $this->removeAllListeners();
         if (is_resource($this->socket)) {
+            stream_socket_shutdown($this->socket, STREAM_SHUT_WR);
             fclose($this->socket);
         }
         $this->closed = true;
