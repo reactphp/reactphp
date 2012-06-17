@@ -10,6 +10,7 @@ class Buffer extends EventEmitter
     public $socket;
     public $closed = false;
     public $listening = false;
+    public $chunkSize = 4096;
     private $loop;
     private $data = '';
 
@@ -28,15 +29,7 @@ class Buffer extends EventEmitter
         $this->data .= $data;
 
         if (!$this->listening) {
-            $that = $this;
-            $loop = $this->loop;
-            $listener = function ($socket) use ($that, $loop) {
-                $loop->removeWriteStream($that->socket);
-                $that->listening = false;
-
-                $that->handleWrite();
-            };
-            $this->loop->addWriteStream($this->socket, $listener);
+            $this->loop->addWriteStream($this->socket, array($this, 'handleWrite'));
 
             $this->listening = true;
         }
@@ -53,25 +46,10 @@ class Buffer extends EventEmitter
 
     public function handleWrite()
     {
-        set_error_handler(function ($errno, $errstr, $errfile, $errline) {
-            throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
-
-            return false;
-        });
-
-        $error = null;
-        try {
-            $sent = fwrite($this->socket, $this->data);
-        } catch (\ErrorException $e) {
-            $sent = false;
-            $error = $e;
-        }
-
-        restore_error_handler();
+        $sent = @fwrite($this->socket, $this->data, $this->chunkSize);
 
         if (false === $sent) {
-            $error = $error ?: new \RuntimeException('Unable to write to socket');
-            $this->emit('error', array($error));
+            $this->emit('error', array(new \RuntimeException('Unable to write to socket')));
 
             return;
         }
@@ -79,6 +57,9 @@ class Buffer extends EventEmitter
         $this->data = substr($this->data, $sent);
 
         if (0 === strlen($this->data)) {
+            $this->loop->removeWriteStream($this->socket);
+            $this->listening = false;
+
             $this->emit('end');
         }
     }
