@@ -2,7 +2,7 @@
 
 Event-driven, non-blocking I/O with PHP.
 
-[![Build Status](https://secure.travis-ci.org/react-php/react.png)](http://travis-ci.org/react-php/react)
+[![Build Status](https://secure.travis-ci.org/react-php/react.png?branch=master)](http://travis-ci.org/react-php/react)
 
 ## Install
 
