@@ -10,7 +10,6 @@ class Buffer extends EventEmitter
     public $socket;
     public $closed = false;
     public $listening = false;
-    public $chunkSize = 4096;
     private $loop;
     private $data = '';
 
@@ -46,7 +45,7 @@ class Buffer extends EventEmitter
 
     public function handleWrite()
     {
-        $sent = @fwrite($this->socket, $this->data, $this->chunkSize);
+        $sent = @fwrite($this->socket, $this->data);
 
         if (false === $sent) {
             $this->emit('error', array(new \RuntimeException('Unable to write to socket')));
