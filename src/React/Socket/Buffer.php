@@ -12,6 +12,12 @@ class Buffer extends EventEmitter
     public $listening = false;
     private $loop;
     private $data = '';
+    private $lastError = array(
+        'number'  => ''
+      , 'message' => ''
+      , 'file'    => ''
+      , 'line'    => ''
+    );
 
     public function __construct($socket, LoopInterface $loop)
     {
@@ -45,10 +51,20 @@ class Buffer extends EventEmitter
 
     public function handleWrite()
     {
-        $sent = @fwrite($this->socket, $this->data);
+        set_error_handler(array($this, 'errorHandler'));
+
+        $sent = fwrite($this->socket, $this->data);
+
+        restore_error_handler();
 
         if (false === $sent) {
-            $this->emit('error', array(new \RuntimeException('Unable to write to socket')));
+            $this->emit('error', array(new \ErrorException(
+                $this->lastError['message']
+              , 0
+              , $this->lastError['number']
+              , $this->lastError['file']
+              , $this->lastError['line']
+            )));
 
             return;
         }
@@ -61,5 +77,12 @@ class Buffer extends EventEmitter
 
             $this->emit('end');
         }
+    }
+
+    private function errorHandler($errno, $errstr, $errfile, $errline) {
+        $this->lastError['number']  = $errno;
+        $this->lastError['message'] = $errstr;
+        $this->lastError['file']    = $errfile;
+        $this->lastError['line']    = $errline;
     }
 }
