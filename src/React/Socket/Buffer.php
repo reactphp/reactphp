@@ -12,6 +12,12 @@ class Buffer extends EventEmitter
     public $listening = false;
     private $loop;
     private $data = '';
+    private $lastError = array(
+        'number'  => '',
+        'message' => '',
+        'file'    => '',
+        'line'    => '',
+    );
 
     public function __construct($socket, LoopInterface $loop)
     {
@@ -28,15 +34,7 @@ class Buffer extends EventEmitter
         $this->data .= $data;
 
         if (!$this->listening) {
-            $that = $this;
-            $loop = $this->loop;
-            $listener = function ($socket) use ($that, $loop) {
-                $loop->removeWriteStream($that->socket);
-                $that->listening = false;
-
-                $that->handleWrite();
-            };
-            $this->loop->addWriteStream($this->socket, $listener);
+            $this->loop->addWriteStream($this->socket, array($this, 'handleWrite'));
 
             $this->listening = true;
         }
@@ -53,25 +51,20 @@ class Buffer extends EventEmitter
 
     public function handleWrite()
     {
-        set_error_handler(function ($errno, $errstr, $errfile, $errline) {
-            throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+        set_error_handler(array($this, 'errorHandler'));
 
-            return false;
-        });
-
-        $error = null;
-        try {
-            $sent = fwrite($this->socket, $this->data);
-        } catch (\ErrorException $e) {
-            $sent = false;
-            $error = $e;
-        }
+        $sent = fwrite($this->socket, $this->data);
 
         restore_error_handler();
 
         if (false === $sent) {
-            $error = $error ?: new \RuntimeException('Unable to write to socket');
-            $this->emit('error', array($error));
+            $this->emit('error', array(new \ErrorException(
+                $this->lastError['message'],
+                0,
+                $this->lastError['number'],
+                $this->lastError['file'],
+                $this->lastError['line']
+            )));
 
             return;
         }
@@ -79,7 +72,18 @@ class Buffer extends EventEmitter
         $this->data = substr($this->data, $sent);
 
         if (0 === strlen($this->data)) {
+            $this->loop->removeWriteStream($this->socket);
+            $this->listening = false;
+
             $this->emit('end');
         }
+    }
+
+    private function errorHandler($errno, $errstr, $errfile, $errline)
+    {
+        $this->lastError['number']  = $errno;
+        $this->lastError['message'] = $errstr;
+        $this->lastError['file']    = $errfile;
+        $this->lastError['line']    = $errline;
     }
 }
