@@ -13,10 +13,10 @@ class Buffer extends EventEmitter
     private $loop;
     private $data = '';
     private $lastError = array(
-        'number'  => ''
-      , 'message' => ''
-      , 'file'    => ''
-      , 'line'    => ''
+        'number'  => '',
+        'message' => '',
+        'file'    => '',
+        'line'    => '',
     );
 
     public function __construct($socket, LoopInterface $loop)
@@ -59,11 +59,11 @@ class Buffer extends EventEmitter
 
         if (false === $sent) {
             $this->emit('error', array(new \ErrorException(
-                $this->lastError['message']
-              , 0
-              , $this->lastError['number']
-              , $this->lastError['file']
-              , $this->lastError['line']
+                $this->lastError['message'],
+                0,
+                $this->lastError['number'],
+                $this->lastError['file'],
+                $this->lastError['line']
             )));
 
             return;
@@ -79,7 +79,8 @@ class Buffer extends EventEmitter
         }
     }
 
-    private function errorHandler($errno, $errstr, $errfile, $errline) {
+    private function errorHandler($errno, $errstr, $errfile, $errline)
+    {
         $this->lastError['number']  = $errno;
         $this->lastError['message'] = $errstr;
         $this->lastError['file']    = $errfile;
