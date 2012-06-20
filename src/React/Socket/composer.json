@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
         "php": ">=5.3.2",
-        "evenement/evenement": "dev-master",
+        "evenement/evenement": "1.0.*",
         "react/event-loop": "dev-master"
     },
     "autoload": {
