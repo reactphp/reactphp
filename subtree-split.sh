@@ -1,5 +1,6 @@
 git clone https://github.com/react-php/react react-split
 cd react-split
+git checkout master
 git pull origin master
 
 git branch -D event-loop
