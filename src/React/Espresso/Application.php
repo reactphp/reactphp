@@ -13,9 +13,11 @@ class Application extends BaseApplication
     {
         parent::__construct();
 
-        $this['controllers'] = $this->share(function () {
-            return new ControllerCollection();
-        });
+        $app = $this;
+
+        $this['controllers_factory'] = function () use ($app) {
+            return new ControllerCollection($app['route_factory']);
+        };
     }
 
     public function __invoke(Request $request, Response $response)
