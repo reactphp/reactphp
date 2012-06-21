@@ -1,7 +1,8 @@
 <?php
 
-namespace React\Tests\Socket;
+namespace React\Tests\EventLoop;
 
+use React\Tests\Socket\TestCase;
 use React\EventLoop\StreamSelectLoop;
 
 class LoopTest extends TestCase
