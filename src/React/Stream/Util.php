@@ -26,8 +26,11 @@ class Util
             $source->resume();
         });
 
-        $source->on('end', function () use ($dest) {
-            $dest->end();
-        });
+        $end = isset($options['end']) ? $options['end'] : true;
+        if ($end && $source !== $dest) {
+            $source->on('end', function () use ($dest) {
+                $dest->end();
+            });
+        }
     }
 }
