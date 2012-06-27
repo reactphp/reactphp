@@ -87,7 +87,7 @@ class Connection extends EventEmitter implements ConnectionInterface
     {
         Util::pipe($this, $dest, $options);
 
-        return $this;
+        return $dest;
     }
 
     public function handleData($socket)

@@ -23,7 +23,7 @@ class ConnectionStub extends EventEmitter implements ConnectionInterface
     {
         Util::pipe($this, $dest, $options);
 
-        return $this;
+        return $dest;
     }
 
     public function write($data)

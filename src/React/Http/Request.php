@@ -69,6 +69,6 @@ class Request extends EventEmitter implements ReadableStream
     {
         Util::pipe($this, $dest, $options);
 
-        return $this;
+        return $dest;
     }
 }
