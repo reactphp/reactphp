@@ -11,6 +11,7 @@
     },
     "replace": {
         "react/event-loop": "self.version",
+        "react/stream": "self.version",
         "react/socket": "self.version",
         "react/http": "self.version",
         "react/espresso": "self.version"
