@@ -5,8 +5,9 @@ namespace React\Http;
 use Evenement\EventEmitter;
 use Guzzle\Http\Message\Response as GuzzleResponse;
 use React\Socket\ConnectionInterface;
+use React\Stream\WritableStream;
 
-class Response extends EventEmitter
+class Response extends EventEmitter implements WritableStream
 {
     private $conn;
     private $headWritten = false;
@@ -48,10 +49,12 @@ class Response extends EventEmitter
         if ($this->chunkedEncoding) {
             $len = strlen($data);
             $chunk = dechex($len)."\r\n".$data."\r\n";
-            $this->conn->write($chunk);
+            $flushed = $this->conn->write($chunk);
         } else {
-            $this->conn->write($data);
+            $flushed = $this->conn->write($data);
         }
+
+        return $flushed;
     }
 
     public function end($data = null)
@@ -67,5 +70,12 @@ class Response extends EventEmitter
         $this->emit('end');
         $this->removeAllListeners();
         $this->conn->end();
+    }
+
+    public function close()
+    {
+        $this->emit('end');
+        $this->removeAllListeners();
+        $this->conn->close();
     }
 }

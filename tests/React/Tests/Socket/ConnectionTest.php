@@ -80,7 +80,7 @@ class ConnectionTest extends TestCase
         $method = $class->getMethod('parseAddress');
         $method->setAccessible(true);
 
-        $servConn = new Connection($server, $loop);
+        $servConn = new Connection($server->master, $loop);
 
         $mock = $this->createCallableMock();
         $mock

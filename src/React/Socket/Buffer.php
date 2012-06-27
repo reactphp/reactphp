@@ -4,12 +4,16 @@ namespace React\Socket;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
+use React\Stream\WritableStream;
 
-class Buffer extends EventEmitter
+// TODO: move to stream component
+
+class Buffer extends EventEmitter implements WritableStream
 {
     public $socket;
     public $closed = false;
     public $listening = false;
+    public $softLimit = 2048;
     private $loop;
     private $data = '';
     private $lastError = array(
@@ -38,15 +42,32 @@ class Buffer extends EventEmitter
 
             $this->listening = true;
         }
+
+        $belowSoftLimit = strlen($this->data) < $this->softLimit;
+
+        return $belowSoftLimit;
     }
 
-    public function end()
+    public function end($data = null)
     {
+        if (null !== $data) {
+            $this->write($data);
+        }
+
         $this->closed = true;
 
         if (!$this->listening) {
-            $this->emit('end');
+            $this->emit('close');
         }
+    }
+
+    public function close()
+    {
+        $this->closed = true;
+        $this->listening = false;
+        $this->data = '';
+
+        $this->emit('close');
     }
 
     public function handleWrite()
@@ -69,13 +90,18 @@ class Buffer extends EventEmitter
             return;
         }
 
+        $len = strlen($this->data);
+        if ($len >= $this->softLimit && $len - $sent < $this->softLimit) {
+            $this->emit('drain');
+        }
+
         $this->data = substr($this->data, $sent);
 
         if (0 === strlen($this->data)) {
             $this->loop->removeWriteStream($this->socket);
             $this->listening = false;
 
-            $this->emit('end');
+            $this->emit('close');
         }
     }
 

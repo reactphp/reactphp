@@ -38,14 +38,14 @@ class BufferTest extends TestCase
     /**
      * @covers React\Socket\Buffer::end
      */
-    public function testEnd()
+    public function testClose()
     {
         $socket = fopen('php://temp', 'r+');
         $loop = $this->createLoopMock();
 
         $buffer = new Buffer($socket, $loop);
         $buffer->on('error', $this->expectCallableNever());
-        $buffer->on('end', $this->expectCallableOnce());
+        $buffer->on('close', $this->expectCallableOnce());
 
         $this->assertFalse($buffer->closed);
         $buffer->end();

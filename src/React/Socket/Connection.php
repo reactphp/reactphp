@@ -4,6 +4,8 @@ namespace React\Socket;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
+use React\Stream\WritableStream;
+use React\Stream\Util;
 
 class Connection extends EventEmitter implements ConnectionInterface
 {
@@ -25,6 +27,18 @@ class Connection extends EventEmitter implements ConnectionInterface
             $that->emit('error', array($error, $that));
             $that->close();
         });
+
+        $this->resume();
+    }
+
+    public function pause()
+    {
+        $this->loop->removeReadStream($this->socket);
+    }
+
+    public function resume()
+    {
+        $this->loop->addReadStream($this->socket, array($this, 'handleData'));
     }
 
     public function write($data)
@@ -33,7 +47,7 @@ class Connection extends EventEmitter implements ConnectionInterface
             return;
         }
 
-        $this->buffer->write($data);
+        return $this->buffer->write($data);
     }
 
     public function close()
@@ -43,6 +57,7 @@ class Connection extends EventEmitter implements ConnectionInterface
         }
 
         $this->emit('end', array($this));
+        $this->emit('close', array($this));
         $this->loop->removeStream($this->socket);
         $this->buffer->removeAllListeners();
         $this->removeAllListeners();
@@ -53,7 +68,7 @@ class Connection extends EventEmitter implements ConnectionInterface
         $this->closed = true;
     }
 
-    public function end()
+    public function end($data = null)
     {
         if ($this->closed) {
             return;
@@ -61,11 +76,18 @@ class Connection extends EventEmitter implements ConnectionInterface
 
         $that = $this;
 
-        $this->buffer->on('end', function () use ($that) {
+        $this->buffer->on('close', function () use ($that) {
             $that->close();
         });
 
-        $this->buffer->end();
+        $this->buffer->end($data);
+    }
+
+    public function pipe(WritableStream $dest, array $options = array())
+    {
+        Util::pipe($this, $dest, $options);
+
+        return $this;
     }
 
     public function handleData($socket)
