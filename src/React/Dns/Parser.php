@@ -117,13 +117,17 @@ class Parser
 
         $consumed = 0;
 
-        $length = ord(substr($message->data, $consumed, 1));
-        $consumed += 1;
+        $mask = 0xc000; // 1100000000000000
+        list($nameOffset) = array_merge(unpack('n', substr($message->data, $consumed, 2)));
 
-        if ($length === 192) {
-            $labels[] = '@';
-            $consumed += 3;
+        if ($nameOffset & $mask) {
+            $consumed += 2;
+            $labels[] = $message->question[0]['name'];
+            // TODO: get proper offset
         } else {
+            $length = ord(substr($message->data, $consumed, 1));
+            $consumed += 1;
+
             while ($length !== 0) {
                 $labels[] = substr($message->data, $consumed, $length);
                 $consumed += $length;
@@ -144,11 +148,19 @@ class Parser
         list($type, $class) = array_merge(unpack('n*', substr($message->data, $consumed, 4)));
         $consumed += 4;
 
-        list($ttl) = array_merge(unpack('l', substr($message->data, $consumed, 4)));
+        list($ttl) = array_merge(unpack('N', substr($message->data, $consumed, 4)));
         $consumed += 4;
 
         list($rdLength) = array_merge(unpack('n', substr($message->data, $consumed, 2)));
         $consumed += 2;
+
+        $rdata = null;
+        if (Message::TYPE_A === $type) {
+            $ip = substr($message->data, $consumed, $rdLength);
+            $consumed += $rdLength;
+
+            $rdata = inet_ntop($ip);
+        }
 
         $message->data = substr($message->data, $consumed) ?: '';
 
@@ -156,10 +168,16 @@ class Parser
         $record->name = implode('.', $labels);
         $record->type = $type;
         $record->class = $class;
-        $record->ttl = $ttl;
+        $record->ttl = $this->signedLongToUnsignedLong($ttl);
+        $record->data = $rdata;
 
         $message->answer[] = $record;
 
         return $message;
+    }
+
+    private function signedLongToUnsignedLong($i)
+    {
+        return $i & 0x80000000 ? $i - 0xffffffff : $i;
     }
 }

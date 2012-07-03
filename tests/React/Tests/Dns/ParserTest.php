@@ -28,10 +28,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testParseRequest()
     {
         $data = "";
-        $data .= "72 62 01 00 00 01 00 00";
-        $data .= "00 00 00 00 04 69 67 6f";
-        $data .= "72 02 69 6f 00 00 01 00";
-        $data .= "01";
+        $data .= "72 62 01 00 00 01 00 00 00 00 00 00"; // header
+        $data .= "04 69 67 6f 72 02 69 6f 00";          // question: igor.io
+        $data .= "00 01 00 01";                         // question: type A, class IN
 
         $data = $this->convertTcpDumpToBinary($data);
 
@@ -63,12 +62,14 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testParseResponse()
     {
         $data = "";
-        $data .= "72 62 81 80 00 01 00 01";
-        $data .= "00 00 00 00 04 69 67 6f";
-        $data .= "72 02 69 6f 00 00 01 00";
-        $data .= "01 c0 0c 00 01 00 01 00";
-        $data .= "01 3c 05 00 04 b2 4f a9";
-        $data .= "83";
+        $data .= "72 62 81 80 00 01 00 01 00 00 00 00"; // header
+        $data .= "04 69 67 6f 72 02 69 6f 00";          // question: igor.io
+        $data .= "00 01 00 01";                         // question: type A, class IN
+        $data .= "c0 0c";                               // answer: offset pointer to igor.io
+        $data .= "00 01 00 01";                         // answer: type A, class IN
+        $data .= "00 01 51 80";                         // answer: ttl 86400
+        $data .= "00 04";                               // answer: rdlength 4
+        $data .= "b2 4f a9 83";                         // answer: rdata 178.79.169.131
 
         $data = $this->convertTcpDumpToBinary($data);
 
@@ -97,11 +98,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(Message::CLASS_IN, $response->question[0]['class']);
 
         $this->assertCount(1, $response->answer);
-        $this->assertSame('@', $response->answer[0]->name);
+        $this->assertSame('igor.io', $response->answer[0]->name);
         $this->assertSame(Message::TYPE_A, $response->answer[0]->type);
         $this->assertSame(Message::CLASS_IN, $response->answer[0]->class);
-        $this->assertSame(68283, $response->answer[0]->ttl);
-        $this->assertSame('?', $response->answer[0]->data);
+        $this->assertSame(86400, $response->answer[0]->ttl);
+        $this->assertSame('178.79.169.131', $response->answer[0]->data);
     }
 
     private function convertTcpDumpToBinary($input)
