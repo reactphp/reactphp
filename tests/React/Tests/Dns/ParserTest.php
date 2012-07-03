@@ -52,6 +52,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1, $request->header['rd']);
         $this->assertSame(0, $request->header['ra']);
         $this->assertSame(0, $request->header['z']);
+        $this->assertSame(Message::RCODE_OK, $request->header['rcode']);
 
         $this->assertCount(1, $request->question);
         $this->assertSame('igor.io', $request->question[0]['name']);
@@ -91,6 +92,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1, $response->header['rd']);
         $this->assertSame(1, $response->header['ra']);
         $this->assertSame(0, $response->header['z']);
+        $this->assertSame(Message::RCODE_OK, $response->header['rcode']);
 
         $this->assertCount(1, $response->question);
         $this->assertSame('igor.io', $response->question[0]['name']);

@@ -18,6 +18,13 @@ class Message
     const OPCODE_IQUERY = 1; // inverse query
     const OPCODE_STATUS = 2;
 
+    const RCODE_OK = 0;
+    const RCODE_FORMAT_ERROR = 1;
+    const RCODE_SERVER_FAILURE = 2;
+    const RCODE_NAME_ERROR = 3;
+    const RCODE_NOT_IMPLEMENTED = 4;
+    const RCODE_REFUSED = 5;
+
     public $data = '';
 
     public $header = array();
