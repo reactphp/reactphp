@@ -24,6 +24,12 @@ class Parser
                 return;
             }
         }
+
+        if ($message->header['anCount'] != count($message->answer)) {
+            if (!$this->parseAnswer($message)) {
+                return;
+            }
+        }
     }
 
     private function parseHeader(Message $message)
@@ -81,10 +87,14 @@ class Parser
             }
         }
 
+        if (strlen($message->data) - $consumed < 4) {
+            return;
+        }
+
         list($type, $class) = array_merge(unpack('n*', substr($message->data, $consumed, 4)));
         $consumed += 4;
 
-        $message->data = substr($message->data, 0, $consumed);
+        $message->data = substr($message->data, $consumed) ?: '';
 
         $message->question[] = array(
             'name' => implode('.', $labels),
@@ -99,7 +109,57 @@ class Parser
         return $message;
     }
 
-    public function toBinary(Message $message)
+    private function parseAnswer(Message $message)
     {
+        if (strlen($message->data) < 2) {
+            return;
+        }
+
+        $consumed = 0;
+
+        $length = ord(substr($message->data, $consumed, 1));
+        $consumed += 1;
+
+        if ($length === 192) {
+            $labels[] = '@';
+            $consumed += 3;
+        } else {
+            while ($length !== 0) {
+                $labels[] = substr($message->data, $consumed, $length);
+                $consumed += $length;
+
+                $length = ord(substr($message->data, $consumed, 1));
+                $consumed += 1;
+
+                if (strlen($message->data) - $consumed < $length) {
+                    return;
+                }
+            }
+        }
+
+        if (strlen($message->data) - $consumed < 10) {
+            return;
+        }
+
+        list($type, $class) = array_merge(unpack('n*', substr($message->data, $consumed, 4)));
+        $consumed += 4;
+
+        list($ttl) = array_merge(unpack('l', substr($message->data, $consumed, 4)));
+        $consumed += 4;
+
+        list($rdLength) = array_merge(unpack('n', substr($message->data, $consumed, 2)));
+        $consumed += 2;
+
+        $message->data = substr($message->data, $consumed) ?: '';
+
+        $record = new Record();
+        $record->name = implode('.', $labels);
+        $record->type = $type;
+        $record->class = $class;
+        $record->ttl = $ttl;
+
+        $message->answer[] = $record;
+
+        return $message;
     }
 }

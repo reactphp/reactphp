@@ -95,6 +95,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('igor.io', $response->question[0]['name']);
         $this->assertSame(Message::TYPE_A, $response->question[0]['type']);
         $this->assertSame(Message::CLASS_IN, $response->question[0]['class']);
+
+        $this->assertCount(1, $response->answer);
+        $this->assertSame('@', $response->answer[0]->name);
+        $this->assertSame(Message::TYPE_A, $response->answer[0]->type);
+        $this->assertSame(Message::CLASS_IN, $response->answer[0]->class);
+        $this->assertSame(68283, $response->answer[0]->ttl);
+        $this->assertSame('?', $response->answer[0]->data);
     }
 
     private function convertTcpDumpToBinary($input)
