@@ -39,7 +39,7 @@ class BufferTest extends TestCase
     /**
      * @covers React\Stream\Buffer::end
      */
-    public function testClose()
+    public function testEnd()
     {
         $stream = fopen('php://temp', 'r+');
         $loop = $this->createLoopMock();
@@ -51,6 +51,59 @@ class BufferTest extends TestCase
         $this->assertFalse($buffer->closed);
         $buffer->end();
         $this->assertTrue($buffer->closed);
+    }
+
+    /**
+     * @covers React\Stream\Buffer::end
+     */
+    public function testEndWithData()
+    {
+        $stream = fopen('php://temp', 'r+');
+        $loop = $this->createWriteableLoopMock();
+
+        $buffer = new Buffer($stream, $loop);
+        $buffer->on('error', $this->expectCallableNever());
+        $buffer->on('close', $this->expectCallableOnce());
+
+        $buffer->end('final words');
+
+        rewind($stream);
+        $this->assertSame('final words', stream_get_contents($stream));
+    }
+
+    /**
+     * @covers React\Stream\Buffer::close
+     */
+    public function testClose()
+    {
+        $stream = fopen('php://temp', 'r+');
+        $loop = $this->createLoopMock();
+
+        $buffer = new Buffer($stream, $loop);
+        $buffer->on('error', $this->expectCallableNever());
+        $buffer->on('close', $this->expectCallableOnce());
+
+        $this->assertFalse($buffer->closed);
+        $buffer->close();
+        $this->assertTrue($buffer->closed);
+    }
+
+    /**
+     * @covers React\Stream\Buffer::write
+     * @covers React\Stream\Buffer::close
+     */
+    public function testWritingToClosedBufferShouldNotWriteToStream()
+    {
+        $stream = fopen('php://temp', 'r+');
+        $loop = $this->createWriteableLoopMock();
+
+        $buffer = new Buffer($stream, $loop);
+        $buffer->close();
+
+        $buffer->write('foo');
+
+        rewind($stream);
+        $this->assertSame('', stream_get_contents($stream));
     }
 
     /**
