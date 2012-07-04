@@ -1,6 +1,6 @@
 <?php
 
-// downloading the two best technologies ever in parallel
+// async DNS resolution
 
 require __DIR__.'/../vendor/autoload.php';
 
