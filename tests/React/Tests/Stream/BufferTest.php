@@ -77,7 +77,7 @@ class BufferTest extends TestCase
     {
         $loop = $this->createLoopMock();
         $loop
-            ->expects($this->once())
+            ->expects($this->any())
             ->method('addWriteStream')
             ->will($this->returnCallback(function ($stream, $listener) {
                 call_user_func($listener, $stream);
