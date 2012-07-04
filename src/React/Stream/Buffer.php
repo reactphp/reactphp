@@ -36,9 +36,9 @@ class Buffer extends EventEmitter implements WritableStream
         $this->data .= $data;
 
         if (!$this->listening) {
-            $this->loop->addWriteStream($this->stream, array($this, 'handleWrite'));
-
             $this->listening = true;
+
+            $this->loop->addWriteStream($this->stream, array($this, 'handleWrite'));
         }
 
         $belowSoftLimit = strlen($this->data) < $this->softLimit;
