@@ -1,13 +1,14 @@
 <?php
 
-namespace React\Tests\Socket;
+namespace React\Tests\Stream;
 
-use React\Socket\Buffer;
+use React\Stream\Buffer;
+use React\Tests\Socket\TestCase;
 
 class BufferTest extends TestCase
 {
     /**
-     * @covers React\Socket\Buffer::__construct
+     * @covers React\Stream\Buffer::__construct
      */
     public function testConstructor()
     {
@@ -19,8 +20,8 @@ class BufferTest extends TestCase
     }
 
     /**
-     * @covers React\Socket\Buffer::write
-     * @covers React\Socket\Buffer::handleWrite
+     * @covers React\Stream\Buffer::write
+     * @covers React\Stream\Buffer::handleWrite
      */
     public function testWrite()
     {
@@ -36,7 +37,7 @@ class BufferTest extends TestCase
     }
 
     /**
-     * @covers React\Socket\Buffer::end
+     * @covers React\Stream\Buffer::end
      */
     public function testClose()
     {
@@ -53,7 +54,7 @@ class BufferTest extends TestCase
     }
 
     /**
-     * @covers React\Socket\Buffer::end
+     * @covers React\Stream\Buffer::end
      */
     public function testError()
     {

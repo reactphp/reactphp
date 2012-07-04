@@ -1,12 +1,10 @@
 <?php
 
-namespace React\Socket;
+namespace React\Stream;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
 use React\Stream\WritableStream;
-
-// TODO: move to stream component
 
 class Buffer extends EventEmitter implements WritableStream
 {

@@ -5,6 +5,7 @@ namespace React\Socket;
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
 use React\Stream\WritableStream;
+use React\Stream\Buffer;
 use React\Stream\Util;
 
 class Connection extends EventEmitter implements ConnectionInterface

@@ -19,7 +19,7 @@ foreach ($files as $file => $url) {
 
     stream_set_blocking($readStream, 0);
 
-    $buffers[$file] = new React\Socket\Buffer($writeStream, $loop);
+    $buffers[$file] = new React\Stream\Buffer($writeStream, $loop);
 
     $loop->addReadStream($readStream, function ($readStream) use (&$buffers, $loop, $file, $writeStream, &$files) {
         if (feof($readStream)) {
