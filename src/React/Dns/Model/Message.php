@@ -1,6 +1,6 @@
 <?php
 
-namespace React\Dns;
+namespace React\Dns\Model;
 
 class Message
 {
@@ -27,24 +27,19 @@ class Message
 
     public $data = '';
 
-    public $header = array();
-    public $question = array();
-    public $answer = array();
+    public $headers;
+    public $questions = array();
+    public $answers = array();
     public $authority = array();
     public $additional = array();
 
-    public function getId()
+    public function __construct()
     {
-        return $this->header['id'];
+        $this->headers = new HeaderBag();
     }
 
-    public function isQuery()
+    public function prepare()
     {
-        return 0 === $this->header['qr'];
-    }
-
-    public function isResponse()
-    {
-        return 1 === $this->header['qr'];
+        $this->headers->populateCounts($this);
     }
 }

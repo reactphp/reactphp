@@ -2,40 +2,43 @@
 
 namespace React\Dns;
 
+use React\Dns\Model\Message;
+use React\Dns\Model\HeaderBag;
+
 class BinaryDumper
 {
     public function toBinary(Message $message)
     {
         $data = '';
 
-        $data .= $this->headerToBinary($message->header);
-        $data .= $this->questionToBinary($message->question);
+        $data .= $this->headerToBinary($message->headers);
+        $data .= $this->questionToBinary($message->questions);
 
         return $data;
     }
 
-    private function headerToBinary(array $header)
+    private function headerToBinary(HeaderBag $header)
     {
         $data = '';
 
-        $data .= pack('n', $header['id']);
+        $data .= pack('n', $header->get('id'));
 
         $flags = 0x00;
-        $flags = ($flags << 1) | $header['qr'];
-        $flags = ($flags << 4) | $header['opcode'];
-        $flags = ($flags << 1) | $header['aa'];
-        $flags = ($flags << 1) | $header['tc'];
-        $flags = ($flags << 1) | $header['rd'];
-        $flags = ($flags << 1) | $header['ra'];
-        $flags = ($flags << 3) | $header['z'];
-        $flags = ($flags << 4) | $header['rcode'];
+        $flags = ($flags << 1) | $header->get('qr');
+        $flags = ($flags << 4) | $header->get('opcode');
+        $flags = ($flags << 1) | $header->get('aa');
+        $flags = ($flags << 1) | $header->get('tc');
+        $flags = ($flags << 1) | $header->get('rd');
+        $flags = ($flags << 1) | $header->get('ra');
+        $flags = ($flags << 3) | $header->get('z');
+        $flags = ($flags << 4) | $header->get('rcode');
 
         $data .= pack('n', $flags);
 
-        $data .= pack('n', $header['qdCount']);
-        $data .= pack('n', $header['anCount']);
-        $data .= pack('n', $header['nsCount']);
-        $data .= pack('n', $header['arCount']);
+        $data .= pack('n', $header->get('qdCount'));
+        $data .= pack('n', $header->get('anCount'));
+        $data .= pack('n', $header->get('nsCount'));
+        $data .= pack('n', $header->get('arCount'));
 
         return $data;
     }

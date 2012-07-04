@@ -3,7 +3,7 @@
 namespace React\Tests\Dns;
 
 use React\Dns\BinaryDumper;
-use React\Dns\Message;
+use React\Dns\Model\Message;
 
 class BinaryDumperTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,21 +17,10 @@ class BinaryDumperTest extends \PHPUnit_Framework_TestCase
         $expected = $this->formatHexDump(str_replace(' ', '', $data), 2);
 
         $request = new Message();
-        $request->header = array(
-            'id'        => 0x7262,
-            'qdCount'   => 1,
-            'anCount'   => 0,
-            'nsCount'   => 0,
-            'arCount'   => 0,
-            'qr'        => 0,
-            'opcode'    => Message::OPCODE_QUERY,
-            'aa'        => 0,
-            'tc'        => 0,
-            'rd'        => 1,
-            'ra'        => 0,
-            'z'         => 0,
-            'rcode'     => Message::RCODE_OK,
-        );
+        $request->headers->set('id', 0x7262);
+        $request->headers->set('rd', 1);
+        $request->prepare();
+
         $request->question[] = array(
             'name'  => 'igor.io',
             'type'  => Message::TYPE_A,

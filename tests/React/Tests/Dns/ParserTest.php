@@ -3,7 +3,7 @@
 namespace React\Tests\Dns;
 
 use React\Dns\Parser;
-use React\Dns\Message;
+use React\Dns\Model\Message;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
@@ -39,25 +39,24 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser = new Parser();
         $parser->parseChunk($data, $request);
 
-        $this->assertNotNull($request->header);
-        $this->assertSame(0x7262, $request->header['id']);
-        $this->assertSame(1, $request->header['qdCount']);
-        $this->assertSame(0, $request->header['anCount']);
-        $this->assertSame(0, $request->header['nsCount']);
-        $this->assertSame(0, $request->header['arCount']);
-        $this->assertSame(0, $request->header['qr']);
-        $this->assertSame(Message::OPCODE_QUERY, $request->header['opcode']);
-        $this->assertSame(0, $request->header['aa']);
-        $this->assertSame(0, $request->header['tc']);
-        $this->assertSame(1, $request->header['rd']);
-        $this->assertSame(0, $request->header['ra']);
-        $this->assertSame(0, $request->header['z']);
-        $this->assertSame(Message::RCODE_OK, $request->header['rcode']);
+        $this->assertSame(0x7262, $request->headers->get('id'));
+        $this->assertSame(1, $request->headers->get('qdCount'));
+        $this->assertSame(0, $request->headers->get('anCount'));
+        $this->assertSame(0, $request->headers->get('nsCount'));
+        $this->assertSame(0, $request->headers->get('arCount'));
+        $this->assertSame(0, $request->headers->get('qr'));
+        $this->assertSame(Message::OPCODE_QUERY, $request->headers->get('opcode'));
+        $this->assertSame(0, $request->headers->get('aa'));
+        $this->assertSame(0, $request->headers->get('tc'));
+        $this->assertSame(1, $request->headers->get('rd'));
+        $this->assertSame(0, $request->headers->get('ra'));
+        $this->assertSame(0, $request->headers->get('z'));
+        $this->assertSame(Message::RCODE_OK, $request->headers->get('rcode'));
 
-        $this->assertCount(1, $request->question);
-        $this->assertSame('igor.io', $request->question[0]['name']);
-        $this->assertSame(Message::TYPE_A, $request->question[0]['type']);
-        $this->assertSame(Message::CLASS_IN, $request->question[0]['class']);
+        $this->assertCount(1, $request->questions);
+        $this->assertSame('igor.io', $request->questions[0]['name']);
+        $this->assertSame(Message::TYPE_A, $request->questions[0]['type']);
+        $this->assertSame(Message::CLASS_IN, $request->questions[0]['class']);
     }
 
     public function testParseResponse()
@@ -79,32 +78,31 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser = new Parser();
         $parser->parseChunk($data, $response);
 
-        $this->assertNotNull($response->header);
-        $this->assertSame(0x7262, $response->header['id']);
-        $this->assertSame(1, $response->header['qdCount']);
-        $this->assertSame(1, $response->header['anCount']);
-        $this->assertSame(0, $response->header['nsCount']);
-        $this->assertSame(0, $response->header['arCount']);
-        $this->assertSame(1, $response->header['qr']);
-        $this->assertSame(Message::OPCODE_QUERY, $response->header['opcode']);
-        $this->assertSame(0, $response->header['aa']);
-        $this->assertSame(0, $response->header['tc']);
-        $this->assertSame(1, $response->header['rd']);
-        $this->assertSame(1, $response->header['ra']);
-        $this->assertSame(0, $response->header['z']);
-        $this->assertSame(Message::RCODE_OK, $response->header['rcode']);
+        $this->assertSame(0x7262, $response->headers->get('id'));
+        $this->assertSame(1, $response->headers->get('qdCount'));
+        $this->assertSame(1, $response->headers->get('anCount'));
+        $this->assertSame(0, $response->headers->get('nsCount'));
+        $this->assertSame(0, $response->headers->get('arCount'));
+        $this->assertSame(1, $response->headers->get('qr'));
+        $this->assertSame(Message::OPCODE_QUERY, $response->headers->get('opcode'));
+        $this->assertSame(0, $response->headers->get('aa'));
+        $this->assertSame(0, $response->headers->get('tc'));
+        $this->assertSame(1, $response->headers->get('rd'));
+        $this->assertSame(1, $response->headers->get('ra'));
+        $this->assertSame(0, $response->headers->get('z'));
+        $this->assertSame(Message::RCODE_OK, $response->headers->get('rcode'));
 
-        $this->assertCount(1, $response->question);
-        $this->assertSame('igor.io', $response->question[0]['name']);
-        $this->assertSame(Message::TYPE_A, $response->question[0]['type']);
-        $this->assertSame(Message::CLASS_IN, $response->question[0]['class']);
+        $this->assertCount(1, $response->questions);
+        $this->assertSame('igor.io', $response->questions[0]['name']);
+        $this->assertSame(Message::TYPE_A, $response->questions[0]['type']);
+        $this->assertSame(Message::CLASS_IN, $response->questions[0]['class']);
 
-        $this->assertCount(1, $response->answer);
-        $this->assertSame('igor.io', $response->answer[0]->name);
-        $this->assertSame(Message::TYPE_A, $response->answer[0]->type);
-        $this->assertSame(Message::CLASS_IN, $response->answer[0]->class);
-        $this->assertSame(86400, $response->answer[0]->ttl);
-        $this->assertSame('178.79.169.131', $response->answer[0]->data);
+        $this->assertCount(1, $response->answers);
+        $this->assertSame('igor.io', $response->answers[0]->name);
+        $this->assertSame(Message::TYPE_A, $response->answers[0]->type);
+        $this->assertSame(Message::CLASS_IN, $response->answers[0]->class);
+        $this->assertSame(86400, $response->answers[0]->ttl);
+        $this->assertSame('178.79.169.131', $response->answers[0]->data);
     }
 
     private function convertTcpDumpToBinary($input)

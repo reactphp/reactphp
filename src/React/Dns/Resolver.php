@@ -2,6 +2,7 @@
 
 namespace React\Dns;
 
+use React\Dns\Model\Message;
 use React\Socket\Connection;
 
 class Resolver
@@ -12,7 +13,7 @@ class Resolver
         $query = new Query($domain, 'A', 'IN');
 
         $this->query($nameserver, $query, function (Message $response) use ($callback) {
-            $answer = $response->answer[array_rand($response->answer)]->data->address;
+            $answer = $response->answers[array_rand($response->answers)]->data;
             $callback($address);
         });
     }
@@ -22,13 +23,10 @@ class Resolver
         $dumper = new BinaryDumper();
         $parser = new Parser();
 
-        $message = new Message();
-        $message->header = array(
-            // $query...
-        );
-        $message->question = array(
-            // $query...
-        );
+        $request = new Message();
+        $request->headers->set('id', rand());
+        $request->headers->set('rd', 1);
+        $request->question = (array) $query;
 
         $response = new Message();
 
@@ -39,6 +37,6 @@ class Resolver
                 $callback($response);
             }
         });
-        $conn->write($dumper->toBinary($message));
+        $conn->write($dumper->toBinary($request));
     }
 }

@@ -2,6 +2,9 @@
 
 namespace React\Dns;
 
+use React\Dns\Model\Message;
+use React\Dns\Model\Record;
+
 /**
  * DNS protocol parser
  *
@@ -13,19 +16,19 @@ class Parser
     {
         $message->data .= $data;
 
-        if (!$message->header) {
+        if (!$message->headers->get('id')) {
             if (!$this->parseHeader($message)) {
                 return;
             }
         }
 
-        if ($message->header['qdCount'] != count($message->question)) {
+        if ($message->headers->get('qdCount') != count($message->questions)) {
             if (!$this->parseQuestion($message)) {
                 return;
             }
         }
 
-        if ($message->header['anCount'] != count($message->answer)) {
+        if ($message->headers->get('anCount') != count($message->answers)) {
             if (!$this->parseAnswer($message)) {
                 return;
             }
@@ -52,8 +55,13 @@ class Parser
         $opcode = ($fields >> 11) & chr(bindec('1111'));
         $qr = ($fields >> 15) & 1;
 
-        $message->header = compact('id', 'qdCount', 'anCount', 'nsCount', 'arCount',
-                                    'qr', 'opcode', 'aa', 'tc', 'rd', 'ra', 'z', 'rcode');
+        $vars = compact('id', 'qdCount', 'anCount', 'nsCount', 'arCount',
+                            'qr', 'opcode', 'aa', 'tc', 'rd', 'ra', 'z', 'rcode');
+
+
+        foreach ($vars as $name => $value) {
+            $message->headers->set($name, $value);
+        }
 
         return $message;
     }
@@ -96,13 +104,13 @@ class Parser
 
         $message->data = substr($message->data, $consumed) ?: '';
 
-        $message->question[] = array(
+        $message->questions[] = array(
             'name' => implode('.', $labels),
             'type' => $type,
             'class' => $class,
         );
 
-        if ($message->header['qdCount'] != count($message->question)) {
+        if ($message->headers->get('qdCount') != count($message->questions)) {
             return $this->parseQuestion($message);
         }
 
@@ -122,7 +130,7 @@ class Parser
 
         if ($nameOffset & $mask) {
             $consumed += 2;
-            $labels[] = $message->question[0]['name'];
+            $labels[] = $message->questions[0]['name'];
             // TODO: get proper offset
         } else {
             $length = ord(substr($message->data, $consumed, 1));
@@ -171,7 +179,7 @@ class Parser
         $record->ttl = $this->signedLongToUnsignedLong($ttl);
         $record->data = $rdata;
 
-        $message->answer[] = $record;
+        $message->answers[] = $record;
 
         return $message;
     }
