@@ -37,6 +37,46 @@ class BufferTest extends TestCase
     }
 
     /**
+     * @covers React\Stream\Buffer::write
+     * @covers React\Stream\Buffer::handleWrite
+     */
+    public function testWriteReturnsFalseWhenBufferIsFull()
+    {
+        $stream = fopen('php://temp', 'r+');
+        $loop = $this->createWriteableLoopMock();
+        $loop->preventWrites = true;
+
+        $buffer = new Buffer($stream, $loop);
+        $buffer->softLimit = 4;
+        $buffer->on('error', $this->expectCallableNever());
+
+        $this->assertTrue($buffer->write("foo"));
+        $loop->preventWrites = false;
+        $this->assertFalse($buffer->write("bar\n"));
+    }
+
+    /**
+     * @covers React\Stream\Buffer::write
+     * @covers React\Stream\Buffer::handleWrite
+     */
+    public function testDrain()
+    {
+        $stream = fopen('php://temp', 'r+');
+        $loop = $this->createWriteableLoopMock();
+        $loop->preventWrites = true;
+
+        $buffer = new Buffer($stream, $loop);
+        $buffer->softLimit = 4;
+        $buffer->on('error', $this->expectCallableNever());
+        $buffer->on('drain', $this->expectCallableOnce());
+
+        $buffer->write("foo");
+        $loop->preventWrites = false;
+        $buffer->listening = false;
+        $buffer->write("bar\n");
+    }
+
+    /**
      * @covers React\Stream\Buffer::end
      */
     public function testEnd()
@@ -130,11 +170,14 @@ class BufferTest extends TestCase
     private function createWriteableLoopMock()
     {
         $loop = $this->createLoopMock();
+        $loop->preventWrites = false;
         $loop
             ->expects($this->any())
             ->method('addWriteStream')
-            ->will($this->returnCallback(function ($stream, $listener) {
-                call_user_func($listener, $stream);
+            ->will($this->returnCallback(function ($stream, $listener) use ($loop) {
+                if (!$loop->preventWrites) {
+                    call_user_func($listener, $stream);
+                }
             }));
 
         return $loop;
