@@ -12,10 +12,10 @@ class BufferTest extends TestCase
      */
     public function testConstructor()
     {
-        $socket = fopen('php://temp', 'r+');
+        $stream = fopen('php://temp', 'r+');
         $loop = $this->createLoopMock();
 
-        $buffer = new Buffer($socket, $loop);
+        $buffer = new Buffer($stream, $loop);
         $buffer->on('error', $this->expectCallableNever());
     }
 
@@ -25,15 +25,15 @@ class BufferTest extends TestCase
      */
     public function testWrite()
     {
-        $socket = fopen('php://temp', 'r+');
+        $stream = fopen('php://temp', 'r+');
         $loop = $this->createWriteableLoopMock();
 
-        $buffer = new Buffer($socket, $loop);
+        $buffer = new Buffer($stream, $loop);
         $buffer->on('error', $this->expectCallableNever());
 
         $buffer->write("foobar\n");
-        rewind($socket);
-        $this->assertSame("foobar\n", fread($socket, 1024));
+        rewind($stream);
+        $this->assertSame("foobar\n", fread($stream, 1024));
     }
 
     /**
@@ -41,10 +41,10 @@ class BufferTest extends TestCase
      */
     public function testClose()
     {
-        $socket = fopen('php://temp', 'r+');
+        $stream = fopen('php://temp', 'r+');
         $loop = $this->createLoopMock();
 
-        $buffer = new Buffer($socket, $loop);
+        $buffer = new Buffer($stream, $loop);
         $buffer->on('error', $this->expectCallableNever());
         $buffer->on('close', $this->expectCallableOnce());
 
@@ -58,17 +58,17 @@ class BufferTest extends TestCase
      */
     public function testError()
     {
-        $socket = null;
+        $stream = null;
         $loop = $this->createWriteableLoopMock();
 
         $error = null;
 
-        $buffer = new Buffer($socket, $loop);
+        $buffer = new Buffer($stream, $loop);
         $buffer->on('error', function ($message) use (&$error) {
             $error = $message;
         });
 
-        $buffer->write('Attempting to write to bad socket');
+        $buffer->write('Attempting to write to bad stream');
         $this->assertInstanceOf('Exception', $error);
         $this->assertSame('fwrite() expects parameter 1 to be resource, null given', $error->getMessage());
     }
@@ -79,8 +79,8 @@ class BufferTest extends TestCase
         $loop
             ->expects($this->once())
             ->method('addWriteStream')
-            ->will($this->returnCallback(function ($socket, $listener) {
-                call_user_func($listener, $socket);
+            ->will($this->returnCallback(function ($stream, $listener) {
+                call_user_func($listener, $stream);
             }));
 
         return $loop;
