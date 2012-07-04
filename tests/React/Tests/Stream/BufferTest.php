@@ -107,7 +107,8 @@ class BufferTest extends TestCase
     }
 
     /**
-     * @covers React\Stream\Buffer::end
+     * @covers React\Stream\Buffer::handleWrite
+     * @covers React\Stream\Buffer::errorHandler
      */
     public function testError()
     {
