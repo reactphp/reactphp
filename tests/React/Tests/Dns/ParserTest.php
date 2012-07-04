@@ -39,19 +39,20 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser = new Parser();
         $parser->parseChunk($data, $request);
 
-        $this->assertSame(0x7262, $request->headers->get('id'));
-        $this->assertSame(1, $request->headers->get('qdCount'));
-        $this->assertSame(0, $request->headers->get('anCount'));
-        $this->assertSame(0, $request->headers->get('nsCount'));
-        $this->assertSame(0, $request->headers->get('arCount'));
-        $this->assertSame(0, $request->headers->get('qr'));
-        $this->assertSame(Message::OPCODE_QUERY, $request->headers->get('opcode'));
-        $this->assertSame(0, $request->headers->get('aa'));
-        $this->assertSame(0, $request->headers->get('tc'));
-        $this->assertSame(1, $request->headers->get('rd'));
-        $this->assertSame(0, $request->headers->get('ra'));
-        $this->assertSame(0, $request->headers->get('z'));
-        $this->assertSame(Message::RCODE_OK, $request->headers->get('rcode'));
+        $headers = $request->headers;
+        $this->assertSame(0x7262, $headers->get('id'));
+        $this->assertSame(1, $headers->get('qdCount'));
+        $this->assertSame(0, $headers->get('anCount'));
+        $this->assertSame(0, $headers->get('nsCount'));
+        $this->assertSame(0, $headers->get('arCount'));
+        $this->assertSame(0, $headers->get('qr'));
+        $this->assertSame(Message::OPCODE_QUERY, $headers->get('opcode'));
+        $this->assertSame(0, $headers->get('aa'));
+        $this->assertSame(0, $headers->get('tc'));
+        $this->assertSame(1, $headers->get('rd'));
+        $this->assertSame(0, $headers->get('ra'));
+        $this->assertSame(0, $headers->get('z'));
+        $this->assertSame(Message::RCODE_OK, $headers->get('rcode'));
 
         $this->assertCount(1, $request->questions);
         $this->assertSame('igor.io', $request->questions[0]['name']);
@@ -78,19 +79,20 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser = new Parser();
         $parser->parseChunk($data, $response);
 
-        $this->assertSame(0x7262, $response->headers->get('id'));
-        $this->assertSame(1, $response->headers->get('qdCount'));
-        $this->assertSame(1, $response->headers->get('anCount'));
-        $this->assertSame(0, $response->headers->get('nsCount'));
-        $this->assertSame(0, $response->headers->get('arCount'));
-        $this->assertSame(1, $response->headers->get('qr'));
-        $this->assertSame(Message::OPCODE_QUERY, $response->headers->get('opcode'));
-        $this->assertSame(0, $response->headers->get('aa'));
-        $this->assertSame(0, $response->headers->get('tc'));
-        $this->assertSame(1, $response->headers->get('rd'));
-        $this->assertSame(1, $response->headers->get('ra'));
-        $this->assertSame(0, $response->headers->get('z'));
-        $this->assertSame(Message::RCODE_OK, $response->headers->get('rcode'));
+        $headers = $response->headers;
+        $this->assertSame(0x7262, $headers->get('id'));
+        $this->assertSame(1, $headers->get('qdCount'));
+        $this->assertSame(1, $headers->get('anCount'));
+        $this->assertSame(0, $headers->get('nsCount'));
+        $this->assertSame(0, $headers->get('arCount'));
+        $this->assertSame(1, $headers->get('qr'));
+        $this->assertSame(Message::OPCODE_QUERY, $headers->get('opcode'));
+        $this->assertSame(0, $headers->get('aa'));
+        $this->assertSame(0, $headers->get('tc'));
+        $this->assertSame(1, $headers->get('rd'));
+        $this->assertSame(1, $headers->get('ra'));
+        $this->assertSame(0, $headers->get('z'));
+        $this->assertSame(Message::RCODE_OK, $headers->get('rcode'));
 
         $this->assertCount(1, $response->questions);
         $this->assertSame('igor.io', $response->questions[0]['name']);
