@@ -95,12 +95,9 @@ class Buffer extends EventEmitter implements WritableStream
 
         $this->data = (string) substr($this->data, $sent);
 
-
         if (0 === strlen($this->data)) {
             $this->loop->removeWriteStream($this->stream);
             $this->listening = false;
-
-            $this->emit('close');
         }
     }
 
