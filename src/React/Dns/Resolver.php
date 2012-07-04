@@ -13,7 +13,8 @@ class Resolver
         $query = new Query($domain, 'A', 'IN');
 
         $this->query($nameserver, $query, function (Message $response) use ($callback) {
-            $answer = $response->answers[array_rand($response->answers)]->data;
+            $answer = $response->answers[array_rand($response->answers)];
+            $address = $answer->data;
             $callback($address);
         });
     }
@@ -26,7 +27,7 @@ class Resolver
         $request = new Message();
         $request->headers->set('id', rand());
         $request->headers->set('rd', 1);
-        $request->question = (array) $query;
+        $request->questions[] = (array) $query;
 
         $response = new Message();
 

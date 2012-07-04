@@ -43,18 +43,18 @@ class BinaryDumper
         return $data;
     }
 
-    private function questionToBinary(array $question)
+    private function questionToBinary(array $questions)
     {
         $data = '';
 
-        foreach ($question as $q) {
-            $labels = explode('.', $q['name']);
+        foreach ($questions as $question) {
+            $labels = explode('.', $question['name']);
             foreach ($labels as $label) {
                 $data .= chr(strlen($label)).$label;
             }
             $data .= "\x00";
 
-            $data .= pack('n*', $q['type'], $q['class']);
+            $data .= pack('n*', $question['type'], $question['class']);
         }
 
         return $data;

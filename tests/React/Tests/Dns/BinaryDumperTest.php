@@ -19,13 +19,14 @@ class BinaryDumperTest extends \PHPUnit_Framework_TestCase
         $request = new Message();
         $request->headers->set('id', 0x7262);
         $request->headers->set('rd', 1);
-        $request->prepare();
 
-        $request->question[] = array(
+        $request->questions[] = array(
             'name'  => 'igor.io',
             'type'  => Message::TYPE_A,
             'class' => Message::CLASS_IN,
         );
+
+        $request->prepare();
 
         $dumper = new BinaryDumper();
         $data = $dumper->toBinary($request);
