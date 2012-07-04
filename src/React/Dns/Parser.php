@@ -33,6 +33,8 @@ class Parser
                 return;
             }
         }
+
+        return $message;
     }
 
     private function parseHeader(Message $message)
