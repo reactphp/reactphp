@@ -10,7 +10,7 @@ use React\Stream\WritableStream;
 
 class Buffer extends EventEmitter implements WritableStream
 {
-    public $socket;
+    public $stream;
     public $closed = false;
     public $listening = false;
     public $softLimit = 2048;
@@ -23,9 +23,9 @@ class Buffer extends EventEmitter implements WritableStream
         'line'    => '',
     );
 
-    public function __construct($socket, LoopInterface $loop)
+    public function __construct($stream, LoopInterface $loop)
     {
-        $this->socket = $socket;
+        $this->stream = $stream;
         $this->loop = $loop;
     }
 
@@ -38,7 +38,7 @@ class Buffer extends EventEmitter implements WritableStream
         $this->data .= $data;
 
         if (!$this->listening) {
-            $this->loop->addWriteStream($this->socket, array($this, 'handleWrite'));
+            $this->loop->addWriteStream($this->stream, array($this, 'handleWrite'));
 
             $this->listening = true;
         }
@@ -74,7 +74,7 @@ class Buffer extends EventEmitter implements WritableStream
     {
         set_error_handler(array($this, 'errorHandler'));
 
-        $sent = fwrite($this->socket, $this->data);
+        $sent = fwrite($this->stream, $this->data);
 
         restore_error_handler();
 
@@ -98,7 +98,7 @@ class Buffer extends EventEmitter implements WritableStream
         $this->data = substr($this->data, $sent);
 
         if (0 === strlen($this->data)) {
-            $this->loop->removeWriteStream($this->socket);
+            $this->loop->removeWriteStream($this->stream);
             $this->listening = false;
 
             $this->emit('close');
