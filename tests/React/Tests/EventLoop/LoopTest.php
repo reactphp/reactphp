@@ -12,9 +12,6 @@ class LoopTest extends TestCase
         return new StreamSelectLoop();
     }
 
-    /**
-     * @covers React\EventLoop\StreamSelectLoop
-     */
     public function testAddReadStream()
     {
         $loop = $this->createLoop();
