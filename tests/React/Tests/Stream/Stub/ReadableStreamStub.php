@@ -9,7 +9,13 @@ use React\Stream\Util;
 
 class ReadableStreamStub extends EventEmitter implements ReadableStream
 {
+    public $readable = true;
     public $paused = false;
+
+    public function isReadable()
+    {
+        return true;
+    }
 
     // trigger data event
     public function write($data)
@@ -41,6 +47,8 @@ class ReadableStreamStub extends EventEmitter implements ReadableStream
 
     public function close()
     {
+        $this->readable = false;
+
         $this->emit('close');
     }
 

@@ -11,6 +11,16 @@ class ConnectionStub extends EventEmitter implements ConnectionInterface
 {
     private $data = '';
 
+    public function isReadable()
+    {
+        return true;
+    }
+
+    public function isWritable()
+    {
+        return true;
+    }
+
     public function pause()
     {
     }

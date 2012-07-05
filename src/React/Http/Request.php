@@ -9,6 +9,7 @@ use React\Stream\Util;
 
 class Request extends EventEmitter implements ReadableStream
 {
+    private $readable = true;
     private $method;
     private $path;
     private $query;
@@ -49,6 +50,11 @@ class Request extends EventEmitter implements ReadableStream
         return $this->headers;
     }
 
+    public function isReadable()
+    {
+        return $this->readable;
+    }
+
     public function pause()
     {
         $this->emit('pause');
@@ -61,6 +67,7 @@ class Request extends EventEmitter implements ReadableStream
 
     public function close()
     {
+        $this->readable = false;
         $this->emit('end');
         $this->removeAllListeners();
     }

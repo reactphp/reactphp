@@ -12,7 +12,9 @@ class Connection extends EventEmitter implements ConnectionInterface
 {
     public $bufferSize = 4096;
     public $socket;
-    public $closed = false;
+    private $readable = true;
+    private $writable = true;
+    private $closing = false;
     private $loop;
     private $buffer;
 
@@ -32,6 +34,16 @@ class Connection extends EventEmitter implements ConnectionInterface
         $this->resume();
     }
 
+    public function isReadable()
+    {
+        return $this->readable;
+    }
+
+    public function isWritable()
+    {
+        return $this->writable;
+    }
+
     public function pause()
     {
         $this->loop->removeReadStream($this->socket);
@@ -44,7 +56,7 @@ class Connection extends EventEmitter implements ConnectionInterface
 
     public function write($data)
     {
-        if ($this->closed) {
+        if (!$this->writable) {
             return;
         }
 
@@ -53,9 +65,14 @@ class Connection extends EventEmitter implements ConnectionInterface
 
     public function close()
     {
-        if ($this->closed) {
+        if (!$this->writable && !$this->closing) {
             return;
         }
+
+        $this->closing = false;
+
+        $this->readable = false;
+        $this->writable = false;
 
         $this->emit('end', array($this));
         $this->emit('close', array($this));
@@ -66,14 +83,18 @@ class Connection extends EventEmitter implements ConnectionInterface
             stream_socket_shutdown($this->socket, STREAM_SHUT_RDWR);
             fclose($this->socket);
         }
-        $this->closed = true;
     }
 
     public function end($data = null)
     {
-        if ($this->closed) {
+        if (!$this->writable) {
             return;
         }
+
+        $this->closing = true;
+
+        $this->readable = false;
+        $this->writable = false;
 
         $that = $this;
 
