@@ -5,6 +5,8 @@ php:
   - 5.4
 
 before_script:
+  - pecl install libevent
+  - echo "extension=libevent.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - curl -s http://getcomposer.org/installer | php
   - php composer.phar install
 
