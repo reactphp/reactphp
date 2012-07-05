@@ -31,6 +31,10 @@ class Connection extends EventEmitter implements ConnectionInterface
             $that->close();
         });
 
+        $this->buffer->on('drain', function () use ($that) {
+            $that->emit('drain');
+        });
+
         $this->resume();
     }
 
@@ -120,6 +124,11 @@ class Connection extends EventEmitter implements ConnectionInterface
         } else {
             $this->emit('data', array($data, $this));
         }
+    }
+
+    public function getBuffer()
+    {
+        return $this->buffer;
     }
 
     public function getRemoteAddress()

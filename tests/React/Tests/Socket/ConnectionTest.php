@@ -123,6 +123,21 @@ class ConnectionTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testBufferEventsShouldBubbleUp()
+    {
+        $socket = fopen('php://temp', 'r+');
+        $loop = $this->createLoopMock();
+
+        $conn = new Connection($socket, $loop);
+
+        $conn->on('drain', $this->expectCallableOnce());
+        $conn->on('error', $this->expectCallableOnce());
+
+        $buffer = $conn->getBuffer();
+        $buffer->emit('drain');
+        $buffer->emit('error', array(new \RuntimeException('Whoops')));
+    }
+
     private function createWriteableLoopMock()
     {
         $loop = $this->createLoopMock();
