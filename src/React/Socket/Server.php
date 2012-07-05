@@ -17,9 +17,10 @@ class Server extends EventEmitter implements ServerInterface
 
     public function listen($port, $host = '127.0.0.1')
     {
-        $this->master = stream_socket_server("tcp://$host:$port", $errno, $errstr);
+        $this->master = @stream_socket_server("tcp://$host:$port", $errno, $errstr);
         if (false === $this->master) {
-            throw new ConnectionException($errstr, $errno);
+            $message = "Could not bind to tcp://$host:$port: $errstr";
+            throw new ConnectionException($message, $errno);
         }
         stream_set_blocking($this->master, 0);
 
