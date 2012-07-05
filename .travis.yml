@@ -9,6 +9,6 @@ before_script:
   - yes "" | pecl install libevent-beta
   - echo "extension=libevent.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - curl -s http://getcomposer.org/installer | php
-  - php composer.phar install
+  - php composer.phar install --dev
 
 script: phpunit --coverage-text
