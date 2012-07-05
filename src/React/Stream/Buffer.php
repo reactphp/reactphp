@@ -54,8 +54,10 @@ class Buffer extends EventEmitter implements WritableStream
 
         $this->closed = true;
 
-        if (!$this->listening) {
-            $this->emit('close');
+        if ($this->listening) {
+            $this->on('full-drain', array($this, 'close'));
+        } else {
+            $this->close();
         }
     }
 
@@ -98,6 +100,8 @@ class Buffer extends EventEmitter implements WritableStream
         if (0 === strlen($this->data)) {
             $this->loop->removeWriteStream($this->stream);
             $this->listening = false;
+
+            $this->emit('full-drain');
         }
     }
 
