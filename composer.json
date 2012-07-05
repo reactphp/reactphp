@@ -9,6 +9,9 @@
         "guzzle/guzzle": "2.5.*",
         "silex/silex": "1.0.*"
     },
+    "require-dev": {
+        "pecl-libevent": "*"
+    },
     "replace": {
         "react/event-loop": "self.version",
         "react/stream": "self.version",
