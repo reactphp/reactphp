@@ -38,7 +38,7 @@ class ServerTest extends TestCase
     {
         $client = stream_socket_client('tcp://localhost:'.$this->port);
 
-        $this->server->on('connect', $this->expectCallableOnce());
+        $this->server->on('connection', $this->expectCallableOnce());
         $this->loop->tick();
     }
 
@@ -53,7 +53,7 @@ class ServerTest extends TestCase
         $client2 = stream_socket_client('tcp://localhost:'.$this->port);
         $client3 = stream_socket_client('tcp://localhost:'.$this->port);
 
-        $this->server->on('connect', $this->expectCallableExactly(3));
+        $this->server->on('connection', $this->expectCallableExactly(3));
         $this->loop->tick();
         $this->loop->tick();
         $this->loop->tick();
@@ -69,7 +69,7 @@ class ServerTest extends TestCase
 
         $mock = $this->expectCallableNever();
 
-        $this->server->on('connect', function ($conn) use ($mock) {
+        $this->server->on('connection', function ($conn) use ($mock) {
             $conn->on('data', $mock);
         });
         $this->loop->tick();
@@ -92,7 +92,7 @@ class ServerTest extends TestCase
             ->method('__invoke')
             ->with("foo\n");
 
-        $this->server->on('connect', function ($conn) use ($mock) {
+        $this->server->on('connection', function ($conn) use ($mock) {
             $conn->on('data', $mock);
         });
         $this->loop->tick();
@@ -111,7 +111,7 @@ class ServerTest extends TestCase
             ->method('__invoke')
             ->with("He");
 
-        $this->server->on('connect', function ($conn) use ($mock) {
+        $this->server->on('connection', function ($conn) use ($mock) {
             $conn->bufferSize = 2;
             $conn->on('data', $mock);
         });
@@ -128,7 +128,7 @@ class ServerTest extends TestCase
 
         $mock = $this->expectCallableNever();
 
-        $this->server->on('connect', function ($conn) use ($mock) {
+        $this->server->on('connection', function ($conn) use ($mock) {
             $conn->on('end', $mock);
         });
         $this->loop->tick();
@@ -147,7 +147,7 @@ class ServerTest extends TestCase
 
         $mock = $this->expectCallableOnce();
 
-        $this->server->on('connect', function ($conn) use ($mock) {
+        $this->server->on('connection', function ($conn) use ($mock) {
             $conn->on('end', $mock);
         });
         $this->loop->tick();

@@ -89,7 +89,7 @@ class ConnectionTest extends TestCase
             ->with($method->invokeArgs($servConn, array(stream_socket_get_name($master->getValue($server), false))))
         ;
 
-        $server->on('connect', function ($conn) use ($mock) {
+        $server->on('connection', function ($conn) use ($mock) {
             $mock($conn->getRemoteAddress());
         });
         $loop->tick();

@@ -21,7 +21,7 @@ class Server extends EventEmitter implements ServerInterface
 
         $server = $this;
 
-        $this->io->on('connect', function ($conn) use ($server) {
+        $this->io->on('connection', function ($conn) use ($server) {
             // TODO: http 1.1 keep-alive
             // TODO: chunked transfer encoding (also for outgoing data)
             // TODO: multipart parsing
