@@ -1,5 +1,5 @@
 {
-    "hash": "28a550c8ee0d128fcfba3b04ed50f2f8",
+    "hash": "ed0ea09dc63f064a2f72d2575871f223",
     "packages": [
         {
             "package": "evenement/evenement",
@@ -90,7 +90,7 @@
     "aliases": [
 
     ],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": [
 
     ]
