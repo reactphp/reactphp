@@ -9,6 +9,7 @@ use React\Stream\WritableStream;
 
 class Response extends EventEmitter implements WritableStream
 {
+    private $writable = true;
     private $conn;
     private $headWritten = false;
     private $chunkedEncoding = true;
@@ -16,6 +17,11 @@ class Response extends EventEmitter implements WritableStream
     public function __construct(ConnectionInterface $conn)
     {
         $this->conn = $conn;
+    }
+
+    public function isWritable()
+    {
+        return $this->writable;
     }
 
     public function writeHead($status = 200, array $headers = array())
@@ -74,6 +80,7 @@ class Response extends EventEmitter implements WritableStream
 
     public function close()
     {
+        $this->writable = false;
         $this->emit('end');
         $this->removeAllListeners();
         $this->conn->close();

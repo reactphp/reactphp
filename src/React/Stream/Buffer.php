@@ -1,19 +1,17 @@
 <?php
 
-namespace React\Socket;
+namespace React\Stream;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
 use React\Stream\WritableStream;
 
-// TODO: move to stream component
-
 class Buffer extends EventEmitter implements WritableStream
 {
-    public $socket;
-    public $closed = false;
+    public $stream;
     public $listening = false;
     public $softLimit = 2048;
+    private $writable = true;
     private $loop;
     private $data = '';
     private $lastError = array(
@@ -23,24 +21,29 @@ class Buffer extends EventEmitter implements WritableStream
         'line'    => '',
     );
 
-    public function __construct($socket, LoopInterface $loop)
+    public function __construct($stream, LoopInterface $loop)
     {
-        $this->socket = $socket;
+        $this->stream = $stream;
         $this->loop = $loop;
+    }
+
+    public function isWritable()
+    {
+        return $this->writable;
     }
 
     public function write($data)
     {
-        if ($this->closed) {
+        if (!$this->writable) {
             return;
         }
 
         $this->data .= $data;
 
         if (!$this->listening) {
-            $this->loop->addWriteStream($this->socket, array($this, 'handleWrite'));
-
             $this->listening = true;
+
+            $this->loop->addWriteStream($this->stream, array($this, 'handleWrite'));
         }
 
         $belowSoftLimit = strlen($this->data) < $this->softLimit;
@@ -54,16 +57,18 @@ class Buffer extends EventEmitter implements WritableStream
             $this->write($data);
         }
 
-        $this->closed = true;
+        $this->writable = false;
 
-        if (!$this->listening) {
-            $this->emit('close');
+        if ($this->listening) {
+            $this->on('full-drain', array($this, 'close'));
+        } else {
+            $this->close();
         }
     }
 
     public function close()
     {
-        $this->closed = true;
+        $this->writable = false;
         $this->listening = false;
         $this->data = '';
 
@@ -74,7 +79,7 @@ class Buffer extends EventEmitter implements WritableStream
     {
         set_error_handler(array($this, 'errorHandler'));
 
-        $sent = fwrite($this->socket, $this->data);
+        $sent = fwrite($this->stream, $this->data);
 
         restore_error_handler();
 
@@ -95,13 +100,13 @@ class Buffer extends EventEmitter implements WritableStream
             $this->emit('drain');
         }
 
-        $this->data = substr($this->data, $sent);
+        $this->data = (string) substr($this->data, $sent);
 
         if (0 === strlen($this->data)) {
-            $this->loop->removeWriteStream($this->socket);
+            $this->loop->removeWriteStream($this->stream);
             $this->listening = false;
 
-            $this->emit('close');
+            $this->emit('full-drain');
         }
     }
 

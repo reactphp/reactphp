@@ -18,6 +18,7 @@ class ServerTest extends TestCase
 
     /**
      * @covers React\Socket\Server::__construct
+     * @covers React\Socket\Server::listen
      * @covers React\Socket\Server::getPort
      */
     public function setUp()
