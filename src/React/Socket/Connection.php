@@ -4,73 +4,16 @@ namespace React\Socket;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
+use React\Stream\WritableStreamInterface;
+use React\Stream\Buffer;
+use React\Stream\Stream;
+use React\Stream\Util;
 
-class Connection extends EventEmitter implements ConnectionInterface
+class Connection extends Stream implements ConnectionInterface
 {
-    public $bufferSize = 4096;
-    public $socket;
-    public $closed = false;
-    private $loop;
-    private $buffer;
-
-    public function __construct($socket, LoopInterface $loop)
+    public function handleData($stream)
     {
-        $this->socket = $socket;
-        $this->loop = $loop;
-        $this->buffer = new Buffer($this->socket, $this->loop);
-
-        $that = $this;
-
-        $this->buffer->on('error', function ($error) use ($that) {
-            $that->emit('error', array($error, $that));
-            $that->close();
-        });
-    }
-
-    public function write($data)
-    {
-        if ($this->closed) {
-            return;
-        }
-
-        $this->buffer->write($data);
-    }
-
-    public function close()
-    {
-        if ($this->closed) {
-            return;
-        }
-
-        $this->emit('end', array($this));
-        $this->loop->removeStream($this->socket);
-        $this->buffer->removeAllListeners();
-        $this->removeAllListeners();
-        if (is_resource($this->socket)) {
-            stream_socket_shutdown($this->socket, STREAM_SHUT_RDWR);
-            fclose($this->socket);
-        }
-        $this->closed = true;
-    }
-
-    public function end()
-    {
-        if ($this->closed) {
-            return;
-        }
-
-        $that = $this;
-
-        $this->buffer->on('end', function () use ($that) {
-            $that->close();
-        });
-
-        $this->buffer->end();
-    }
-
-    public function handleData($socket)
-    {
-        $data = stream_socket_recvfrom($socket, $this->bufferSize);
+        $data = stream_socket_recvfrom($stream, $this->bufferSize);
         if ('' === $data || false === $data) {
             $this->end();
         } else {
@@ -78,9 +21,17 @@ class Connection extends EventEmitter implements ConnectionInterface
         }
     }
 
+    public function handleClose()
+    {
+        if (is_resource($this->stream)) {
+            stream_socket_shutdown($this->stream, STREAM_SHUT_RDWR);
+            fclose($this->stream);
+        }
+    }
+
     public function getRemoteAddress()
     {
-        return $this->parseAddress(stream_socket_get_name($this->socket, true));
+        return $this->parseAddress(stream_socket_get_name($this->stream, true));
     }
 
     private function parseAddress($address)

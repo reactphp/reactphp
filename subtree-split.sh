@@ -8,6 +8,11 @@ git subtree split --prefix=src/React/EventLoop/ -b event-loop
 git remote add event-loop git@github.com:react-php/event-loop.git
 git push -f event-loop event-loop:master
 
+git branch -D stream
+git subtree split --prefix=src/React/Stream/ -b stream
+git remote add stream git@github.com:react-php/stream.git
+git push -f stream stream:master
+
 git branch -D socket
 git subtree split --prefix=src/React/Socket/ -b socket
 git remote add socket git@github.com:react-php/socket.git

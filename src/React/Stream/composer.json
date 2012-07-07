@@ -1,0 +1,17 @@
+{
+    "name": "react/stream",
+    "description": "Basic readable and writable stream interfaces that support piping.",
+    "keywords": ["stream", "pipe"],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.2",
+        "evenement/evenement": "1.0.*"
+    },
+    "suggest": {
+        "react/event-loop": "dev-master"
+    },
+    "autoload": {
+        "psr-0": { "React\\Stream": "" }
+    },
+    "target-dir": "React/Stream"
+}

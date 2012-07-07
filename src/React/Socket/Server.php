@@ -7,7 +7,7 @@ use React\EventLoop\LoopInterface;
 
 class Server extends EventEmitter implements ServerInterface
 {
-    private $master;
+    public $master;
     private $loop;
 
     public function __construct(LoopInterface $loop)
@@ -42,7 +42,6 @@ class Server extends EventEmitter implements ServerInterface
         stream_set_blocking($socket, 0);
 
         $client = $this->createConnection($socket);
-        $this->loop->addReadStream($socket, array($client, 'handleData'));
 
         $this->emit('connect', array($client));
     }
