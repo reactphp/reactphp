@@ -9,7 +9,7 @@ class UtilTest extends \PHPUnit_Framework_TestCase
 {
     public function testPipeShouldEmitEvents()
     {
-        $readable = $this->getMock('React\Stream\ReadableStream');
+        $readable = $this->getMock('React\Stream\ReadableStreamInterface');
         $readable
             ->expects($this->at(0))
             ->method('on')
@@ -19,7 +19,7 @@ class UtilTest extends \PHPUnit_Framework_TestCase
             ->method('on')
             ->with('end', $this->isInstanceOf('Closure'));
 
-        $writable = $this->getMock('React\Stream\WritableStream');
+        $writable = $this->getMock('React\Stream\WritableStreamInterface');
         $writable
             ->expects($this->at(0))
             ->method('emit')
@@ -32,7 +32,7 @@ class UtilTest extends \PHPUnit_Framework_TestCase
     {
         $readable = new Stub\ReadableStreamStub();
 
-        $writable = $this->getMock('React\Stream\WritableStream');
+        $writable = $this->getMock('React\Stream\WritableStreamInterface');
         $writable
             ->expects($this->once())
             ->method('end');
@@ -46,7 +46,7 @@ class UtilTest extends \PHPUnit_Framework_TestCase
     {
         $readable = new Stub\ReadableStreamStub();
 
-        $writable = $this->getMock('React\Stream\WritableStream');
+        $writable = $this->getMock('React\Stream\WritableStreamInterface');
         $writable
             ->expects($this->never())
             ->method('end');
@@ -60,7 +60,7 @@ class UtilTest extends \PHPUnit_Framework_TestCase
     {
         $readable = new Stub\ReadableStreamStub();
 
-        $writable = $this->getMock('React\Stream\WritableStream');
+        $writable = $this->getMock('React\Stream\WritableStreamInterface');
         $writable
             ->expects($this->once())
             ->method('write')
@@ -80,7 +80,7 @@ class UtilTest extends \PHPUnit_Framework_TestCase
 
         $onDrain = null;
 
-        $writable = $this->getMock('React\Stream\WritableStream');
+        $writable = $this->getMock('React\Stream\WritableStreamInterface');
         $writable
             ->expects($this->once())
             ->method('on')

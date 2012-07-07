@@ -18,20 +18,17 @@ foreach ($files as $file => $url) {
     $writeStream = fopen($file, 'w');
 
     stream_set_blocking($readStream, 0);
+    stream_set_blocking($writeStream, 0);
 
-    $buffers[$file] = new React\Stream\Buffer($writeStream, $loop);
+    $read = new React\Stream\Stream($readStream, $loop);
+    $write = new React\Stream\Stream($writeStream, $loop);
 
-    $loop->addReadStream($readStream, function ($readStream) use (&$buffers, $loop, $file, $writeStream, &$files) {
-        if (feof($readStream)) {
-            $loop->removeStream($readStream);
-            $loop->removeStream($writeStream);
-            unset($files[$file]);
-            echo "Finished downloading $file\n";
-
-            return;
-        }
-        $buffers[$file]->write(fread($readStream, 1024));
+    $read->on('end', function () use ($file, &$files) {
+        unset($files[$file]);
+        echo "Finished downloading $file\n";
     });
+
+    $read->pipe($write);
 }
 
 $loop->addPeriodicTimer(5, function ($timer, $loop) use (&$files) {
@@ -40,7 +37,9 @@ $loop->addPeriodicTimer(5, function ($timer, $loop) use (&$files) {
     }
 
     foreach ($files as $file => $url) {
-        echo "$file: ".filesize($file)." bytes\n";
+        $mbytes = filesize($file) / (1024 * 1024);
+        $formatted = number_format($mbytes, 3);
+        echo "$file: $formatted MiB\n";
     }
 });
 

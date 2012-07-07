@@ -6,7 +6,7 @@ namespace React\Stream;
 
 class Util
 {
-    public static function pipe(ReadableStream $source, WritableStream $dest, array $options = array())
+    public static function pipe(ReadableStreamInterface $source, WritableStreamInterface $dest, array $options = array())
     {
         // TODO: use stream_copy_to_stream
         // it is 4x faster than this

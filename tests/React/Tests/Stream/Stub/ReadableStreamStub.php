@@ -3,13 +3,19 @@
 namespace React\Tests\Stream\Stub;
 
 use Evenement\EventEmitter;
-use React\Stream\ReadableStream;
-use React\Stream\WritableStream;
+use React\Stream\ReadableStreamInterface;
+use React\Stream\WritableStreamInterface;
 use React\Stream\Util;
 
-class ReadableStreamStub extends EventEmitter implements ReadableStream
+class ReadableStreamStub extends EventEmitter implements ReadableStreamInterface
 {
+    public $readable = true;
     public $paused = false;
+
+    public function isReadable()
+    {
+        return true;
+    }
 
     // trigger data event
     public function write($data)
@@ -41,10 +47,12 @@ class ReadableStreamStub extends EventEmitter implements ReadableStream
 
     public function close()
     {
+        $this->readable = false;
+
         $this->emit('close');
     }
 
-    public function pipe(WritableStream $dest, array $options = array())
+    public function pipe(WritableStreamInterface $dest, array $options = array())
     {
         Util::pipe($this, $dest, $options);
 

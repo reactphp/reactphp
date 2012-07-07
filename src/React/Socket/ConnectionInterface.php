@@ -3,10 +3,10 @@
 namespace React\Socket;
 
 use Evenement\EventEmitterInterface;
-use React\Stream\ReadableStream;
-use React\Stream\WritableStream;
+use React\Stream\ReadableStreamInterface;
+use React\Stream\WritableStreamInterface;
 
-interface ConnectionInterface extends ReadableStream, WritableStream
+interface ConnectionInterface extends ReadableStreamInterface, WritableStreamInterface
 {
     public function getRemoteAddress();
 }

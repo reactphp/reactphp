@@ -3,12 +3,13 @@
 namespace React\Http;
 
 use Evenement\EventEmitter;
-use React\Stream\ReadableStream;
-use React\Stream\WritableStream;
+use React\Stream\ReadableStreamInterface;
+use React\Stream\WritableStreamInterface;
 use React\Stream\Util;
 
-class Request extends EventEmitter implements ReadableStream
+class Request extends EventEmitter implements ReadableStreamInterface
 {
+    private $readable = true;
     private $method;
     private $path;
     private $query;
@@ -49,6 +50,11 @@ class Request extends EventEmitter implements ReadableStream
         return $this->headers;
     }
 
+    public function isReadable()
+    {
+        return $this->readable;
+    }
+
     public function pause()
     {
         $this->emit('pause');
@@ -61,11 +67,12 @@ class Request extends EventEmitter implements ReadableStream
 
     public function close()
     {
+        $this->readable = false;
         $this->emit('end');
         $this->removeAllListeners();
     }
 
-    public function pipe(WritableStream $dest, array $options = array())
+    public function pipe(WritableStreamInterface $dest, array $options = array())
     {
         Util::pipe($this, $dest, $options);
 

@@ -4,14 +4,14 @@ namespace React\Stream;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
-use React\Stream\WritableStream;
+use React\Stream\WritableStreamInterface;
 
-class Buffer extends EventEmitter implements WritableStream
+class Buffer extends EventEmitter implements WritableStreamInterface
 {
     public $stream;
-    public $closed = false;
     public $listening = false;
     public $softLimit = 2048;
+    private $writable = true;
     private $loop;
     private $data = '';
     private $lastError = array(
@@ -27,9 +27,14 @@ class Buffer extends EventEmitter implements WritableStream
         $this->loop = $loop;
     }
 
+    public function isWritable()
+    {
+        return $this->writable;
+    }
+
     public function write($data)
     {
-        if ($this->closed) {
+        if (!$this->writable) {
             return;
         }
 
@@ -52,16 +57,18 @@ class Buffer extends EventEmitter implements WritableStream
             $this->write($data);
         }
 
-        $this->closed = true;
+        $this->writable = false;
 
-        if (!$this->listening) {
-            $this->emit('close');
+        if ($this->listening) {
+            $this->on('full-drain', array($this, 'close'));
+        } else {
+            $this->close();
         }
     }
 
     public function close()
     {
-        $this->closed = true;
+        $this->writable = false;
         $this->listening = false;
         $this->data = '';
 
@@ -98,6 +105,8 @@ class Buffer extends EventEmitter implements WritableStream
         if (0 === strlen($this->data)) {
             $this->loop->removeWriteStream($this->stream);
             $this->listening = false;
+
+            $this->emit('full-drain');
         }
     }
 

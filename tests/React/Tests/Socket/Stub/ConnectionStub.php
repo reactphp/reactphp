@@ -4,12 +4,22 @@ namespace React\Tests\Socket\Stub;
 
 use Evenement\EventEmitter;
 use React\Socket\ConnectionInterface;
-use React\Stream\WritableStream;
+use React\Stream\WritableStreamInterface;
 use React\Stream\Util;
 
 class ConnectionStub extends EventEmitter implements ConnectionInterface
 {
     private $data = '';
+
+    public function isReadable()
+    {
+        return true;
+    }
+
+    public function isWritable()
+    {
+        return true;
+    }
 
     public function pause()
     {
@@ -19,7 +29,7 @@ class ConnectionStub extends EventEmitter implements ConnectionInterface
     {
     }
 
-    public function pipe(WritableStream $dest, array $options = array())
+    public function pipe(WritableStreamInterface $dest, array $options = array())
     {
         Util::pipe($this, $dest, $options);
 

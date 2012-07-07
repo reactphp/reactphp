@@ -1,4 +1,5 @@
 {
+    "minimum-stability": "dev",
     "name": "react/react",
     "description": "Nuclear Reactor written in PHP.",
     "keywords": ["event-loop", "reactor"],

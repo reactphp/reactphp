@@ -88,9 +88,9 @@ class BufferTest extends TestCase
         $buffer->on('error', $this->expectCallableNever());
         $buffer->on('close', $this->expectCallableOnce());
 
-        $this->assertFalse($buffer->closed);
+        $this->assertTrue($buffer->isWritable());
         $buffer->end();
-        $this->assertTrue($buffer->closed);
+        $this->assertFalse($buffer->isWritable());
     }
 
     /**
@@ -112,6 +112,7 @@ class BufferTest extends TestCase
     }
 
     /**
+     * @covers React\Stream\Buffer::isWritable
      * @covers React\Stream\Buffer::close
      */
     public function testClose()
@@ -123,9 +124,9 @@ class BufferTest extends TestCase
         $buffer->on('error', $this->expectCallableNever());
         $buffer->on('close', $this->expectCallableOnce());
 
-        $this->assertFalse($buffer->closed);
+        $this->assertTrue($buffer->isWritable());
         $buffer->close();
-        $this->assertTrue($buffer->closed);
+        $this->assertFalse($buffer->isWritable());
     }
 
     /**
