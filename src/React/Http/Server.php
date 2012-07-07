@@ -34,6 +34,12 @@ class Server extends EventEmitter implements ServerInterface
                 $conn->on('data', function ($data) use ($request) {
                     $request->emit('data', array($data));
                 });
+                $request->on('pause', function () use ($conn) {
+                    $conn->emit('pause');
+                });
+                $request->on('resume', function () use ($conn) {
+                    $conn->emit('resume');
+                });
             });
 
             $conn->on('data', array($parser, 'feed'));
@@ -43,7 +49,7 @@ class Server extends EventEmitter implements ServerInterface
     public function handleRequest(ConnectionInterface $conn, Request $request, $bodyBuffer)
     {
         $response = new Response($conn);
-        $response->on('end', array($request, 'end'));
+        $response->on('close', array($request, 'close'));
 
         if (!$this->listeners('request')) {
             $response->end();

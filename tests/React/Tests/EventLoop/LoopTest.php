@@ -13,8 +13,7 @@ class LoopTest extends TestCase
     }
 
     /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\EventLoop\StreamSelectLoop::addReadStream
+     * @covers React\EventLoop\StreamSelectLoop
      */
     public function testAddReadStream()
     {

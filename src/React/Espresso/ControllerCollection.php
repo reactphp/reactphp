@@ -2,10 +2,8 @@
 
 namespace React\Espresso;
 
-use React\Http\Request;
-use React\Http\Response;
 use Silex\ControllerCollection as BaseControllerCollection;
-use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse as SymfonyStreamedResponse;
 
 class ControllerCollection extends BaseControllerCollection
@@ -19,7 +17,7 @@ class ControllerCollection extends BaseControllerCollection
 
     private function wrapController($controller)
     {
-        return function (SymfonyRequest $sfRequest) use ($controller) {
+        return function (Request $sfRequest) use ($controller) {
             $request = $sfRequest->attributes->get('react.espresso.request');
             $response = $sfRequest->attributes->get('react.espresso.response');
 
