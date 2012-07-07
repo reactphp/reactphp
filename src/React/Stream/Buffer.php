@@ -4,9 +4,9 @@ namespace React\Stream;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
-use React\Stream\WritableStream;
+use React\Stream\WritableStreamInterface;
 
-class Buffer extends EventEmitter implements WritableStream
+class Buffer extends EventEmitter implements WritableStreamInterface
 {
     public $stream;
     public $listening = false;
