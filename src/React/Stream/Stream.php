@@ -5,7 +5,7 @@ namespace React\Stream;
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
 
-class Stream extends EventEmitter implements ReadableStream, WritableStream
+class Stream extends EventEmitter implements ReadableStreamInterface, WritableStreamInterface
 {
     public $bufferSize = 4096;
     public $stream;
@@ -104,7 +104,7 @@ class Stream extends EventEmitter implements ReadableStream, WritableStream
         $this->buffer->end($data);
     }
 
-    public function pipe(WritableStream $dest, array $options = array())
+    public function pipe(WritableStreamInterface $dest, array $options = array())
     {
         Util::pipe($this, $dest, $options);
 

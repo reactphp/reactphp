@@ -5,9 +5,9 @@ namespace React\Http;
 use Evenement\EventEmitter;
 use Guzzle\Http\Message\Response as GuzzleResponse;
 use React\Socket\ConnectionInterface;
-use React\Stream\WritableStream;
+use React\Stream\WritableStreamInterface;
 
-class Response extends EventEmitter implements WritableStream
+class Response extends EventEmitter implements WritableStreamInterface
 {
     private $writable = true;
     private $conn;

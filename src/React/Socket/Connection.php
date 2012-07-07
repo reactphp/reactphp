@@ -4,7 +4,7 @@ namespace React\Socket;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
-use React\Stream\WritableStream;
+use React\Stream\WritableStreamInterface;
 use React\Stream\Buffer;
 use React\Stream\Stream;
 use React\Stream\Util;
