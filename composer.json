@@ -20,9 +20,4 @@
     "autoload": {
         "psr-0": { "React": "src" }
     }
-    "extra": {
-        "branch-alias": {
-            "dev-master": "0.1.0"
-        }
-    }
 }
