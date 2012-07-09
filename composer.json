@@ -4,6 +4,10 @@
     "description": "Nuclear Reactor written in PHP.",
     "keywords": ["event-loop", "reactor"],
     "license": "MIT",
+    "support": {
+        "issues": "https://github.com/react-php/react/issues",
+        "irc": "irc://irc.freenode.org/reactphp"
+    },
     "require": {
         "php": ">=5.3.2",
         "evenement/evenement": "1.0.*",
@@ -19,5 +23,10 @@
     },
     "autoload": {
         "psr-0": { "React": "src" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.0"
+        }
     }
 }

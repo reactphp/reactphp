@@ -1,5 +1,5 @@
 {
-    "hash": "ed0ea09dc63f064a2f72d2575871f223",
+    "hash": "8e0e561625648810f03a800d6e54be43",
     "packages": [
         {
             "package": "evenement/evenement",
@@ -32,8 +32,8 @@
         {
             "package": "silex/silex",
             "version": "dev-master",
-            "source-reference": "23dc19c334e2f74ec4de037568f5426bceaff421",
-            "commit-date": "1341597562"
+            "source-reference": "11c3943d80e2c7b220fa060cf91ff7fcf0de5a76",
+            "commit-date": "1341842962"
         },
         {
             "package": "symfony/event-dispatcher",
@@ -44,8 +44,8 @@
         {
             "package": "symfony/event-dispatcher",
             "version": "dev-master",
-            "source-reference": "v2.1.0-BETA1",
-            "commit-date": "1338018513"
+            "source-reference": "0dc437f2eca7dea19facfde6db7f7f5e8e71d0bc",
+            "commit-date": "1341838460"
         },
         {
             "package": "symfony/http-foundation",
@@ -56,8 +56,8 @@
         {
             "package": "symfony/http-foundation",
             "version": "dev-master",
-            "source-reference": "3e53f0a9f802dc1f34a722109df0b0d2679671a8",
-            "commit-date": "1341379664"
+            "source-reference": "985f3aa6c9f8074b2d1a12345e0768f8c24aa72d",
+            "commit-date": "1341838460"
         },
         {
             "package": "symfony/http-kernel",
@@ -68,8 +68,8 @@
         {
             "package": "symfony/http-kernel",
             "version": "dev-master",
-            "source-reference": "6d6f55f6b07b8bfed741a192def8d1bfbf6c590f",
-            "commit-date": "1341332120"
+            "source-reference": "ff65fbaa20ace7e39ce6df92afe97c5c9586a2d1",
+            "commit-date": "1341849771"
         },
         {
             "package": "symfony/routing",
@@ -80,13 +80,11 @@
         {
             "package": "symfony/routing",
             "version": "dev-master",
-            "source-reference": "622a168a3be54a87e34ad65e9d50a738fb89ff7e",
-            "commit-date": "1341312726"
+            "source-reference": "48c201da53b7c3b787609b0f6702456b86939577",
+            "commit-date": "1341838460"
         }
     ],
-    "packages-dev": [
-
-    ],
+    "packages-dev": null,
     "aliases": [
 
     ],
