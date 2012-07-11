@@ -6,11 +6,16 @@
     "require": {
         "php": ">=5.3.2",
         "evenement/evenement": "1.0.*",
-        "react/event-loop": "dev-master",
-        "react/stream": "dev-master"
+        "react/event-loop": "0.1.*",
+        "react/stream": "0.1.*"
     },
     "autoload": {
         "psr-0": { "React\\Socket": "" }
     },
-    "target-dir": "React/Socket"
+    "target-dir": "React/Socket",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.0"
+        }
+    }
 }
