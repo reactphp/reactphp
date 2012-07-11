@@ -32,8 +32,8 @@
         {
             "package": "silex/silex",
             "version": "dev-master",
-            "source-reference": "11c3943d80e2c7b220fa060cf91ff7fcf0de5a76",
-            "commit-date": "1341842962"
+            "source-reference": "d5f26243645fab7f7d967ceb8e5cb85974719f95",
+            "commit-date": "1342022136"
         },
         {
             "package": "symfony/event-dispatcher",
@@ -56,8 +56,8 @@
         {
             "package": "symfony/http-foundation",
             "version": "dev-master",
-            "source-reference": "985f3aa6c9f8074b2d1a12345e0768f8c24aa72d",
-            "commit-date": "1341838460"
+            "source-reference": "1a450955d5c487d85a7aaae4d8e306316c2a2f79",
+            "commit-date": "1341951444"
         },
         {
             "package": "symfony/http-kernel",
@@ -68,8 +68,8 @@
         {
             "package": "symfony/http-kernel",
             "version": "dev-master",
-            "source-reference": "ff65fbaa20ace7e39ce6df92afe97c5c9586a2d1",
-            "commit-date": "1341849771"
+            "source-reference": "5032709c51ac154be997d99690f80c08b0943057",
+            "commit-date": "1341987182"
         },
         {
             "package": "symfony/routing",
@@ -80,11 +80,13 @@
         {
             "package": "symfony/routing",
             "version": "dev-master",
-            "source-reference": "48c201da53b7c3b787609b0f6702456b86939577",
-            "commit-date": "1341838460"
+            "source-reference": "67c72b042d753e6ee3675eb4b0c2165243d34055",
+            "commit-date": "1341890620"
         }
     ],
-    "packages-dev": null,
+    "packages-dev": [
+
+    ],
     "aliases": [
 
     ],
