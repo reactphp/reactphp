@@ -12,5 +12,10 @@
     "autoload": {
         "psr-0": { "React\\Socket": "" }
     },
-    "target-dir": "React/Socket"
+    "target-dir": "React/Socket",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.0"
+        }
+    }
 }

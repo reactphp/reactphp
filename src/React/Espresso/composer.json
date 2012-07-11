@@ -11,5 +11,10 @@
     "autoload": {
         "psr-0": { "React\\Espresso": "" }
     },
-    "target-dir": "React/Espresso"
+    "target-dir": "React/Espresso",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.0"
+        }
+    }
 }
