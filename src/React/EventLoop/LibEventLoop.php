@@ -52,9 +52,9 @@ class LibEventLoop implements LoopInterface
                     }
                 }
             } catch (\Exception $ex) {
-                // If one of the callbacks throws an exception we must remove the stream
+                // If one of the callbacks throws an exception we must stop the loop
                 // otherwise libevent will swallow the exception and go berserk.
-                $loop->removeStream($stream);
+                $loop->stop();
 
                 throw $ex;
             }
