@@ -6,10 +6,15 @@
     "require": {
         "php": ">=5.3.2",
         "guzzle/guzzle": "2.5.*",
-        "react/socket": "dev-master"
+        "react/socket": "0.1.*"
     },
     "autoload": {
         "psr-0": { "React\\Http": "" }
     },
-    "target-dir": "React/Http"
+    "target-dir": "React/Http",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.0"
+        }
+    }
 }

@@ -13,5 +13,10 @@
     "autoload": {
         "psr-0": { "React\\Stream": "" }
     },
-    "target-dir": "React/Stream"
+    "target-dir": "React/Stream",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.0"
+        }
+    }
 }
