@@ -1,5 +1,5 @@
 {
-    "hash": "8e0e561625648810f03a800d6e54be43",
+    "hash": "c161a3abbbb039b57e361618ce050798",
     "packages": [
         {
             "package": "evenement/evenement",
@@ -32,8 +32,8 @@
         {
             "package": "silex/silex",
             "version": "dev-master",
-            "source-reference": "d5f26243645fab7f7d967ceb8e5cb85974719f95",
-            "commit-date": "1342022136"
+            "source-reference": "344dd201ff448f82cf1ec67d2135d1c44e7ec802",
+            "commit-date": "1342113874"
         },
         {
             "package": "symfony/event-dispatcher",
@@ -56,8 +56,8 @@
         {
             "package": "symfony/http-foundation",
             "version": "dev-master",
-            "source-reference": "1a450955d5c487d85a7aaae4d8e306316c2a2f79",
-            "commit-date": "1341951444"
+            "source-reference": "3399f6f068cd41f1b42140699db1f1e6d3bcb361",
+            "commit-date": "1342107786"
         },
         {
             "package": "symfony/http-kernel",
@@ -84,9 +84,7 @@
             "commit-date": "1341890620"
         }
     ],
-    "packages-dev": [
-
-    ],
+    "packages-dev": null,
     "aliases": [
 
     ],
