@@ -9,7 +9,7 @@
         "irc": "irc://irc.freenode.org/reactphp"
     },
     "require": {
-        "php": ">=5.3.3",
+        "php": ">=5.3.4",
         "evenement/evenement": "1.0.*",
         "guzzle/guzzle": "2.5.*",
         "silex/silex": "1.0.*"
