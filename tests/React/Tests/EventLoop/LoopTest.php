@@ -6,6 +6,7 @@ use React\Tests\Socket\TestCase;
 use React\EventLoop\LoopInterface;
 use React\EventLoop\StreamSelectLoop;
 use React\EventLoop\LibEventLoop;
+use React\EventLoop\LibEvLoop;
 
 class LoopTest extends TestCase
 {
@@ -14,6 +15,7 @@ class LoopTest extends TestCase
         return array(
             array(new StreamSelectLoop()),
             array(new LibEventLoop()),
+            array(new LibEvLoop()),
         );
     }
 
@@ -25,6 +27,11 @@ class LoopTest extends TestCase
     public function testLibEventConstructor()
     {
         $loop = new LibEventLoop();
+    }
+
+    public function testLibEvConstructor()
+    {
+        $loop = new LibEvLoop();
     }
 
     /**
