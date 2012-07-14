@@ -97,31 +97,39 @@ class LibEvLoop implements LoopInterface
     public function cancelTimer($signature)
     {
         $this->loop->remove($this->timers[$signature]);
+        unset($this->timers[$signature]);
     }
 
     private function createTimer($interval, $callback, $periodic)
     {
-        $obj = (object) array();
-        $signature = spl_object_hash($obj);
-        $callback = $this->wrapTimerCallback($signature, $callback);
+        $dummyCallback = function () {};
 
         if ($periodic) {
-            $timer = new \libev\PeriodicEvent($callback, 1, $interval);
+            $timer = new \libev\PeriodicEvent($dummyCallback, 1, $interval);
         } else {
-            $timer = new \libev\TimerEvent($callback, $interval);
+            $timer = new \libev\TimerEvent($dummyCallback, $interval);
         }
+
+        $signature = spl_object_hash($timer);
+        $callback = $this->wrapTimerCallback($signature, $callback, $periodic);
+        $timer->setCallback($callback);
+
         $this->timers[$signature] = $timer;
         $this->loop->add($timer);
 
         return $signature;
     }
 
-    private function wrapTimerCallback($signature, $callback)
+    private function wrapTimerCallback($signature, $callback, $periodic)
     {
         $loop = $this;
 
-        return function ($event) use ($signature, $callback, $loop) {
+        return function ($event) use ($signature, $callback, $periodic, $loop) {
             call_user_func($callback, $signature, $loop);
+
+            if (!$periodic) {
+                $loop->cancelTimer($signature);
+            }
         };
     }
 
