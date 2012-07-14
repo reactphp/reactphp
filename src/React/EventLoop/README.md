@@ -45,7 +45,7 @@ Here is an async HTTP server built with just the event loop.
     });
 
     $loop->addPeriodicTimer(5, function () {
-        $memory = memory_get_usage() / (1024*1024);
+        $memory = memory_get_usage() / 1024;
         $formatted = number_format($memory, 3).'K';
         echo "Current memory usage: {$formatted}\n";
     });
