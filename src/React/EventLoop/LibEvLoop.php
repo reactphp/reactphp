@@ -21,12 +21,12 @@ class LibEvLoop implements LoopInterface
 
     public function addReadStream($stream, $listener)
     {
-        $this->readEvents[(int)$stream] = $this->addStream($stream, $listener, \libev\IOEvent::READ);
+        $this->addStream($stream, $listener, \libev\IOEvent::READ);
     }
 
     public function addWriteStream($stream, $listener)
     {
-        $this->writeEvents[(int)$stream] = $this->addStream($stream, $listener, \libev\IOEvent::WRITE);
+        $this->addStream($stream, $listener, \libev\IOEvent::WRITE);
     }
 
     public function removeReadStream($stream)
@@ -54,18 +54,29 @@ class LibEvLoop implements LoopInterface
 
     private function addStream($stream, $listener, $flags)
     {
-        $listener = $this->wrapStreamListener($stream, $listener);
+        $listener = $this->wrapStreamListener($stream, $listener, $flags);
         $event = new \libev\IOEvent($listener, $stream, $flags);
         $this->loop->add($event);
 
-        return $event;
+        if (($flags & \libev\IOEvent::READ) === $flags) {
+            $this->readEvents[(int)$stream] = $event;
+        } elseif (($flags & \libev\IOEvent::WRITE) === $flags) {
+            $this->writeEvents[(int)$stream] = $event;
+        }
     }
 
-    private function wrapStreamListener($stream, $listener)
+    private function wrapStreamListener($stream, $listener, $flags)
     {
-        return function ($event) use ($stream, $listener) {
+        if (($flags & \libev\IOEvent::READ) === $flags) {
+            $removeCallback = array($this, 'removeReadStream');
+        } elseif (($flags & \libev\IOEvent::WRITE) === $flags) {
+            $removeCallback = array($this, 'removeWriteStream');
+        }
+
+        return function ($event) use ($stream, $listener, $removeCallback) {
             if (feof($stream)) {
-                $event->stop();
+                call_user_func($removeCallback, $stream);
+
                 return;
             }
 
