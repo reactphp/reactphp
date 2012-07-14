@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Using git-subsplit
+# https://github.com/dflydev/git-subsplit
 
 GIT_SUBSPLIT=$(pwd)/$(dirname $0)/git-subsplit.sh
 
