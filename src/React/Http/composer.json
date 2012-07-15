@@ -4,7 +4,7 @@
     "keywords": ["http"],
     "license": "MIT",
     "require": {
-        "php": ">=5.3.4",
+        "php": ">=5.3.3",
         "guzzle/guzzle": "2.5.*",
         "react/socket": "0.1.*"
     },
