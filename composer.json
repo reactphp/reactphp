@@ -11,7 +11,8 @@
     "require": {
         "php": ">=5.3.3",
         "evenement/evenement": "1.0.*",
-        "guzzle/guzzle": "2.5.*",
+        "guzzle/http": "2.8.*",
+        "guzzle/parser": "2.8.*",
         "silex/silex": "1.0.*"
     },
     "replace": {
