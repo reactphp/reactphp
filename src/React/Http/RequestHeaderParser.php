@@ -3,7 +3,7 @@
 namespace React\Http;
 
 use Evenement\EventEmitter;
-use Guzzle\Http\Message\RequestFactory;
+use Guzzle\Parser\Message\MessageParser;
 
 class RequestHeaderParser extends EventEmitter
 {
@@ -32,20 +32,19 @@ class RequestHeaderParser extends EventEmitter
     {
         list($headers, $bodyBuffer) = explode("\r\n\r\n", $data, 2);
 
-        $factory = new RequestFactory();
-        $parsed = $factory->parseMessage($headers."\r\n\r\n");
+        $parser = new MessageParser();
+        $parsed = $parser->parseRequest($headers."\r\n\r\n");
 
         $parsedQuery = array();
-        if (0 === strpos($parsed['parts']['query'], '?')) {
-            $query = substr($parsed['parts']['query'], 1);
-            parse_str($query, $parsedQuery);
+        if ($parsed['request_url']['query']) {
+            parse_str($parsed['request_url']['query'], $parsedQuery);
         }
 
         $request = new Request(
             $parsed['method'],
-            $parsed['parts']['path'],
+            $parsed['request_url']['path'],
             $parsedQuery,
-            $parsed['protocol_version'],
+            $parsed['version'],
             $parsed['headers']
         );
 
