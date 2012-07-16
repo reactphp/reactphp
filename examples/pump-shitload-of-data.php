@@ -10,7 +10,7 @@ require __DIR__.'/../vendor/autoload.php';
 $loop = React\EventLoop\Factory::create();
 $socket = new React\Socket\Server($loop);
 
-$socket->on('connect', function ($conn) {
+$socket->on('connection', function ($conn) {
     $shitload = str_repeat('a', 1024*1024*32);
     $conn->write($shitload);
     $conn->end();
