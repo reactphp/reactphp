@@ -4,7 +4,7 @@
     "keywords": ["stream", "pipe"],
     "license": "MIT",
     "require": {
-        "php": ">=5.3.2",
+        "php": ">=5.3.3",
         "evenement/evenement": "1.0.*"
     },
     "suggest": {
@@ -13,5 +13,10 @@
     "autoload": {
         "psr-0": { "React\\Stream": "" }
     },
-    "target-dir": "React/Stream"
+    "target-dir": "React/Stream",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1"
+        }
+    }
 }

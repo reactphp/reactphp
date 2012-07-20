@@ -17,7 +17,7 @@ class ServerTest extends TestCase
         $server->on('request', $this->expectCallableOnce());
 
         $conn = new ConnectionStub();
-        $io->emit('connect', array($conn));
+        $io->emit('connection', array($conn));
 
         $data = $this->createGetRequest();
         $conn->emit('data', array($data));
@@ -42,7 +42,7 @@ class ServerTest extends TestCase
         });
 
         $conn = new ConnectionStub();
-        $io->emit('connect', array($conn));
+        $io->emit('connection', array($conn));
 
         $data = $this->createGetRequest();
         $conn->emit('data', array($data));
@@ -61,7 +61,7 @@ class ServerTest extends TestCase
         });
 
         $conn = new ConnectionStub();
-        $io->emit('connect', array($conn));
+        $io->emit('connection', array($conn));
 
         $data = $this->createGetRequest();
         $conn->emit('data', array($data));

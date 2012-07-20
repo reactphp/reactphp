@@ -1,5 +1,5 @@
 {
-    "hash": "ed0ea09dc63f064a2f72d2575871f223",
+    "hash": "7105e6538b78173ea6a32ec85648fed7",
     "packages": [
         {
             "package": "evenement/evenement",
@@ -8,8 +8,16 @@
             "commit-date": "1338390068"
         },
         {
-            "package": "guzzle/guzzle",
-            "version": "v2.5.0"
+            "package": "guzzle/common",
+            "version": "v2.8.0"
+        },
+        {
+            "package": "guzzle/http",
+            "version": "v2.8.0"
+        },
+        {
+            "package": "guzzle/parser",
+            "version": "v2.8.0"
         },
         {
             "package": "pimple/pimple",
@@ -32,20 +40,12 @@
         {
             "package": "silex/silex",
             "version": "dev-master",
-            "source-reference": "23dc19c334e2f74ec4de037568f5426bceaff421",
-            "commit-date": "1341597562"
+            "source-reference": "b9277c0e378ff1bce2a3e974cb801b6d9b0b5d5f",
+            "commit-date": "1342380872"
         },
         {
             "package": "symfony/event-dispatcher",
-            "version": "dev-master",
-            "alias-pretty-version": "2.1.x-dev",
-            "alias-version": "2.1.9999999.9999999-dev"
-        },
-        {
-            "package": "symfony/event-dispatcher",
-            "version": "dev-master",
-            "source-reference": "v2.1.0-BETA1",
-            "commit-date": "1338018513"
+            "version": "v2.1.0-BETA2"
         },
         {
             "package": "symfony/http-foundation",
@@ -56,8 +56,8 @@
         {
             "package": "symfony/http-foundation",
             "version": "dev-master",
-            "source-reference": "3e53f0a9f802dc1f34a722109df0b0d2679671a8",
-            "commit-date": "1341379664"
+            "source-reference": "v2.1.0-BETA3",
+            "commit-date": "1342347231"
         },
         {
             "package": "symfony/http-kernel",
@@ -68,8 +68,8 @@
         {
             "package": "symfony/http-kernel",
             "version": "dev-master",
-            "source-reference": "6d6f55f6b07b8bfed741a192def8d1bfbf6c590f",
-            "commit-date": "1341332120"
+            "source-reference": "6df39b97d0815fa493c84ed448eb6cc961652303",
+            "commit-date": "1342376835"
         },
         {
             "package": "symfony/routing",
@@ -80,8 +80,8 @@
         {
             "package": "symfony/routing",
             "version": "dev-master",
-            "source-reference": "622a168a3be54a87e34ad65e9d50a738fb89ff7e",
-            "commit-date": "1341312726"
+            "source-reference": "v2.1.0-BETA3",
+            "commit-date": "1342347231"
         }
     ],
     "packages-dev": [
