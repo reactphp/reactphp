@@ -9,22 +9,15 @@ use React\Stream\Stream;
 class Response extends EventEmitter
 {
     private $loop;
-
     private $stream;
-
     private $protocol;
-
     private $version;
-
     private $code;
-
     private $reasonPhrase;
-
     private $headers;
-
     private $body;
 
-    public function __construct(LoopInterface $loop, Stream $stream, $protocol, $version, $code, $reasonPhrase, $headers, $body)
+    public function __construct(LoopInterface $loop, Stream $stream, $protocol, $version, $code, $reasonPhrase, $headers)
     {
         $this->loop = $loop;
         $this->stream = $stream;
@@ -33,9 +26,10 @@ class Response extends EventEmitter
         $this->code = $code;
         $this->reasonPhrase = $reasonPhrase;
         $this->headers = $headers;
-        $this->body = $body;
 
         $stream->on('data', array($this, 'handleData'));
+        $stream->on('error', array($this, 'handleError'));
+        $stream->on('end', array($this, 'handleEnd'));
     }
     
     public function getProtocol()
@@ -71,7 +65,17 @@ class Response extends EventEmitter
     public function handleData($data)
     {
         $this->data .= $data;
-        $this->emit('data', array($data));
+        $this->emit('data', array($data, $this));
+    }
+
+    public function handleEnd()
+    {
+        $this->emit('end', array($this));
+    }
+
+    public function handleError()
+    {
+        $this->emit('error', array($this));
     }
 }
 

@@ -9,32 +9,35 @@ use Guzzle\Http\Message\Request as GuzzleRequest;
 use React\Http\Client\Response;
 use React\EventLoop\LoopInterface;
 use Guzzle\Parser\Message\MessageParser;
+use React\Http\Client\ConnectionManagerInterface;
+use React\Http\Client\ResponseHeaderParser;
 
 class Request extends EventEmitter
 {
     private $request;
-
     private $loop;
-
+    private $connectionManager;
     private $stream;
-
     private $buffer;
+    private $responseFactory;
+    private $response;
 
-    public function __construct(LoopInterface $loop, GuzzleRequest $request)
+    public function __construct(LoopInterface $loop, ConnectionManagerInterface $connectionManager, GuzzleRequest $request)
     {
         $this->loop = $loop;
+        $this->connectionManager = $connectionManager;
         $this->request = $request;
-    }
-
-    static public function createFromUrl(LoopInterface $loop, $url)
-    {
-        return new static($loop, new GuzzleRequest('GET', $url));
     }
 
     public function send()
     {
-        $this->stream = $this->connect();
+        if (!$this->stream = $this->connect()) {
+            return;
+        }
+
         $this->stream->on('data', array($this, 'handleData'));
+        $this->stream->on('end', array($this, 'handleEnd'));
+        $this->stream->on('error', array($this, 'handleError'));
 
         $this->request->setProtocolVersion('1.0');
         $data = (string) $this->request;
@@ -47,60 +50,90 @@ class Request extends EventEmitter
         $this->buffer .= $data;
 
         if (false !== strpos($this->buffer, "\r\n\r\n")) {
-            $response = $this->parseResponse($this->buffer);
+
+            list($response, $body) = $this->parseResponse($this->buffer);
+
+            $this->stream->removeListener('data', array($this, 'handleData'));
+            $this->stream->removeListener('end', array($this, 'handleEnd'));
+            $this->stream->removeListener('error', array($this, 'handleError'));
 
             $this->emit('response', array($response));
-            $this->stream->removeListener('data', array($this, 'handleData'));
-            $this->removeAllListeners();
 
-            $response->emit('data', array($response->getBody()));
+            $response->emit('data', array($body));
         }
+    }
+
+    public function handleEnd()
+    {
+        $this->emit('error', array($this));
+    }
+
+    public function handleError()
+    {
+        $this->emit('error', array($this));
     }
 
     protected function parseResponse($data)
     {
-        list($headers, $bodyBuffer) = explode("\r\n\r\n", $data, 2);
-
         $parser = new MessageParser();
-        $parsed = $parser->parseResponse($headers."\r\n\r\n");
+        $parsed = $parser->parseResponse($data);
 
-        $response = new Response(
-            $this->loop,
-            $this->stream,
+        $response = $this->getResponseFactory()->__invoke(
             $parsed['protocol'],
             $parsed['version'],
             $parsed['code'],
             $parsed['reason_phrase'],
-            $parsed['headers'],
-            $bodyBuffer
+            $parsed['headers']
         );
 
-        return $response;
+        return array($response, $parsed['body']);
     }
 
     protected function connect()
     {
-        $socketUrl = $this->getSocketUrl();
+        $host = $this->request->getHost();
+        $port = $this->request->getPort();
+        $https = 'https' === $this->request->getScheme();
+        $connectionManager = $this->connectionManager;
 
-        $socket = stream_socket_client($socketUrl, $errno, $errstr, ini_get("default_socket_timeout"), STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
+        $stream = $this->connectionManager->getConnection($host, $port, $https);
 
-        return new Stream($socket, $this->loop);
-    }
-
-    protected function getSocketUrl()
-    {
-        $socketUrl = '';
-
-        if ('https' === $this->request->getScheme()) {
-            $socketUrl .= 'tls://';
-        } else {
-            $socketUrl .= 'tcp://';
+        if (!$stream) {
+            $this->emit('error', array($this));
+            return null;
         }
 
-        $socketUrl .= $this->request->getHost();
-        $socketUrl .= ':' . $this->request->getPort();
+        return $stream;
+    }
 
-        return $socketUrl;
+    public function setResponseFactory($factory)
+    {
+        $this->responseFactory = $factory;
+    }
+
+    public function getResponseFactory()
+    {
+        if (null === $factory = $this->responseFactory) {
+
+            $loop = $this->loop;
+            $stream = $this->stream;
+
+            $factory = function ($protocol, $version, $code, $reasonPhrase, $headers) use ($loop, $stream) {
+                return new Response(
+                    $loop,
+                    $stream,
+                    $protocol,
+                    $version,
+                    $code,
+                    $reasonPhrase,
+                    $headers
+                );
+            };
+
+            $this->responseFactory = $factory;
+        }
+
+        return $factory;
     }
 }
 
