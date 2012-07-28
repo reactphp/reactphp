@@ -31,18 +31,26 @@ class Request extends EventEmitter
 
     public function send()
     {
-        if (!$this->stream = $this->connect()) {
-            return;
-        }
+        $that = $this;
+        $request = $this->request;
+        $streamRef = &$this->stream;
 
-        $this->stream->on('data', array($this, 'handleData'));
-        $this->stream->on('end', array($this, 'handleEnd'));
-        $this->stream->on('error', array($this, 'handleError'));
+        $this->connect(function($stream) use ($that, $request, &$streamRef) {
+            if (!$stream) {
+                return;
+            }
 
-        $this->request->setProtocolVersion('1.0');
-        $data = (string) $this->request;
+            $streamRef = $stream;
 
-        $this->stream->write($data);
+            $stream->on('data', array($that, 'handleData'));
+            $stream->on('end', array($that, 'handleEnd'));
+            $stream->on('error', array($that, 'handleError'));
+
+            $request->setProtocolVersion('1.0');
+            $data = (string) $request;
+
+            $stream->write($data);
+        });
     }
 
     public function handleData($data)
@@ -89,21 +97,20 @@ class Request extends EventEmitter
         return array($response, $parsed['body']);
     }
 
-    protected function connect()
+    protected function connect($callback)
     {
         $host = $this->request->getHost();
         $port = $this->request->getPort();
         $https = 'https' === $this->request->getScheme();
         $connectionManager = $this->connectionManager;
+        $that = $this;
 
-        $stream = $this->connectionManager->getConnection($host, $port, $https);
-
-        if (!$stream) {
-            $this->emit('error', array($this));
-            return null;
-        }
-
-        return $stream;
+        $connectionManager->getConnection(function($stream) use ($that, $callback) {
+            if (!$stream) {
+                $that->emit('error', array($that));
+            }
+            call_user_func($callback, $stream);
+        }, $host, $port, $https);
     }
 
     public function setResponseFactory($factory)

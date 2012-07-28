@@ -27,11 +27,14 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
 
+        $stream = $this->stream;
 
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
-            ->with('www.example.com', 80, false)
-            ->will($this->returnValue($this->stream))
+            ->with($this->anything(), 'www.example.com', 80, false)
+            ->will($this->returnCallback(function($cb) use ($stream) {
+                $cb($stream);
+            }))
             ;
 
         $this->stream->expects($this->at(0))
@@ -106,8 +109,10 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
-            ->with('www.example.com', 80, false)
-            ->will($this->returnValue(null))
+            ->with($this->anything(), 'www.example.com', 80, false)
+            ->will($this->returnCallback(function($cb) {
+                $cb(null);
+            }))
             ;
 
         $handler = $this->getMock('React\Tests\Http\Client\InvokableInterface');
@@ -129,10 +134,14 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
 
+        $stream = $this->stream;
+
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
-            ->with('www.example.com', 80, false)
-            ->will($this->returnValue($this->stream))
+            ->with($this->anything(), 'www.example.com', 80, false)
+            ->will($this->returnCallback(function($cb) use ($stream) {
+                $cb($stream);
+            }))
             ;
 
         $handler = $this->getMock('React\Tests\Http\Client\InvokableInterface');
@@ -155,10 +164,14 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
 
+        $stream = $this->stream;
+
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
-            ->with('www.example.com', 80, false)
-            ->will($this->returnValue($this->stream))
+            ->with($this->anything(), 'www.example.com', 80, false)
+            ->will($this->returnCallback(function($cb) use ($stream) {
+                $cb($stream);
+            }))
             ;
 
         $handler = $this->getMock('React\Tests\Http\Client\InvokableInterface');

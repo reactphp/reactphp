@@ -14,17 +14,24 @@ class ConnectionManager implements ConnectionManagerInterface
         $this->loop = $loop;
     }
 
-    public function getConnection($host, $port, $https = false)
+    public function getConnection($callback, $host, $port, $https = false)
     {
         $url = $this->getSocketUrl($host, $port, $https);
 
         $socket = stream_socket_client($url, $errno, $errstr, ini_get("default_socket_timeout"), STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
 
         if (!$socket) {
-            return null;
+            call_user_func($callback, null);
         }
 
-        return new Stream($socket, $this->loop);
+        // wait for connection
+
+        $loop = $this->loop;
+
+        $this->loop->addWriteStream($socket, function() use ($callback, $socket, $loop) {
+            $loop->removeWriteStream($socket);
+            $callback(new Stream($socket, $this->loop));
+        });
     }
 
     protected function getSocketUrl($host, $port, $https)
