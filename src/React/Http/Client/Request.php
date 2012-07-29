@@ -29,13 +29,17 @@ class Request extends EventEmitter
         $this->request = $request;
     }
 
-    public function send()
+    public function end($data = null)
     {
         $that = $this;
         $request = $this->request;
         $streamRef = &$this->stream;
 
-        $this->connect(function($stream) use ($that, $request, &$streamRef) {
+        if (null !== $data && !is_scalar($data)) {
+            throw new \InvalidArgumentException('$data must be null or scalar');
+        }
+
+        $this->connect(function($stream) use ($that, $request, &$streamRef, $data) {
             if (!$stream) {
                 return;
             }
@@ -47,9 +51,13 @@ class Request extends EventEmitter
             $stream->on('error', array($that, 'handleError'));
 
             $request->setProtocolVersion('1.0');
-            $data = (string) $request;
+            $headers = (string) $request;
 
-            $stream->write($data);
+            if (null !== $data) {
+                $headers .= $data;
+            }
+
+            $stream->write($headers);
         });
     }
 

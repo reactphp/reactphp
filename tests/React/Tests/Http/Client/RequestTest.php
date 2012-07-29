@@ -90,13 +90,11 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ; 
         $request->on('response', $handler);
 
-        $request->send();
+        $request->end();
 
         $request->handleData("HTTP/1.0 200 OK\r\n");
         $request->handleData("Content-Type: text/plain\r\n");
         $request->handleData("\r\nbody");
-
-        $this->assertNotNull($response);
     }
 
     public function testRequestEmitsErrorIfConnectionFails()
@@ -123,7 +121,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $request->on('error', $handler);
 
-        $request->send();
+        $request->end();
     }
 
     public function testRequestEmitsErrorIfConnectionEndsBeforeResponseIsParsed()
@@ -152,7 +150,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $request->on('error', $handler);
 
-        $request->send();
+        $request->end();
         $request->handleEnd();
     }
 
@@ -182,8 +180,60 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $request->on('error', $handler);
 
-        $request->send();
+        $request->end();
         $request->handleError();
+    }
+
+    public function testPostRequest()
+    {
+        $that = $this;
+
+        $guzzleRequest = new GuzzleRequest('POST', 'http://www.example.com');
+
+        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+
+        $stream = $this->stream;
+
+        $this->connectionManager->expects($this->once())
+            ->method('getConnection')
+            ->with($this->anything(), 'www.example.com', 80, false)
+            ->will($this->returnCallback(function($cb) use ($stream) {
+                $cb($stream);
+            }))
+            ;
+
+        $this->stream->expects($this->at(3))
+            ->method('write')
+            ->with($this->matchesRegularExpression("#^POST / HTTP/1\.0\r\nHost: www.example.com\r\nUser-Agent:.*\r\n\r\nsome post data$#"))
+            ;
+
+        $factory = $this->getMock('React\Tests\Http\Client\InvokableInterface');
+        $factory->expects($this->once())
+            ->method('__invoke')
+            ->will($this->returnValue($this->response))
+            ;
+        $request->setResponseFactory($factory);
+
+        $request->end('some post data');
+
+        $request->handleData("HTTP/1.0 200 OK\r\n");
+        $request->handleData("Content-Type: text/plain\r\n");
+        $request->handleData("\r\nbody");
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage $data must be null or scalar
+     */
+    public function testEndAcceptsOnlyScalars()
+    {
+        $that = $this;
+
+        $guzzleRequest = new GuzzleRequest('POST', 'http://www.example.com');
+
+        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+
+        $request->end(array());
     }
 }
 
