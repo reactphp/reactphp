@@ -5,8 +5,11 @@ namespace React\Http\Client;
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
 use React\Stream\Stream;
+use React\Stream\ReadableStreamInterface;
+use React\Stream\Util;
+use React\Stream\WritableStreamInterface;
 
-class Response extends EventEmitter
+class Response extends EventEmitter implements ReadableStreamInterface
 {
     private $loop;
     private $stream;
@@ -16,6 +19,7 @@ class Response extends EventEmitter
     private $reasonPhrase;
     private $headers;
     private $body;
+    private $readable = true;
 
     public function __construct(LoopInterface $loop, Stream $stream, $protocol, $version, $code, $reasonPhrase, $headers)
     {
@@ -70,12 +74,58 @@ class Response extends EventEmitter
 
     public function handleEnd()
     {
-        $this->emit('end', array($this));
+        $this->close();
     }
 
     public function handleError()
     {
         $this->emit('error', array($this));
+        $this->close();
+    }
+
+    public function close()
+    {
+        if (!$this->readable) {
+            return;
+        }
+
+        $this->readable = false;
+
+        $this->emit('end', array($this));
+        $this->emit('close', array($this));
+
+        $this->removeAllListeners();
+        $this->stream->end();
+    }
+
+    public function isReadable()
+    {
+        return $this->readable;
+    }
+
+    public function pause()
+    {
+        if (!$this->readable) {
+            return;
+        }
+
+        $this->stream->pause();
+    }
+
+    public function resume()
+    {
+        if (!$this->readable) {
+            return;
+        }
+
+        $this->stream->resume();
+    }
+
+    public function pipe(WritableStreamInterface $dest, array $options = array())
+    {
+        Util::pipe($this, $dest, $options);
+
+        return $dest;
     }
 }
 
