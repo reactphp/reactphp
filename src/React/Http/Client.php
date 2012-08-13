@@ -5,7 +5,7 @@ namespace React\Http;
 use React\EventLoop\LoopInterface;
 use React\Http\Client\ConnectionManager;
 use Guzzle\Http\Message\Request as GuzzleRequest;
-use React\Http\Client\Request;
+use React\Http\Client\Request as ClientRequest;
 
 class Client
 {
@@ -22,7 +22,7 @@ class Client
     {
         $guzzleRequest = new GuzzleRequest($method, $url, $headers);
         $connectionManager = $this->getConnectionManager();
-        return new Request($this->loop, $connectionManager, $guzzleRequest);
+        return new ClientRequest($this->loop, $connectionManager, $guzzleRequest);
     }
 
     public function setConnectionManager(ConnectionManagerInterface $connectionManager)
