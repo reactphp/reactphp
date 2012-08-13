@@ -98,6 +98,25 @@ class StreamTest extends TestCase
         $buffer->emit('error', array(new \RuntimeException('Whoops')));
     }
 
+    /**
+     * @covers React\Stream\Stream::handleData
+     */
+    public function testClosingStreamInDataEventSouldntTriggerError()
+    {
+        $stream = fopen('php://temp', 'r+');
+        $loop = $this->createLoopMock();
+
+        $conn = new Stream($stream, $loop);
+        $conn->on('data', function ($data, $stream) {
+            $stream->close();
+        });
+
+        fwrite($stream, "foobar\n");
+        rewind($stream);
+
+        $conn->handleData($stream);
+    }
+
     private function createWriteableLoopMock()
     {
         $loop = $this->createLoopMock();
