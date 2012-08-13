@@ -68,7 +68,6 @@ class Response extends EventEmitter implements ReadableStreamInterface
 
     public function handleData($data)
     {
-        $this->data .= $data;
         $this->emit('data', array($data, $this));
     }
 
