@@ -25,6 +25,8 @@ class ConnectionManager implements ConnectionManagerInterface
             return;
         }
 
+        stream_set_blocking($socket, 0);
+
         // wait for connection
 
         $loop = $this->loop;
@@ -45,8 +47,6 @@ class ConnectionManager implements ConnectionManagerInterface
             return;
         }
 
-        stream_set_blocking($socket, 0);
-
         $loop = $this->loop;
 
         $enableCrypto = function() use ($callback, $socket, $loop) {
@@ -57,14 +57,12 @@ class ConnectionManager implements ConnectionManagerInterface
             if (true === $result) {
                 $loop->removeWriteStream($socket);
                 $loop->removeReadStream($socket);
-                stream_set_blocking($socket, 1);
                 call_user_func($callback, new Stream($socket, $loop));
 
             // an error occured
             } else if (false === $result) {
                 $loop->removeWriteStream($socket);
                 $loop->removeReadStream($socket);
-                stream_set_blocking($socket, 1);
                 call_user_func($callback, null);
 
             } else {
