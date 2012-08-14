@@ -3,8 +3,9 @@
 namespace React\Tests\Http\Client;
 
 use React\Http\Client\Response;
+use React\Tests\Socket\TestCase;
 
-class ResponseTest extends \PHPUnit_Framework_TestCase
+class ResponseTest extends TestCase
 {
     private $loop;
     private $stream;
@@ -32,7 +33,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
         $response = new Response($this->loop, $this->stream, 'HTTP', '1.0', '200', 'OK', array('Content-Type' => 'text/plain'));
 
-        $handler = $this->getMock('React\Tests\Http\Client\InvokableInterface');
+        $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
             ->with('some data', $this->anything())
@@ -40,7 +41,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
         $response->on('data', $handler);
 
-        $handler = $this->getMock('React\Tests\Http\Client\InvokableInterface');
+        $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('React\Http\Client\Response'))
@@ -48,7 +49,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
         $response->on('end', $handler);
 
-        $handler = $this->getMock('React\Tests\Http\Client\InvokableInterface');
+        $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('React\Http\Client\Response'))

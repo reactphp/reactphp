@@ -4,8 +4,9 @@ namespace React\Tests\Http\Client;
 
 use Guzzle\Http\Message\Request as GuzzleRequest;
 use React\Http\Client\Request;
+use React\Tests\Socket\TestCase;
 
-class RequestTest extends \PHPUnit_Framework_TestCase
+class RequestTest extends TestCase
 {
     private $loop;
     private $connectionManager;
@@ -75,7 +76,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->with('data', array('body'))
             ;
 
-        $factory = $this->getMock('React\Tests\Http\Client\InvokableInterface');
+        $factory = $this->createCallableMock();
         $factory->expects($this->once())
             ->method('__invoke')
             ->with('HTTP', '1.0', '200', 'OK', array('Content-Type' => 'text/plain'))
@@ -83,7 +84,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ;
         $request->setResponseFactory($factory);
 
-        $handler = $this->getMock('React\Tests\Http\Client\InvokableInterface');
+        $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
             ->with($response)
@@ -113,7 +114,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             }))
             ;
 
-        $handler = $this->getMock('React\Tests\Http\Client\InvokableInterface');
+        $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
             ->with($request)
@@ -142,7 +143,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             }))
             ;
 
-        $handler = $this->getMock('React\Tests\Http\Client\InvokableInterface');
+        $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
             ->with($request)
@@ -172,7 +173,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             }))
             ;
 
-        $handler = $this->getMock('React\Tests\Http\Client\InvokableInterface');
+        $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
             ->with($request)
@@ -207,7 +208,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->with($this->matchesRegularExpression("#^POST / HTTP/1\.0\r\nHost: www.example.com\r\nUser-Agent:.*\r\n\r\nsome post data$#"))
             ;
 
-        $factory = $this->getMock('React\Tests\Http\Client\InvokableInterface');
+        $factory = $this->createCallableMock();
         $factory->expects($this->once())
             ->method('__invoke')
             ->will($this->returnValue($this->response))
