@@ -21,7 +21,10 @@ class ConnectionManager implements ConnectionManagerInterface
         $socket = stream_socket_client($url, $errno, $errstr, ini_get("default_socket_timeout"), STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
 
         if (!$socket) {
-            call_user_func($callback, null);
+            call_user_func($callback, null, new \RuntimeException(
+                $errstr,
+                $errno
+            ));
             return;
         }
 

@@ -76,6 +76,13 @@ class RequestTest extends TestCase
             ->with('data', array('body'))
             ;
 
+        $response->expects($this->at(0))
+            ->method('on')
+            ->with('end', $this->anything())
+            ->will($this->returnCallback(function($event, $cb) use (&$endCallback) {
+                $endCallback = $cb;
+            }));
+
         $factory = $this->createCallableMock();
         $factory->expects($this->once())
             ->method('__invoke')
@@ -91,11 +98,28 @@ class RequestTest extends TestCase
             ; 
         $request->on('response', $handler);
 
+        $request->on('close', $this->expectCallableNever());
+
+        $handler = $this->createCallableMock();
+        $handler->expects($this->once())
+            ->method('__invoke')
+            ->with(
+                null,
+                $this->isInstanceof('React\Http\Client\Response'),
+                $this->isInstanceof('React\Http\Client\Request')
+            )
+            ; 
+
+        $request->on('end', $handler);
+
         $request->end();
 
         $request->handleData("HTTP/1.0 200 OK\r\n");
         $request->handleData("Content-Type: text/plain\r\n");
         $request->handleData("\r\nbody");
+
+        $this->assertNotNull($endCallback);
+        call_user_func($endCallback);
     }
 
     public function testRequestEmitsErrorIfConnectionFails()
@@ -117,10 +141,27 @@ class RequestTest extends TestCase
         $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
-            ->with($request)
+            ->with(
+                $this->isInstanceOf('RuntimeException'),
+                $this->isInstanceOf('React\Http\Client\Request')
+            )
             ;
 
         $request->on('error', $handler);
+
+        $handler = $this->createCallableMock();
+        $handler->expects($this->once())
+            ->method('__invoke')
+            ->with(
+                $this->isInstanceOf('RuntimeException'),
+                null,
+                $this->isInstanceOf('React\Http\Client\Request')
+            )
+            ;
+
+        $request->on('end', $handler);
+
+        $request->on('close', $this->expectCallableNever());
 
         $request->end();
     }
@@ -146,10 +187,26 @@ class RequestTest extends TestCase
         $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
-            ->with($request)
-            ;
+            ->with(
+                $this->isInstanceOf('RuntimeException'),
+                $this->isInstanceOf('React\Http\Client\Request')
+            );
 
         $request->on('error', $handler);
+
+        $handler = $this->createCallableMock();
+        $handler->expects($this->once())
+            ->method('__invoke')
+            ->with(
+                $this->isInstanceOf('RuntimeException'),
+                null,
+                $this->isInstanceOf('React\Http\Client\Request')
+            )
+            ;
+
+        $request->on('end', $handler);
+
+        $request->on('close', $this->expectCallableNever());
 
         $request->end();
         $request->handleEnd();
@@ -176,13 +233,30 @@ class RequestTest extends TestCase
         $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
-            ->with($request)
+            ->with(
+                $this->isInstanceOf('Exception'),
+                $this->isInstanceOf('React\Http\Client\Request')
+            )
             ;
 
         $request->on('error', $handler);
 
+        $handler = $this->createCallableMock();
+        $handler->expects($this->once())
+            ->method('__invoke')
+            ->with(
+                $this->isInstanceOf('Exception'),
+                null,
+                $this->isInstanceOf('React\Http\Client\Request')
+            )
+            ;
+
+        $request->on('end', $handler);
+
+        $request->on('close', $this->expectCallableNever());
+
         $request->end();
-        $request->handleError();
+        $request->handleError(new \Exception('test'));
     }
 
     public function testPostRequest()
@@ -235,6 +309,55 @@ class RequestTest extends TestCase
         $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
 
         $request->end(array());
+    }
+
+    public function testRequestRelaysErrorEventsFromResponse()
+    {
+        $that = $this;
+
+        $guzzleRequest = new GuzzleRequest('GET', 'http://www.example.com');
+
+        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+
+        $stream = $this->stream;
+
+        $this->connectionManager->expects($this->once())
+            ->method('getConnection')
+            ->with($this->anything(), 'www.example.com', 80, false)
+            ->will($this->returnCallback(function($cb) use ($stream) {
+                $cb($stream);
+            }))
+            ;
+
+        $response = $this->response;
+
+        $response->expects($this->at(0))
+            ->method('on')
+            ->with('end', $this->anything());
+
+        $response->expects($this->at(1))
+            ->method('on')
+            ->with('error', $this->anything())
+            ->will($this->returnCallback(function($event, $cb) use (&$errorCallback) {
+                $errorCallback = $cb;
+            }));
+
+        $factory = $this->createCallableMock();
+        $factory->expects($this->once())
+            ->method('__invoke')
+            ->with('HTTP', '1.0', '200', 'OK', array('Content-Type' => 'text/plain'))
+            ->will($this->returnValue($response))
+            ;
+        $request->setResponseFactory($factory);
+
+        $request->end();
+
+        $request->handleData("HTTP/1.0 200 OK\r\n");
+        $request->handleData("Content-Type: text/plain\r\n");
+        $request->handleData("\r\nbody");
+
+        $this->assertNotNull($errorCallback);
+        call_user_func($errorCallback, new \Exception('test'));
     }
 }
 

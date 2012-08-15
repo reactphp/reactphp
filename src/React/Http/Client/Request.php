@@ -21,6 +21,7 @@ class Request extends EventEmitter
     private $buffer;
     private $responseFactory;
     private $response;
+    private $closed = false;
 
     public function __construct(LoopInterface $loop, ConnectionManagerInterface $connectionManager, GuzzleRequest $request)
     {
@@ -39,8 +40,13 @@ class Request extends EventEmitter
             throw new \InvalidArgumentException('$data must be null or scalar');
         }
 
-        $this->connect(function($stream) use ($that, $request, &$streamRef, $data) {
+        $this->connect(function($stream, \Exception $error = null) use ($that, $request, &$streamRef, $data) {
             if (!$stream) {
+                $that->closeError(new \RuntimeException(
+                    "connection failed",
+                    0,
+                    $error
+                ));
                 return;
             }
 
@@ -73,7 +79,21 @@ class Request extends EventEmitter
             $this->stream->removeListener('end', array($this, 'handleEnd'));
             $this->stream->removeListener('error', array($this, 'handleError'));
 
-            $this->emit('response', array($response));
+            $this->response = $response;
+            $that = $this;
+
+            $response->on('end', function() use ($that) {
+                $that->close();
+            });
+            $response->on('error', function(\Exception $error) use ($that) {
+                $that->closeError(new \RuntimeException(
+                    "response error",
+                    0,
+                    $error
+                ));
+            });
+
+            $this->emit('response', array($response, $this));
 
             $response->emit('data', array($body));
         }
@@ -81,12 +101,42 @@ class Request extends EventEmitter
 
     public function handleEnd()
     {
-        $this->emit('error', array($this));
+        $this->closeError(new \RuntimeException(
+            "connection closed before receiving response"
+        ));
     }
 
-    public function handleError()
+    public function handleError($error)
     {
-        $this->emit('error', array($this));
+        $this->closeError(new \RuntimeException(
+            "stream error",
+            0,
+            $error
+        ));
+    }
+
+    public function closeError(\Exception $error)
+    {
+        if ($this->closed) {
+            return;
+        }
+        $this->emit('error', array($error, $this));
+        $this->close($error);
+    }
+
+    public function close(\Exception $error = null)
+    {
+        if ($this->closed) {
+            return;
+        }
+
+        $this->closed = true;
+
+        if ($this->stream) {
+            $this->stream->close();
+        }
+
+        $this->emit('end', array($error, $this->response, $this));
     }
 
     protected function parseResponse($data)
@@ -114,9 +164,6 @@ class Request extends EventEmitter
         $that = $this;
 
         $connectionManager->getConnection(function($stream) use ($that, $callback) {
-            if (!$stream) {
-                $that->emit('error', array($that));
-            }
             call_user_func($callback, $stream);
         }, $host, $port, $https);
     }

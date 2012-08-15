@@ -44,18 +44,12 @@ class ResponseTest extends TestCase
         $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
-            ->with($this->isInstanceOf('React\Http\Client\Response'))
+            ->with(null, $this->isInstanceOf('React\Http\Client\Response'))
             ;
 
         $response->on('end', $handler);
 
-        $handler = $this->createCallableMock();
-        $handler->expects($this->once())
-            ->method('__invoke')
-            ->with($this->isInstanceOf('React\Http\Client\Response'))
-            ;
-
-        $response->on('close', $handler);
+        $response->on('close', $this->expectCallableNever());
 
         $this->stream->expects($this->at(0))
             ->method('end')

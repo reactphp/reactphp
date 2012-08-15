@@ -76,13 +76,18 @@ class Response extends EventEmitter implements ReadableStreamInterface
         $this->close();
     }
 
-    public function handleError()
+    public function handleError(\Exception $error)
     {
-        $this->emit('error', array($this));
-        $this->close();
+        $this->emit('error', array(new \RuntimeException(
+            "stream error",
+            0,
+            $error
+        ), $this));
+
+        $this->close($error);
     }
 
-    public function close()
+    public function close(\Exception $error = null)
     {
         if (!$this->readable) {
             return;
@@ -90,8 +95,7 @@ class Response extends EventEmitter implements ReadableStreamInterface
 
         $this->readable = false;
 
-        $this->emit('end', array($this));
-        $this->emit('close', array($this));
+        $this->emit('end', array($error, $this));
 
         $this->removeAllListeners();
         $this->stream->end();
