@@ -1,8 +1,8 @@
 <?php
 
-namespace React\Tests\Dns;
+namespace React\Tests\Dns\Protocol;
 
-use React\Dns\Parser;
+use React\Dns\Protocol\Parser;
 use React\Dns\Model\Message;
 
 class ParserTest extends \PHPUnit_Framework_TestCase

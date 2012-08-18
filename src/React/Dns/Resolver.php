@@ -3,6 +3,8 @@
 namespace React\Dns;
 
 use React\Dns\Model\Message;
+use React\Dns\Protocol\Parser;
+use React\Dns\Protocol\BinaryDumper;
 use React\EventLoop\LoopInterface;
 use React\Socket\Connection;
 

@@ -118,7 +118,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
 
         $test = $this;
 
-        $parser = $this->getMock('React\Dns\Parser');
+        $parser = $this->getMock('React\Dns\Protocol\Parser');
         $parser
             ->expects($this->at(0))
             ->method('parseChunk')

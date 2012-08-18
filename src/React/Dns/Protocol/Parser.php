@@ -1,6 +1,6 @@
 <?php
 
-namespace React\Dns;
+namespace React\Dns\Protocol;
 
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;

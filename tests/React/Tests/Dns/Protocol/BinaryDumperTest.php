@@ -1,8 +1,8 @@
 <?php
 
-namespace React\Tests\Dns;
+namespace React\Tests\Dns\Protocol;
 
-use React\Dns\BinaryDumper;
+use React\Dns\Protocol\BinaryDumper;
 use React\Dns\Model\Message;
 
 class BinaryDumperTest extends \PHPUnit_Framework_TestCase
