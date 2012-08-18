@@ -144,7 +144,9 @@ class Request extends EventEmitter
         $parser = new MessageParser();
         $parsed = $parser->parseResponse($data);
 
-        $response = $this->getResponseFactory()->__invoke(
+        $factory = $this->getResponseFactory();
+
+        $response = $factory(
             $parsed['protocol'],
             $parsed['version'],
             $parsed['code'],
