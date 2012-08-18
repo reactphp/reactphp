@@ -7,14 +7,14 @@ use React\Stream\Stream;
 
 class ConnectionManager implements ConnectionManagerInterface
 {
-    private $loop;
+    protected $loop;
 
     public function __construct(LoopInterface $loop)
     {
         $this->loop = $loop;
     }
 
-    public function getConnection($callback, $host, $port, $https = false)
+    public function getConnection($callback, $host, $port)
     {
         $url = $this->getSocketUrl($host, $port);
 
@@ -35,48 +35,17 @@ class ConnectionManager implements ConnectionManagerInterface
         $loop = $this->loop;
         $that = $this;
 
-        $this->loop->addWriteStream($socket, function() use ($that, $callback, $socket, $loop, $https) {
+        $this->loop->addWriteStream($socket, function() use ($that, $callback, $socket, $loop) {
 
             $loop->removeWriteStream($socket);
 
-            $that->handleConnectedSocket($callback, $socket, $https);
+            $that->handleConnectedSocket($callback, $socket);
         });
     }
 
-    public function handleConnectedSocket($callback, $socket, $https)
+    public function handleConnectedSocket($callback, $socket)
     {
-        if (!$https) {
-            call_user_func($callback, new Stream($socket, $this->loop));
-            return;
-        }
-
-        $loop = $this->loop;
-
-        $enableCrypto = function() use ($callback, $socket, $loop) {
-
-            $result = stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
-
-            // crypto was successfully enabled
-            if (true === $result) {
-                $loop->removeWriteStream($socket);
-                $loop->removeReadStream($socket);
-                call_user_func($callback, new Stream($socket, $loop));
-
-            // an error occured
-            } else if (false === $result) {
-                $loop->removeWriteStream($socket);
-                $loop->removeReadStream($socket);
-                call_user_func($callback, null);
-
-            } else {
-                // need more data, will retry
-            }
-        };
-
-        $this->loop->addWriteStream($socket, $enableCrypto);
-        $this->loop->addReadStream($socket, $enableCrypto);
-
-        $enableCrypto();
+        call_user_func($callback, new Stream($socket, $this->loop));
     }
 
     protected function getSocketUrl($host, $port)

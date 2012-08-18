@@ -161,13 +161,12 @@ class Request extends EventEmitter
     {
         $host = $this->request->getHost();
         $port = $this->request->getPort();
-        $https = 'https' === $this->request->getScheme();
         $connectionManager = $this->connectionManager;
         $that = $this;
 
         $connectionManager->getConnection(function($stream) use ($that, $callback) {
             call_user_func($callback, $stream);
-        }, $host, $port, $https);
+        }, $host, $port);
     }
 
     public function setResponseFactory($factory)
