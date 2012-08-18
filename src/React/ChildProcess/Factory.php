@@ -41,7 +41,7 @@ class Factory
         stream_set_blocking($pipes[1], 0);
         stream_set_blocking($pipes[2], 0);
 
-        return new Process($this->loop, $process, $stdin, $stdout, $stderr);
+        return new Process($process, $stdin, $stdout, $stderr);
     }
 
     private function createCommand($file, $args)
