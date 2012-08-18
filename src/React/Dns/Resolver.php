@@ -13,7 +13,7 @@ class Resolver
 
     public function __construct($nameserver, LoopInterface $loop)
     {
-        $this->nameserver = $nameserver;
+        $this->nameserver = $this->addPortToServerIfMissing($nameserver);
         $this->loop = $loop;
     }
 
@@ -39,16 +39,37 @@ class Resolver
         $request->questions[] = (array) $query;
         $request->prepare();
 
+        $queryData = $dumper->toBinary($request);
+        $transport = strlen($queryData) > 512 ? 'tcp' : 'udp';
+
+        $this->doQuery($nameserver, $transport, $queryData, $parser, $callback);
+    }
+
+    public function doQuery($nameserver, $transport, $queryData, Parser $parser, $callback)
+    {
+        $that = $this;
+
         $response = new Message();
 
-        $fd = stream_socket_client("udp://$nameserver:53");
+        $fd = stream_socket_client("$transport://$nameserver");
         $conn = new Connection($fd, $this->loop);
-        $conn->on('data', function ($data) use ($conn, $parser, $response, $callback) {
-            if ($parser->parseChunk($data, $response)) {
+        $conn->on('data', function ($data) use ($that, $conn, $parser, $response, $callback) {
+            $responseReady = $parser->parseChunk($data, $response);
+            if ($responseReady) {
+                if ($response->headers->isTruncated()) {
+                    $conn->end();
+                    $that->doQuery($nameserver, 'tcp', $queryData, $parser, $callback);
+                    return;
+                }
                 $conn->end();
                 $callback($response);
             }
         });
-        $conn->write($dumper->toBinary($request));
+        $conn->write($queryData);
+    }
+
+    private function addPortToServerIfMissing($nameserver)
+    {
+        return false === strpos($nameserver, ':') ? "$nameserver:53" : $nameserver;
     }
 }

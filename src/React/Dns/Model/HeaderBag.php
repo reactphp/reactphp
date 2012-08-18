@@ -41,6 +41,11 @@ class HeaderBag
         return 1 === $this->attributes['qr'];
     }
 
+    public function isTruncated()
+    {
+        return 1 === $this->attributes['tc'];
+    }
+
     public function populateCounts(Message $message)
     {
         $this->attributes['qdCount'] = count($message->questions);
