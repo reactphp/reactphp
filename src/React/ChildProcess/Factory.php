@@ -15,10 +15,8 @@ class Factory
         $this->loop = $loop;
     }
 
-    public function spawn($file, $args = NULL, $options = NULL)
+    public function spawn($file, array $args = array(), array $options = NULL)
     {
-        $args = $args ? $args : array();
-
         $cmd = $this->createCommand($file, $args);
         $cwd = isset($options['cwd']) ? $options['cwd'] : NULL;
         $env = isset($options['env']) ? $options['env'] : NULL;
