@@ -174,12 +174,9 @@ class Parser
 
         $message->data = substr($message->data, $consumed) ?: '';
 
-        $record = new Record();
-        $record->name = implode('.', $labels);
-        $record->type = $type;
-        $record->class = $class;
-        $record->ttl = $this->signedLongToUnsignedLong($ttl);
-        $record->data = $rdata;
+        $name = implode('.', $labels);
+        $ttl = $this->signedLongToUnsignedLong($ttl);
+        $record = new Record($name, $type, $class, $ttl, $rdata);
 
         $message->answers[] = $record;
 
