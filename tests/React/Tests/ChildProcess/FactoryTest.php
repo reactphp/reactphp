@@ -59,6 +59,33 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo = FOO', $capturedData);
     }
 
+    public function testCommand()
+    {
+        $loop    = $this->createLoop();
+        $factory = $this->createFactory($loop);
+        $process = $factory->spawn('echo');
+
+        $this->assertSame('echo', $process->getCommand());
+    }
+
+    public function testCommandWithOneArgument()
+    {
+        $loop    = $this->createLoop();
+        $factory = $this->createFactory($loop);
+        $process = $factory->spawn('echo', array('foo'));
+
+        $this->assertSame("echo 'foo'", $process->getCommand());
+    }
+
+    public function testCommandWithManyArguments()
+    {
+        $loop    = $this->createLoop();
+        $factory = $this->createFactory($loop);
+        $process = $factory->spawn('echo', array('foo', 'bar', 'foo bar'));
+
+        $this->assertSame("echo 'foo' 'bar' 'foo bar'", $process->getCommand());
+    }
+
     private function createFactory($loop)
     {
         return new Factory($loop);
