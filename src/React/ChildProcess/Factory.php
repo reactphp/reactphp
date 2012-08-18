@@ -45,9 +45,11 @@ class Factory
     private function createCommand($file, $args)
     {
         $command = $file;
+
         if (count($args) > 0) {
             $command .= ' ' . join(' ', array_map('escapeshellarg', $args));
         }
+
         return $command;
     }
 }
