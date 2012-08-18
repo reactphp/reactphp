@@ -21,7 +21,7 @@ class Factory
 
         $cmd = $this->createCommand($file, $args);
         $cwd = isset($options['cwd']) ? $options['cwd'] : getcwd();
-        $env = isset($options['env']) ? $options['env'] : $_ENV;
+        $env = isset($options['env']) ? $options['env'] : NULL;
 
         $fdSpec = array(
             array('pipe', 'r'),
