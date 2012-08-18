@@ -22,17 +22,13 @@ class Process extends EventEmitter
 
         $self = $this;
 
-        $this->stdout->on('end', function () use ($self, $stdout, $stderr) {
-            $stdout->close();
-
+        $this->stdout->on('end', function () use ($self, $stderr) {
             if ($stderr->isReadable() === false) {
                 $self->handleExit();
             }
         });
 
-        $this->stderr->on('end', function () use ($self, $stdout, $stderr) {
-            $stderr->close();
-
+        $this->stderr->on('end', function () use ($self, $stdout) {
             if ($stdout->isReadable() === false) {
                 $self->handleExit();
             }
