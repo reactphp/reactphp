@@ -101,7 +101,7 @@ class StreamTest extends TestCase
     /**
      * @covers React\Stream\Stream::handleData
      */
-    public function testClosingStreamInDataEventSouldntTriggerError()
+    public function testClosingStreamInDataEventShouldNotTriggerError()
     {
         $stream = fopen('php://temp', 'r+');
         $loop = $this->createLoopMock();
