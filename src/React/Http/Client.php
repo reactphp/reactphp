@@ -32,10 +32,10 @@ class Client
 
     public function getConnectionManager()
     {
-        if (null === $connectionManager = $this->connectionManager) {
+        if (null === $this->connectionManager) {
             return $this->connectionManager = new ConnectionManager($this->loop);
         }
-        return $connectionManager;
+        return $this->connectionManager;
     }
 }
 
