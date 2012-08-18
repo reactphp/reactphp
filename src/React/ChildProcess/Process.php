@@ -10,8 +10,12 @@ use Evenement\EventEmitter;
 class Process extends EventEmitter
 {
     public $stdin;
+
     public $stdout;
+
     public $stderr;
+
+    private $status = NULL;
 
     public function __construct(LoopInterface $loop, $process, WritableStreamInterface $stdin, ReadableStreamInterface $stdout, ReadableStreamInterface $stderr)
     {
@@ -40,5 +44,49 @@ class Process extends EventEmitter
         $status = proc_close($this->process);
         $this->emit('exit', array($status));
         $this->emit('close', array($status));
+    }
+
+    public function getPid()
+    {
+        $status = $this->getCachedStatus();
+        return $status['pid'];
+    }
+
+    public function getCommand()
+    {
+        $status = $this->getCachedStatus();
+        return $status['command'];
+    }
+
+    public function isRunning()
+    {
+        $status = $this->getFreshStatus();
+        return $status['running'];
+    }
+
+    public function isSignaled()
+    {
+        $status = $this->getFreshStatus();
+        return $status['signaled'];
+    }
+
+    public function isStopped()
+    {
+        $status = $this->getFreshStatus();
+        return $status['stopped'];
+    }
+
+    private function getCachedStatus()
+    {
+        if (is_null($this->status)) {
+            $this->status = proc_get_status($this->process);
+        }
+        return $this->status;
+    }
+
+    private function getFreshStatus()
+    {
+        $this->status = proc_get_status($this->process);
+        return $this->status;
     }
 }
