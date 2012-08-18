@@ -15,9 +15,18 @@ class RequestTest extends TestCase
     public function setUp()
     {
         $this->loop = $this->getMock('React\EventLoop\LoopInterface');
-        $this->connectionManager = $this->getMock('React\Http\Client\ConnectionManagerInterface');
-        $this->stream = $this->getMock('React\Stream\Stream', array(), array(), '', false);
-        $this->response = $this->getMock('React\Http\Client\Response', array(), array(), '', false);
+
+        $this->connectionManager = $this->getMockBuilder('React\Http\Client\ConnectionManagerInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->stream = $this->getMockBuilder('React\Stream\Stream')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->response = $this->getMockBuilder('React\Http\Client\Response')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     public function testRequest()

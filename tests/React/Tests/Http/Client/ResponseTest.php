@@ -13,7 +13,10 @@ class ResponseTest extends TestCase
     public function setUp()
     {
         $this->loop = $this->getMock('React\EventLoop\LoopInterface');
-        $this->stream = $this->getMock('React\Stream\Stream', array(), array(), '', false);
+
+        $this->stream = $this->getMockbuilder('React\Stream\Stream')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     public function testResponse()
