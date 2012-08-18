@@ -5,7 +5,7 @@
 require __DIR__.'/../vendor/autoload.php';
 
 $loop = new React\EventLoop\StreamSelectLoop();
-$factory = new React\ChildProcess\factory($loop);
+$factory = new React\ChildProcess\Factory($loop);
 
 $commands = array(
     'A' => array('cmd' => 'php', 'args' => array('-r', 'foreach (range(1, 3) as $i) { echo $i, PHP_EOL; sleep(1); } fputs(STDERR, "Bye.");')),
