@@ -14,6 +14,8 @@ class Process extends EventEmitter
 
     public $stderr;
 
+    private $process;
+
     private $status = NULL;
 
     public function __construct($process, WritableStreamInterface $stdin, ReadableStreamInterface $stdout, ReadableStreamInterface $stderr)
