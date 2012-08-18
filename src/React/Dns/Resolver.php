@@ -34,8 +34,8 @@ class Resolver
         $parser = new Parser();
 
         $request = new Message();
-        $request->headers->set('id', rand());
-        $request->headers->set('rd', 1);
+        $request->header->set('id', rand());
+        $request->header->set('rd', 1);
         $request->questions[] = (array) $query;
         $request->prepare();
 
@@ -56,7 +56,7 @@ class Resolver
         $conn->on('data', function ($data) use ($that, $conn, $parser, $response, $callback) {
             $responseReady = $parser->parseChunk($data, $response);
             if ($responseReady) {
-                if ($response->headers->isTruncated()) {
+                if ($response->header->isTruncated()) {
                     $conn->end();
                     $that->doQuery($nameserver, 'tcp', $queryData, $parser, $callback);
                     return;

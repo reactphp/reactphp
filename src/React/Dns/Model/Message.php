@@ -27,7 +27,7 @@ class Message
 
     public $data = '';
 
-    public $headers;
+    public $header;
     public $questions = array();
     public $answers = array();
     public $authority = array();
@@ -35,11 +35,11 @@ class Message
 
     public function __construct()
     {
-        $this->headers = new HeaderBag();
+        $this->header = new HeaderBag();
     }
 
     public function prepare()
     {
-        $this->headers->populateCounts($this);
+        $this->header->populateCounts($this);
     }
 }

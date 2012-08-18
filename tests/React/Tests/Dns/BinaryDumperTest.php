@@ -17,8 +17,8 @@ class BinaryDumperTest extends \PHPUnit_Framework_TestCase
         $expected = $this->formatHexDump(str_replace(' ', '', $data), 2);
 
         $request = new Message();
-        $request->headers->set('id', 0x7262);
-        $request->headers->set('rd', 1);
+        $request->header->set('id', 0x7262);
+        $request->header->set('rd', 1);
 
         $request->questions[] = array(
             'name'  => 'igor.io',

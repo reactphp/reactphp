@@ -11,7 +11,7 @@ class BinaryDumper
     {
         $data = '';
 
-        $data .= $this->headerToBinary($message->headers);
+        $data .= $this->headerToBinary($message->header);
         $data .= $this->questionToBinary($message->questions);
 
         return $data;

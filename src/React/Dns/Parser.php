@@ -16,19 +16,19 @@ class Parser
     {
         $message->data .= $data;
 
-        if (!$message->headers->get('id')) {
+        if (!$message->header->get('id')) {
             if (!$this->parseHeader($message)) {
                 return;
             }
         }
 
-        if ($message->headers->get('qdCount') != count($message->questions)) {
+        if ($message->header->get('qdCount') != count($message->questions)) {
             if (!$this->parseQuestion($message)) {
                 return;
             }
         }
 
-        if ($message->headers->get('anCount') != count($message->answers)) {
+        if ($message->header->get('anCount') != count($message->answers)) {
             if (!$this->parseAnswer($message)) {
                 return;
             }
@@ -62,7 +62,7 @@ class Parser
 
 
         foreach ($vars as $name => $value) {
-            $message->headers->set($name, $value);
+            $message->header->set($name, $value);
         }
 
         return $message;
@@ -112,7 +112,7 @@ class Parser
             'class' => $class,
         );
 
-        if ($message->headers->get('qdCount') != count($message->questions)) {
+        if ($message->header->get('qdCount') != count($message->questions)) {
             return $this->parseQuestion($message);
         }
 
