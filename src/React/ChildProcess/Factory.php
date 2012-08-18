@@ -15,11 +15,11 @@ class Factory
         $this->loop = $loop;
     }
 
-    public function spawn($file, array $args = array(), array $options = NULL)
+    public function spawn($file, array $args = array(), array $options = null)
     {
         $cmd = $this->createCommand($file, $args);
-        $cwd = isset($options['cwd']) ? $options['cwd'] : NULL;
-        $env = isset($options['env']) ? $options['env'] : NULL;
+        $cwd = isset($options['cwd']) ? $options['cwd'] : null;
+        $env = isset($options['env']) ? $options['env'] : null;
 
         $fdSpec = array(
             array('pipe', 'r'),
