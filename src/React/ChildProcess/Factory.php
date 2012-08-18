@@ -20,8 +20,8 @@ class Factory
         $args = $args ? $args : array();
 
         $cmd = $this->createCommand($file, $args);
-        $cwd = $options && $options['cwd'] ? $options['cwd'] : getcwd();
-        $env = $options && $options['env'] ? $options['env'] : $_ENV;
+        $cwd = isset($options['cwd']) ? $options['cwd'] : getcwd();
+        $env = isset($options['env']) ? $options['env'] : $_ENV;
 
         $fdSpec = array(
             array('pipe', 'r'),
