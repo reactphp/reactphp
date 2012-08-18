@@ -79,7 +79,7 @@ class Response extends EventEmitter implements ReadableStreamInterface
     public function handleError(\Exception $error)
     {
         $this->emit('error', array(new \RuntimeException(
-            "stream error",
+            "an error occurred in the underlying stream",
             0,
             $error
         ), $this));
