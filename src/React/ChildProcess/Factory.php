@@ -3,8 +3,8 @@
 namespace React\ChildProcess;
 
 use React\EventLoop\LoopInterface;
-use React\Stream\Stream;
 use React\ChildProcess\Process;
+use React\ChildProcess\Stream;
 
 class Factory
 {
