@@ -1,9 +1,9 @@
 <?php
 
-namespace React\Tests\Dns;
+namespace React\Tests\Dns\Resolver;
 
-use React\Dns\Resolver;
-use React\Dns\Query;
+use React\Dns\Resolver\Resolver;
+use React\Dns\Resolver\Query;
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;
 
@@ -18,7 +18,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
         $resolver
             ->expects($this->once())
             ->method('query')
-            ->with($this->anything(), $this->isInstanceOf('React\Dns\Query'), $this->isInstanceOf('Closure'))
+            ->with($this->anything(), $this->isInstanceOf('React\Dns\Resolver\Query'), $this->isInstanceOf('Closure'))
             ->will($this->returnCallback(function ($nameserver, $query, $callback) use (&$capturedQuery) {
                 $capturedQuery = $query;
             }));
@@ -192,7 +192,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
     {
         $loop = $this->getMock('React\EventLoop\LoopInterface');
 
-        $resolver = $this->getMockBuilder('React\Dns\Resolver')
+        $resolver = $this->getMockBuilder('React\Dns\Resolver\Resolver')
             ->setMethods($methods)
             ->setConstructorArgs(array('8.8.8.8', $loop, $parser, $dumper))
             ->getMock();

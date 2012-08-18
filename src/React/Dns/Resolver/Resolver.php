@@ -1,7 +1,9 @@
 <?php
 
-namespace React\Dns;
+namespace React\Dns\Resolver;
 
+use React\Dns\BadServerException;
+use React\Dns\RecordNotFoundException;
 use React\Dns\Model\Message;
 use React\Dns\Protocol\Parser;
 use React\Dns\Protocol\BinaryDumper;
