@@ -7,41 +7,32 @@ require __DIR__.'/../vendor/autoload.php';
 $loop = new React\EventLoop\StreamSelectLoop();
 $factory = new React\ChildProcess\factory($loop);
 
-$processA = $factory->spawn('php', array('-r', 'foreach (range(1, 3) as $i) { echo $i, PHP_EOL; sleep(1); } fputs(STDERR, "Bye.");'));
-echo '[A] ' . blue('[PID]') . '    pid is ', (string) $processA->getPid(), PHP_EOL;
-echo '[A] ' . blue('[CMD]') . '    ', $processA->getCommand(), PHP_EOL;
+$commands = array(
+    'A' => array('cmd' => 'php', 'args' => array('-r', 'foreach (range(1, 3) as $i) { echo $i, PHP_EOL; sleep(1); } fputs(STDERR, "Bye.");')),
+    'B' => array('cmd' => 'php', 'args' => array('-r', 'foreach (range(1, 6) as $i) { echo $i, PHP_EOL; sleep(1); } fputs(STDERR, "Bye.");')),
+    'C' => array('cmd' => 'php', 'args' => array('-r', 'foreach (range(1, 9) as $i) { echo $i, PHP_EOL; sleep(1); } fputs(STDERR, "Bye.");')),
+);
 
-$processA->stdout->on('data', function ($data) {
-    echo '[A] ' . green('[STDOUT]') . ' ';
-    var_dump($data);
-});
+foreach ($commands as $id => $command) {
+    $idLabel = "[{$id}] ";
+    $process = $factory->spawn($command['cmd'], $command['args']);
+    echo $idLabel, blue('[PID]') . '    pid is ', (string) $process->getPid(), PHP_EOL;
+    echo $idLabel, blue('[CMD]') . '    ', $process->getCommand(), PHP_EOL;
 
-$processA->stderr->on('data', function ($data) {
-    echo '[A] ' . red('[STDERR]') . ' ';
-    var_dump($data);
-});
+    $process->stdout->on('data', function ($data) use ($idLabel) {
+        echo $idLabel, green('[STDOUT]') . ' ';
+        var_dump($data);
+    });
 
-$processA->on('exit', function ($status) {
-    echo '[A] ' . yellow('[EXIT]') . '   exited with status code ', (string) $status, PHP_EOL;
-});
+    $process->stderr->on('data', function ($data) use ($idLabel) {
+        echo $idLabel, red('[STDERR]') . ' ';
+        var_dump($data);
+    });
 
-$processB = $factory->spawn('php', array('-r', 'foreach (range(1, 6) as $i) { echo $i, PHP_EOL; sleep(1); } fputs(STDERR, "Bye.");'));
-echo '[B] ' . blue('[PID]') . '    pid is ', (string) $processB->getPid(), PHP_EOL;
-echo '[B] ' . blue('[CMD]') . '    ', $processB->getCommand(), PHP_EOL;
-
-$processB->stdout->on('data', function ($data) {
-    echo '[B] ' . green('[STDOUT]') . ' ';
-    var_dump($data);
-});
-
-$processB->stderr->on('data', function ($data) {
-    echo '[B] ' . red('[STDERR]') . ' ';
-    var_dump($data);
-});
-
-$processB->on('exit', function ($status) {
-    echo '[B] ' . yellow('[EXIT]') . '   exited with status code ', (string) $status, PHP_EOL;
-});
+    $process->on('exit', function ($status) use ($idLabel) {
+        echo $idLabel, yellow('[EXIT]') . '   exited with status code ', (string) $status, PHP_EOL;
+    });
+}
 
 $loop->run();
 
