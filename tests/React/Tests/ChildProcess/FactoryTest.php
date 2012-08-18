@@ -44,6 +44,10 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testSpawnWithEnv()
     {
+        if (isset($_SERVER['TRAVIS']) && 'true' === $_SERVER['TRAVIS']) {
+            $this->markTestSkipped();
+        }
+
         $loop    = $this->createLoop();
         $factory = $this->createFactory($loop);
         $process = $factory->spawn('php', array('-r', 'echo "foo = ", $_ENV["foo"];'), null, array('foo' => 'FOO'));
