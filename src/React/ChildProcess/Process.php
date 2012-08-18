@@ -2,7 +2,6 @@
 
 namespace React\ChildProcess;
 
-use React\EventLoop\LoopInterface;
 use React\Stream\WritableStreamInterface;
 use React\Stream\ReadableStreamInterface;
 use Evenement\EventEmitter;
@@ -17,7 +16,7 @@ class Process extends EventEmitter
 
     private $status = NULL;
 
-    public function __construct(LoopInterface $loop, $process, WritableStreamInterface $stdin, ReadableStreamInterface $stdout, ReadableStreamInterface $stderr)
+    public function __construct($process, WritableStreamInterface $stdin, ReadableStreamInterface $stdout, ReadableStreamInterface $stderr)
     {
         $this->process = $process;
         $this->stdin   = $stdin;
