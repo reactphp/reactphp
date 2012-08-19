@@ -28,7 +28,7 @@ class Request extends EventEmitter implements WritableStreamInterface
     private $buffer;
     private $responseFactory;
     private $response;
-    private $state;
+    private $state = self::STATE_INIT;
 
     public function __construct(LoopInterface $loop, ConnectionManagerInterface $connectionManager, GuzzleRequest $request)
     {
