@@ -2,6 +2,8 @@
 
 namespace React\Dns\Resolver;
 
+use React\Dns\Query\ExecutorInterface;
+use React\Dns\Query\Query;
 use React\Dns\BadServerException;
 use React\Dns\RecordNotFoundException;
 use React\Dns\Model\Message;
@@ -13,16 +15,12 @@ use React\Socket\Connection;
 class Resolver
 {
     private $nameserver;
-    private $loop;
-    private $parser;
-    private $dumper;
+    private $executor;
 
-    public function __construct($nameserver, LoopInterface $loop, Parser $parser = null, BinaryDumper $dumper = null)
+    public function __construct($nameserver, ExecutorInterface $executor)
     {
-        $this->nameserver = $this->addPortToServerIfMissing($nameserver);
-        $this->loop = $loop;
-        $this->parser = $parser ?: new Parser();
-        $this->dumper = $dumper ?: new BinaryDumper();
+        $this->nameserver = $nameserver;
+        $this->executor = $executor;
     }
 
     public function resolve($domain, $callback, $errback = null)
@@ -31,11 +29,9 @@ class Resolver
 
         $query = new Query($domain, Message::TYPE_A, Message::CLASS_IN);
 
-        $this->query($this->nameserver, $query, function (Message $response) use ($that, $callback, $errback) {
+        $this->executor->query($this->nameserver, $query, function (Message $response) use ($that, $callback, $errback) {
             try {
-                $answer = $that->pickRandomAnswerOfType($response, Message::TYPE_A);
-                $address = $answer->data;
-                $callback($address);
+                $that->extractAddress($response, Message::TYPE_A, $callback);
             } catch (RecordNotFoundException $e) {
                 if (!$errback) {
                     throw $e;
@@ -46,14 +42,11 @@ class Resolver
         });
     }
 
-    public function query($nameserver, Query $query, $callback)
+    public function extractAddress(Message $response, $type, $callback)
     {
-        $request = $this->prepareRequest($query);
-
-        $queryData = $this->dumper->toBinary($request);
-        $transport = strlen($queryData) > 512 ? 'tcp' : 'udp';
-
-        $this->doQuery($nameserver, $transport, $queryData, $callback);
+        $answer = $this->pickRandomAnswerOfType($response, $type);
+        $address = $answer->data;
+        $callback($address);
     }
 
     public function pickRandomAnswerOfType(Message $response, $type)
@@ -70,64 +63,5 @@ class Resolver
         $answer = $filteredAnswers[array_rand($filteredAnswers)];
 
         return $answer;
-    }
-
-    public function prepareRequest(Query $query)
-    {
-        $request = new Message();
-        $request->header->set('id', rand());
-        $request->header->set('rd', 1);
-        $request->questions[] = (array) $query;
-        $request->prepare();
-
-        return $request;
-    }
-
-    public function doQuery($nameserver, $transport, $queryData, $callback)
-    {
-        $that = $this;
-        $parser = $this->parser;
-
-        $response = new Message();
-
-        $retryWithTcp = function () use ($that, $nameserver, $queryData, $callback) {
-            $that->doQuery($nameserver, 'tcp', $queryData, $callback);
-        };
-
-        $conn = $this->createConnection($nameserver, $transport);
-        $conn->on('data', function ($data) use ($that, $retryWithTcp, $conn, $parser, $response, $transport, $callback) {
-            $responseReady = $parser->parseChunk($data, $response);
-
-            if (!$responseReady) {
-                return;
-            }
-
-            if ($response->header->isTruncated()) {
-                if ('tcp' === $transport) {
-                    throw new BadServerException('The server set the truncated bit although we issued a TCP request');
-                }
-
-                $conn->end();
-                $retryWithTcp();
-                return;
-            }
-
-            $conn->end();
-            $callback($response);
-        });
-        $conn->write($queryData);
-    }
-
-    protected function createConnection($nameserver, $transport)
-    {
-        $fd = stream_socket_client("$transport://$nameserver");
-        $conn = new Connection($fd, $this->loop);
-
-        return $conn;
-    }
-
-    protected function addPortToServerIfMissing($nameserver)
-    {
-        return false === strpos($nameserver, ':') ? "$nameserver:53" : $nameserver;
     }
 }

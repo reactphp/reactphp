@@ -8,7 +8,8 @@ $loop = React\EventLoop\Factory::create();
 
 $domain = 'igor.io';
 
-$resolver = new React\Dns\Resolver\Resolver('8.8.8.8', $loop);
+$factory = new React\Dns\Resolver\Factory();
+$resolver = $factory->create('8.8.8.8:53', $loop);
 $resolver->resolve($domain, function ($ip) {
     echo "Host: $ip\n";
 });

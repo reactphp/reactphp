@@ -1,6 +1,6 @@
 <?php
 
-namespace React\Dns\Resolver;
+namespace React\Dns\Query;
 
 class Query
 {
