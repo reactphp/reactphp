@@ -147,6 +147,32 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('178.79.169.131', $response->answers[0]->data);
     }
 
+    public function testParseAnswerWithInlineData()
+    {
+        $data = "";
+        $data .= "04 69 67 6f 72 02 69 6f 00";          // answer: igor.io
+        $data .= "00 01 00 01";                         // answer: type A, class IN
+        $data .= "00 01 51 80";                         // answer: ttl 86400
+        $data .= "00 04";                               // answer: rdlength 4
+        $data .= "b2 4f a9 83";                         // answer: rdata 178.79.169.131
+
+        $data = $this->convertTcpDumpToBinary($data);
+
+        $response = new Message();
+        $response->header->set('anCount', 1);
+        $response->data = $data;
+
+        $parser = new Parser();
+        $parser->parseAnswer($response);
+
+        $this->assertCount(1, $response->answers);
+        $this->assertSame('igor.io', $response->answers[0]->name);
+        $this->assertSame(Message::TYPE_A, $response->answers[0]->type);
+        $this->assertSame(Message::CLASS_IN, $response->answers[0]->class);
+        $this->assertSame(86400, $response->answers[0]->ttl);
+        $this->assertSame('178.79.169.131', $response->answers[0]->data);
+    }
+
     private function convertTcpDumpToBinary($input)
     {
         // sudo ngrep -d en1 -x port 53

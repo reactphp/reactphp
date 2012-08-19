@@ -37,7 +37,7 @@ class Parser
         return $message;
     }
 
-    private function parseHeader(Message $message)
+    public function parseHeader(Message $message)
     {
         if (strlen($message->data) < 12) {
             return;
@@ -68,7 +68,7 @@ class Parser
         return $message;
     }
 
-    private function parseQuestion(Message $message)
+    public function parseQuestion(Message $message)
     {
         if (strlen($message->data) < 2) {
             return;
@@ -119,7 +119,7 @@ class Parser
         return $message;
     }
 
-    private function parseAnswer(Message $message)
+    public function parseAnswer(Message $message)
     {
         if (strlen($message->data) < 2) {
             return;
@@ -183,7 +183,7 @@ class Parser
         return $message;
     }
 
-    private function signedLongToUnsignedLong($i)
+    public function signedLongToUnsignedLong($i)
     {
         return $i & 0x80000000 ? $i - 0xffffffff : $i;
     }
