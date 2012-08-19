@@ -11,9 +11,16 @@ use React\EventLoop\LoopInterface;
 use Guzzle\Parser\Message\MessageParser;
 use React\Http\Client\ConnectionManagerInterface;
 use React\Http\Client\ResponseHeaderParser;
+use React\Stream\WritableStreamInterface;
 
-class Request extends EventEmitter
+class Request extends EventEmitter implements WritableStreamInterface
 {
+
+    const STATE_INIT = 0;
+    const STATE_WRITING_HEAD = 1;
+    const STATE_HEAD_WRITTEN = 2;
+    const STATE_END = 3;
+
     private $request;
     private $loop;
     private $connectionManager;
@@ -21,7 +28,7 @@ class Request extends EventEmitter
     private $buffer;
     private $responseFactory;
     private $response;
-    private $closed = false;
+    private $state;
 
     public function __construct(LoopInterface $loop, ConnectionManagerInterface $connectionManager, GuzzleRequest $request)
     {
@@ -30,17 +37,24 @@ class Request extends EventEmitter
         $this->request = $request;
     }
 
-    public function end($data = null)
+    public function isWritable()
     {
+        return self::STATE_END > $this->state;
+    }
+
+    public function writeHead()
+    {
+        if (self::STATE_WRITING_HEAD <= $this->state) {
+            throw new \LogicException('headers already written');
+        }
+
+        $this->state = self::STATE_WRITING_HEAD;
+
         $that = $this;
         $request = $this->request;
         $streamRef = &$this->stream;
 
-        if (null !== $data && !is_scalar($data)) {
-            throw new \InvalidArgumentException('$data must be null or scalar');
-        }
-
-        $this->connect(function($stream, \Exception $error = null) use ($that, $request, &$streamRef, $data) {
+        $this->connect(function($stream, \Exception $error = null) use ($that, $request, &$streamRef) {
             if (!$stream) {
                 $that->closeError(new \RuntimeException(
                     "connection failed",
@@ -52,6 +66,7 @@ class Request extends EventEmitter
 
             $streamRef = $stream;
 
+            $stream->on('drain', array($that, 'handleDrain'));
             $stream->on('data', array($that, 'handleData'));
             $stream->on('end', array($that, 'handleEnd'));
             $stream->on('error', array($that, 'handleError'));
@@ -59,12 +74,51 @@ class Request extends EventEmitter
             $request->setProtocolVersion('1.0');
             $headers = (string) $request;
 
-            if (null !== $data) {
-                $headers .= $data;
-            }
-
             $stream->write($headers);
+
+            $this->state = self::STATE_HEAD_WRITTEN;
+
+            $that->emit('headers-written', array($that));
         });
+    }
+
+    public function write($data)
+    {
+        if (!$this->isWritable()) {
+            return;
+        }
+
+        if (self::STATE_HEAD_WRITTEN <= $this->state) {
+            return $this->stream->write($data);
+        }
+
+        $this->on('headers-written', function($that) use ($data) {
+            $that->write($data);
+        });
+
+        if (self::STATE_WRITING_HEAD > $this->state) {
+            $this->writeHead();
+        }
+
+        return false;
+    }
+
+    public function end($data = null)
+    {
+        if (null !== $data && !is_scalar($data)) {
+            throw new \InvalidArgumentException('$data must be null or scalar');
+        }
+
+        if (null !== $data) {
+            $this->write($data);
+        } else if (self::STATE_WRITING_HEAD > $this->state) {
+            $this->writeHead();
+        }
+    }
+
+    public function handleDrain()
+    {
+        $this->emit('drain', array($this));
     }
 
     public function handleData($data)
@@ -75,6 +129,7 @@ class Request extends EventEmitter
 
             list($response, $body) = $this->parseResponse($this->buffer);
 
+            $this->stream->removeListener('drain', array($this, 'handleDrain'));
             $this->stream->removeListener('data', array($this, 'handleData'));
             $this->stream->removeListener('end', array($this, 'handleEnd'));
             $this->stream->removeListener('error', array($this, 'handleError'));
@@ -117,7 +172,7 @@ class Request extends EventEmitter
 
     public function closeError(\Exception $error)
     {
-        if ($this->closed) {
+        if (self::STATE_END <= $this->state) {
             return;
         }
         $this->emit('error', array($error, $this));
@@ -126,11 +181,11 @@ class Request extends EventEmitter
 
     public function close(\Exception $error = null)
     {
-        if ($this->closed) {
+        if (self::STATE_END <= $this->state) {
             return;
         }
 
-        $this->closed = true;
+        $this->state = self::STATE_END;
 
         if ($this->stream) {
             $this->stream->close();

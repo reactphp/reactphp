@@ -5,6 +5,7 @@ namespace React\Tests\Http\Client;
 use Guzzle\Http\Message\Request as GuzzleRequest;
 use React\Http\Client\Request;
 use React\Tests\Socket\TestCase;
+use React\Stream\Stream;
 
 class RequestTest extends TestCase
 {
@@ -49,31 +50,39 @@ class RequestTest extends TestCase
 
         $this->stream->expects($this->at(0))
             ->method('on')
-            ->with('data', $this->identicalTo(array($request, 'handleData')))
+            ->with('drain', $this->identicalTo(array($request, 'handleDrain')))
             ;
         $this->stream->expects($this->at(1))
             ->method('on')
-            ->with('end', $this->identicalTo(array($request, 'handleEnd')))
+            ->with('data', $this->identicalTo(array($request, 'handleData')))
             ;
         $this->stream->expects($this->at(2))
+            ->method('on')
+            ->with('end', $this->identicalTo(array($request, 'handleEnd')))
+            ;
+        $this->stream->expects($this->at(3))
             ->method('on')
             ->with('error', $this->identicalTo(array($request, 'handleError')))
             ;
 
-        $this->stream->expects($this->at(3))
+        $this->stream->expects($this->at(4))
             ->method('write')
             ->with($this->matchesRegularExpression("#^GET / HTTP/1\.0\r\nHost: www.example.com\r\n.*\r\n\r\n$#"))
             ;
 
-        $this->stream->expects($this->at(4))
+        $this->stream->expects($this->at(5))
+            ->method('removeListener')
+            ->with('drain', $this->identicalTo(array($request, 'handleDrain')))
+            ;
+        $this->stream->expects($this->at(6))
             ->method('removeListener')
             ->with('data', $this->identicalTo(array($request, 'handleData')))
             ;
-        $this->stream->expects($this->at(5))
+        $this->stream->expects($this->at(7))
             ->method('removeListener')
             ->with('end', $this->identicalTo(array($request, 'handleEnd')))
             ;
-        $this->stream->expects($this->at(6))
+        $this->stream->expects($this->at(8))
             ->method('removeListener')
             ->with('error', $this->identicalTo(array($request, 'handleError')))
             ;
@@ -286,9 +295,14 @@ class RequestTest extends TestCase
             }))
             ;
 
-        $this->stream->expects($this->at(3))
+        $this->stream->expects($this->at(4))
             ->method('write')
-            ->with($this->matchesRegularExpression("#^POST / HTTP/1\.0\r\nHost: www.example.com\r\nUser-Agent:.*\r\n\r\nsome post data$#"))
+            ->with($this->matchesRegularExpression("#^POST / HTTP/1\.0\r\nHost: www.example.com\r\nUser-Agent:.*\r\n\r\n$#"))
+            ;
+
+        $this->stream->expects($this->at(5))
+            ->method('write')
+            ->with($this->identicalTo("some post data"))
             ;
 
         $factory = $this->createCallableMock();
@@ -299,6 +313,112 @@ class RequestTest extends TestCase
         $request->setResponseFactory($factory);
 
         $request->end('some post data');
+
+        $request->handleData("HTTP/1.0 200 OK\r\n");
+        $request->handleData("Content-Type: text/plain\r\n");
+        $request->handleData("\r\nbody");
+    }
+
+    public function testPostRequestUsingWrite()
+    {
+        $that = $this;
+
+        $guzzleRequest = new GuzzleRequest('POST', 'http://www.example.com');
+
+        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+
+        $stream = $this->stream;
+
+        $this->connectionManager->expects($this->once())
+            ->method('getConnection')
+            ->with($this->anything(), 'www.example.com', 80)
+            ->will($this->returnCallback(function($cb) use ($stream) {
+                $cb($stream);
+            }))
+            ;
+
+        $this->stream->expects($this->at(4))
+            ->method('write')
+            ->with($this->matchesRegularExpression("#^POST / HTTP/1\.0\r\nHost: www.example.com\r\nUser-Agent:.*\r\n\r\n$#"))
+            ;
+        $this->stream->expects($this->at(5))
+            ->method('write')
+            ->with($this->identicalTo("some"))
+            ;
+        $this->stream->expects($this->at(6))
+            ->method('write')
+            ->with($this->identicalTo("post"))
+            ;
+        $this->stream->expects($this->at(7))
+            ->method('write')
+            ->with($this->identicalTo("data"))
+            ;
+
+        $factory = $this->createCallableMock();
+        $factory->expects($this->once())
+            ->method('__invoke')
+            ->will($this->returnValue($this->response))
+            ;
+        $request->setResponseFactory($factory);
+
+        $request->write("some");
+        $request->write("post");
+        $request->end("data");
+
+        $request->handleData("HTTP/1.0 200 OK\r\n");
+        $request->handleData("Content-Type: text/plain\r\n");
+        $request->handleData("\r\nbody");
+    }
+
+    public function testPipeToRequest()
+    {
+        $that = $this;
+
+        $guzzleRequest = new GuzzleRequest('POST', 'http://www.example.com');
+
+        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+
+        $stream = $this->stream;
+
+        $this->connectionManager->expects($this->once())
+            ->method('getConnection')
+            ->with($this->anything(), 'www.example.com', 80)
+            ->will($this->returnCallback(function($cb) use ($stream) {
+                $cb($stream);
+            }))
+            ;
+
+        $this->stream->expects($this->at(4))
+            ->method('write')
+            ->with($this->matchesRegularExpression("#^POST / HTTP/1\.0\r\nHost: www.example.com\r\nUser-Agent:.*\r\n\r\n$#"))
+            ;
+        $this->stream->expects($this->at(5))
+            ->method('write')
+            ->with($this->identicalTo("some"))
+            ;
+        $this->stream->expects($this->at(6))
+            ->method('write')
+            ->with($this->identicalTo("post"))
+            ;
+        $this->stream->expects($this->at(7))
+            ->method('write')
+            ->with($this->identicalTo("data"))
+            ;
+
+        $factory = $this->createCallableMock();
+        $factory->expects($this->once())
+            ->method('__invoke')
+            ->will($this->returnValue($this->response))
+            ;
+        $request->setResponseFactory($factory);
+
+        $stream = fopen('php://memory', 'r+');
+        $stream = new Stream($stream, $this->loop);
+
+        $stream->pipe($request);
+        $stream->emit('data', array('some'));
+        $stream->emit('data', array('post'));
+        $stream->emit('data', array('data'));
 
         $request->handleData("HTTP/1.0 200 OK\r\n");
         $request->handleData("Content-Type: text/plain\r\n");
