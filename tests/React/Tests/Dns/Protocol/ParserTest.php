@@ -60,6 +60,46 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(Message::CLASS_IN, $request->questions[0]['class']);
     }
 
+    public function testParseRequestWithTwoQuestions()
+    {
+        $data = "";
+        $data .= "72 62 01 00 00 02 00 00 00 00 00 00";     // header
+        $data .= "04 69 67 6f 72 02 69 6f 00";              // question: igor.io
+        $data .= "00 01 00 01";                             // question: type A, class IN
+        $data .= "03 77 77 77 04 69 67 6f 72 02 69 6f 00";  // question: www.igor.io
+        $data .= "00 01 00 01";                             // question: type A, class IN
+
+        $data = $this->convertTcpDumpToBinary($data);
+
+        $request = new Message();
+
+        $parser = new Parser();
+        $parser->parseChunk($data, $request);
+
+        $header = $request->header;
+        $this->assertSame(0x7262, $header->get('id'));
+        $this->assertSame(2, $header->get('qdCount'));
+        $this->assertSame(0, $header->get('anCount'));
+        $this->assertSame(0, $header->get('nsCount'));
+        $this->assertSame(0, $header->get('arCount'));
+        $this->assertSame(0, $header->get('qr'));
+        $this->assertSame(Message::OPCODE_QUERY, $header->get('opcode'));
+        $this->assertSame(0, $header->get('aa'));
+        $this->assertSame(0, $header->get('tc'));
+        $this->assertSame(1, $header->get('rd'));
+        $this->assertSame(0, $header->get('ra'));
+        $this->assertSame(0, $header->get('z'));
+        $this->assertSame(Message::RCODE_OK, $header->get('rcode'));
+
+        $this->assertCount(2, $request->questions);
+        $this->assertSame('igor.io', $request->questions[0]['name']);
+        $this->assertSame(Message::TYPE_A, $request->questions[0]['type']);
+        $this->assertSame(Message::CLASS_IN, $request->questions[0]['class']);
+        $this->assertSame('www.igor.io', $request->questions[1]['name']);
+        $this->assertSame(Message::TYPE_A, $request->questions[1]['type']);
+        $this->assertSame(Message::CLASS_IN, $request->questions[1]['class']);
+    }
+
     public function testParseResponse()
     {
         $data = "";
