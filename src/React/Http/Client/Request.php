@@ -53,8 +53,9 @@ class Request extends EventEmitter implements WritableStreamInterface
         $that = $this;
         $request = $this->request;
         $streamRef = &$this->stream;
+        $stateRef = &$this->state;
 
-        $this->connect(function($stream, \Exception $error = null) use ($that, $request, &$streamRef) {
+        $this->connect(function($stream, \Exception $error = null) use ($that, $request, &$streamRef, &$stateRef) {
             if (!$stream) {
                 $that->closeError(new \RuntimeException(
                     "connection failed",
@@ -76,7 +77,7 @@ class Request extends EventEmitter implements WritableStreamInterface
 
             $stream->write($headers);
 
-            $this->state = self::STATE_HEAD_WRITTEN;
+            $stateRef = Request::STATE_HEAD_WRITTEN;
 
             $that->emit('headers-written', array($that));
         });
