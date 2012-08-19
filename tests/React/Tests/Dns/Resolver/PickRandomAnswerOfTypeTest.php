@@ -33,7 +33,7 @@ class PickRandomAnswerOfTypeTest extends \PHPUnit_Framework_TestCase
                 $this->createMessage(
                     array('qr' => 1),
                     array(
-                        new Record('igor.io', Message::TYPE_A, Message::CLASS_IN)
+                        new Record('igor.io', Message::TYPE_TXT, Message::CLASS_IN)
                     ),
                     array(
                         new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 3600, '178.79.169.131'),
