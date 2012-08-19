@@ -14,6 +14,8 @@ class Client
 
     private $connectionManager;
 
+    private $secureConnectionManager;
+
     public function __construct(LoopInterface $loop)
     {
         $this->loop = $loop;
@@ -22,13 +24,7 @@ class Client
     public function request($method, $url, array $headers = array())
     {
         $guzzleRequest = new GuzzleRequest($method, $url, $headers);
-
-        if ('https' === $guzzleRequest->getScheme()) {
-            $connectionManager = $this->getSecureConnectionManager();
-        } else {
-            $connectionManager = $this->getConnectionManager();
-        }
-
+        $connectionManager = $this->getConnectionManagerForScheme($guzzleRequest->getScheme());
         return new ClientRequest($this->loop, $connectionManager, $guzzleRequest);
     }
 
@@ -58,5 +54,13 @@ class Client
         return $this->secureConnectionManager;
     }
 
+    private function getConnectionManagerForScheme($scheme)
+    {
+        if ('https' === $scheme) {
+            return $this->getSecureConnectionManager();
+        } else {
+            return $this->getConnectionManager();
+        }
+    }
 }
 
