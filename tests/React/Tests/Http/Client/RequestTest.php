@@ -41,7 +41,7 @@ class RequestTest extends TestCase
 
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80, false)
+            ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function($cb) use ($stream) {
                 $cb($stream);
             }))
@@ -141,7 +141,7 @@ class RequestTest extends TestCase
 
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80, false)
+            ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function($cb) {
                 $cb(null);
             }))
@@ -187,7 +187,7 @@ class RequestTest extends TestCase
 
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80, false)
+            ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function($cb) use ($stream) {
                 $cb($stream);
             }))
@@ -233,7 +233,7 @@ class RequestTest extends TestCase
 
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80, false)
+            ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function($cb) use ($stream) {
                 $cb($stream);
             }))
@@ -280,7 +280,7 @@ class RequestTest extends TestCase
 
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80, false)
+            ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function($cb) use ($stream) {
                 $cb($stream);
             }))
@@ -332,7 +332,7 @@ class RequestTest extends TestCase
 
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80, false)
+            ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function($cb) use ($stream) {
                 $cb($stream);
             }))
