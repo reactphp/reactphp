@@ -36,7 +36,7 @@ class Executor implements ExecutorInterface
     public function prepareRequest(Query $query)
     {
         $request = new Message();
-        $request->header->set('id', rand());
+        $request->header->set('id', $this->generateId());
         $request->header->set('rd', 1);
         $request->questions[] = (array) $query;
         $request->prepare();
@@ -77,6 +77,11 @@ class Executor implements ExecutorInterface
             $callback($response);
         });
         $conn->write($queryData);
+    }
+
+    protected function generateId()
+    {
+        return mt_rand(0, 0xffff);
     }
 
     protected function createConnection($nameserver, $transport)
