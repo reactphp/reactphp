@@ -31,6 +31,66 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($process->isRunning());
     }
 
+    public function testHandleExitExitEvent()
+    {
+        $process = $this->createProcess("php '-r' 'exit(0);'");
+
+        $capturedExitStatus = null;
+
+        $process->on('exit', function ($status) use (&$capturedExitStatus) {
+            $capturedExitStatus = $status;
+        });
+
+        $process->handleExit();
+
+        $this->assertEquals(0, $capturedExitStatus);
+    }
+
+    public function testHandleExitExitEventStatus1()
+    {
+        $process = $this->createProcess("php '-r' 'exit(1);'");
+
+        $capturedExitStatus = null;
+
+        $process->on('exit', function ($status) use (&$capturedExitStatus) {
+            $capturedExitStatus = $status;
+        });
+
+        $process->handleExit();
+
+        $this->assertEquals(1, $capturedExitStatus);
+    }
+
+    public function testHandleCloseExitEvent()
+    {
+        $process = $this->createProcess("php '-r' 'exit(0);'");
+
+        $capturedExitStatus = null;
+
+        $process->on('close', function ($status) use (&$capturedExitStatus) {
+            $capturedExitStatus = $status;
+        });
+
+        $process->handleExit();
+
+        $this->assertEquals(0, $capturedExitStatus);
+    }
+
+    public function testHandleCloseExitEventStatus1()
+    {
+        $process = $this->createProcess("php '-r' 'exit(1);'");
+
+        $capturedExitStatus = null;
+
+        $process->on('close', function ($status) use (&$capturedExitStatus) {
+            $capturedExitStatus = $status;
+        });
+
+        $process->handleExit();
+
+        $this->assertEquals(1, $capturedExitStatus);
+    }
+
     private function createProcess($command)
     {
         return new Process(
