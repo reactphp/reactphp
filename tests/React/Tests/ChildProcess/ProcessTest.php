@@ -33,7 +33,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     public function testIsRunningIsFalseWhenTerminated()
     {
         $process = new Process(
-            $stream = $this->createProcessStream('sleep 3'),
+            $this->createProcessStream('sleep 3'),
             $this->getMock('\\React\\Stream\\WritableStreamInterface'),
             $this->getMock('\\React\\Stream\\ReadableStreamInterface'),
             $this->getMock('\\React\\Stream\\ReadableStreamInterface')
