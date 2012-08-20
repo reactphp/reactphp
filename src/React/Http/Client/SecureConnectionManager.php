@@ -11,18 +11,18 @@ class SecureConnectionManager extends ConnectionManager
     {
         $loop = $this->loop;
 
-        $enableCrypto = function() use ($callback, $socket, $loop) {
+        $enableCrypto = function () use ($callback, $socket, $loop) {
 
             $result = stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
 
-            // crypto was successfully enabled
             if (true === $result) {
+                // crypto was successfully enabled
                 $loop->removeWriteStream($socket);
                 $loop->removeReadStream($socket);
                 call_user_func($callback, new Stream($socket, $loop));
 
-            // an error occured
             } else if (false === $result) {
+                // an error occured
                 $loop->removeWriteStream($socket);
                 $loop->removeReadStream($socket);
                 call_user_func($callback, null);

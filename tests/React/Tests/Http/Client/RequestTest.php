@@ -4,8 +4,8 @@ namespace React\Tests\Http\Client;
 
 use Guzzle\Http\Message\Request as GuzzleRequest;
 use React\Http\Client\Request;
-use React\Tests\Socket\TestCase;
 use React\Stream\Stream;
+use React\Tests\Socket\TestCase;
 
 class RequestTest extends TestCase
 {
@@ -43,7 +43,7 @@ class RequestTest extends TestCase
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function($cb) use ($stream) {
+            ->will($this->returnCallback(function ($cb) use ($stream) {
                 $cb($stream);
             }))
             ;
@@ -97,7 +97,7 @@ class RequestTest extends TestCase
         $response->expects($this->at(0))
             ->method('on')
             ->with('end', $this->anything())
-            ->will($this->returnCallback(function($event, $cb) use (&$endCallback) {
+            ->will($this->returnCallback(function ($event, $cb) use (&$endCallback) {
                 $endCallback = $cb;
             }));
 
@@ -151,7 +151,7 @@ class RequestTest extends TestCase
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function($cb) {
+            ->will($this->returnCallback(function ($cb) {
                 $cb(null);
             }))
             ;
@@ -197,7 +197,7 @@ class RequestTest extends TestCase
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function($cb) use ($stream) {
+            ->will($this->returnCallback(function ($cb) use ($stream) {
                 $cb($stream);
             }))
             ;
@@ -243,7 +243,7 @@ class RequestTest extends TestCase
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function($cb) use ($stream) {
+            ->will($this->returnCallback(function ($cb) use ($stream) {
                 $cb($stream);
             }))
             ;
@@ -290,7 +290,7 @@ class RequestTest extends TestCase
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function($cb) use ($stream) {
+            ->will($this->returnCallback(function ($cb) use ($stream) {
                 $cb($stream);
             }))
             ;
@@ -332,7 +332,7 @@ class RequestTest extends TestCase
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function($cb) use ($stream) {
+            ->will($this->returnCallback(function ($cb) use ($stream) {
                 $cb($stream);
             }))
             ;
@@ -383,7 +383,7 @@ class RequestTest extends TestCase
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function($cb) use ($stream) {
+            ->will($this->returnCallback(function ($cb) use ($stream) {
                 $cb($stream);
             }))
             ;
@@ -453,7 +453,7 @@ class RequestTest extends TestCase
         $this->connectionManager->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function($cb) use ($stream) {
+            ->will($this->returnCallback(function ($cb) use ($stream) {
                 $cb($stream);
             }))
             ;
@@ -467,7 +467,7 @@ class RequestTest extends TestCase
         $response->expects($this->at(1))
             ->method('on')
             ->with('error', $this->anything())
-            ->will($this->returnCallback(function($event, $cb) use (&$errorCallback) {
+            ->will($this->returnCallback(function ($event, $cb) use (&$errorCallback) {
                 $errorCallback = $cb;
             }));
 

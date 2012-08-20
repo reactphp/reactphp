@@ -3,19 +3,18 @@
 namespace React\Http\Client;
 
 use Evenement\EventEmitter;
-use Guzzle\Http\Url;
-use React\Stream\Stream;
 use Guzzle\Http\Message\Request as GuzzleRequest;
-use React\Http\Client\Response;
-use React\EventLoop\LoopInterface;
+use Guzzle\Http\Url;
 use Guzzle\Parser\Message\MessageParser;
+use React\EventLoop\LoopInterface;
 use React\Http\Client\ConnectionManagerInterface;
+use React\Http\Client\Response;
 use React\Http\Client\ResponseHeaderParser;
+use React\Stream\Stream;
 use React\Stream\WritableStreamInterface;
 
 class Request extends EventEmitter implements WritableStreamInterface
 {
-
     const STATE_INIT = 0;
     const STATE_WRITING_HEAD = 1;
     const STATE_HEAD_WRITTEN = 2;
@@ -45,7 +44,7 @@ class Request extends EventEmitter implements WritableStreamInterface
     public function writeHead()
     {
         if (self::STATE_WRITING_HEAD <= $this->state) {
-            throw new \LogicException('headers already written');
+            throw new \LogicException('Headers already written');
         }
 
         $this->state = self::STATE_WRITING_HEAD;
@@ -55,10 +54,10 @@ class Request extends EventEmitter implements WritableStreamInterface
         $streamRef = &$this->stream;
         $stateRef = &$this->state;
 
-        $this->connect(function($stream, \Exception $error = null) use ($that, $request, &$streamRef, &$stateRef) {
+        $this->connect(function ($stream, \Exception $error = null) use ($that, $request, &$streamRef, &$stateRef) {
             if (!$stream) {
                 $that->closeError(new \RuntimeException(
-                    "connection failed",
+                    "Connection failed",
                     0,
                     $error
                 ));
@@ -93,7 +92,7 @@ class Request extends EventEmitter implements WritableStreamInterface
             return $this->stream->write($data);
         }
 
-        $this->on('headers-written', function($that) use ($data) {
+        $this->on('headers-written', function ($that) use ($data) {
             $that->write($data);
         });
 
@@ -127,8 +126,7 @@ class Request extends EventEmitter implements WritableStreamInterface
         $this->buffer .= $data;
 
         if (false !== strpos($this->buffer, "\r\n\r\n")) {
-
-            list($response, $body) = $this->parseResponse($this->buffer);
+            list($response, $bodyChunk) = $this->parseResponse($this->buffer);
 
             $this->stream->removeListener('drain', array($this, 'handleDrain'));
             $this->stream->removeListener('data', array($this, 'handleData'));
@@ -138,12 +136,12 @@ class Request extends EventEmitter implements WritableStreamInterface
             $this->response = $response;
             $that = $this;
 
-            $response->on('end', function() use ($that) {
+            $response->on('end', function () use ($that) {
                 $that->close();
             });
-            $response->on('error', function(\Exception $error) use ($that) {
+            $response->on('error', function (\Exception $error) use ($that) {
                 $that->closeError(new \RuntimeException(
-                    "response error",
+                    "An error occured in the response",
                     0,
                     $error
                 ));
@@ -151,21 +149,21 @@ class Request extends EventEmitter implements WritableStreamInterface
 
             $this->emit('response', array($response, $this));
 
-            $response->emit('data', array($body));
+            $response->emit('data', array($bodyChunk));
         }
     }
 
     public function handleEnd()
     {
         $this->closeError(new \RuntimeException(
-            "connection closed before receiving response"
+            "Connection closed before receiving response"
         ));
     }
 
     public function handleError($error)
     {
         $this->closeError(new \RuntimeException(
-            "stream error",
+            "An error occurred in the underlying stream",
             0,
             $error
         ));
@@ -220,7 +218,7 @@ class Request extends EventEmitter implements WritableStreamInterface
         $connectionManager = $this->connectionManager;
         $that = $this;
 
-        $connectionManager->getConnection(function($stream) use ($that, $callback) {
+        $connectionManager->getConnection(function ($stream) use ($that, $callback) {
             call_user_func($callback, $stream);
         }, $host, $port);
     }
@@ -233,7 +231,6 @@ class Request extends EventEmitter implements WritableStreamInterface
     public function getResponseFactory()
     {
         if (null === $factory = $this->responseFactory) {
-
             $loop = $this->loop;
             $stream = $this->stream;
 

@@ -4,8 +4,8 @@ namespace React\Http\Client;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
-use React\Stream\Stream;
 use React\Stream\ReadableStreamInterface;
+use React\Stream\Stream;
 use React\Stream\Util;
 use React\Stream\WritableStreamInterface;
 
@@ -79,7 +79,7 @@ class Response extends EventEmitter implements ReadableStreamInterface
     public function handleError(\Exception $error)
     {
         $this->emit('error', array(new \RuntimeException(
-            "an error occurred in the underlying stream",
+            "An error occurred in the underlying stream",
             0,
             $error
         ), $this));

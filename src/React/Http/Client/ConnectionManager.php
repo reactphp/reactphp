@@ -35,7 +35,7 @@ class ConnectionManager implements ConnectionManagerInterface
         $loop = $this->loop;
         $that = $this;
 
-        $this->loop->addWriteStream($socket, function() use ($that, $callback, $socket, $loop) {
+        $this->loop->addWriteStream($socket, function () use ($that, $callback, $socket, $loop) {
 
             $loop->removeWriteStream($socket);
 

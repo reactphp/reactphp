@@ -2,11 +2,11 @@
 
 namespace React\Http;
 
+use Guzzle\Http\Message\Request as GuzzleRequest;
 use React\EventLoop\LoopInterface;
 use React\Http\Client\ConnectionManager;
-use React\Http\Client\SecureConnectionManager;
-use Guzzle\Http\Message\Request as GuzzleRequest;
 use React\Http\Client\Request as ClientRequest;
+use React\Http\Client\SecureConnectionManager;
 
 class Client
 {
