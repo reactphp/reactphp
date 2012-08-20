@@ -17,7 +17,7 @@ class Factory
 
     public function spawn($file, array $args = array(), $cwd = null, $env = null)
     {
-        $cmd = $this->createCommand($file, $args);
+        $cmd = $this->formatCommandWithArguments($file, $args);
 
         $fdSpec = array(
             array('pipe', 'r'),
@@ -40,7 +40,7 @@ class Factory
         return new Process($process, $stdin, $stdout, $stderr);
     }
 
-    private function createCommand($file, $args)
+    private function formatCommandWithArguments($file, $args)
     {
         $command = $file;
 
