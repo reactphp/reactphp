@@ -128,6 +128,8 @@ class Request extends EventEmitter implements WritableStreamInterface
         if (false !== strpos($this->buffer, "\r\n\r\n")) {
             list($response, $bodyChunk) = $this->parseResponse($this->buffer);
 
+            $this->buffer = null;
+
             $this->stream->removeListener('drain', array($this, 'handleDrain'));
             $this->stream->removeListener('data', array($this, 'handleData'));
             $this->stream->removeListener('end', array($this, 'handleEnd'));
