@@ -35,4 +35,33 @@ nameserver 8.8.8.8
         $this->assertNotNull($capturedConfig);
         $this->assertSame($expected, $capturedConfig->nameservers);
     }
+
+    /** @test */
+    public function createShouldLoadStuffFromFilesystem()
+    {
+        $expected = array('8.8.8.8');
+
+        $triggerListener = null;
+        $capturedConfig = null;
+
+        $loop = $this->getMock('React\EventLoop\LoopInterface');
+        $loop
+            ->expects($this->once())
+            ->method('addReadStream')
+            ->will($this->returnCallback(function ($stream, $listener) use (&$triggerListener) {
+                $triggerListener = function () use ($stream, $listener) {
+                    call_user_func($listener, $stream);
+                };
+            }));
+
+        $factory = new FilesystemFactory($loop);
+        $factory->create(__DIR__.'/../Fixtures/etc/resolv.conf', function ($config) use (&$capturedConfig) {
+            $capturedConfig = $config;
+        });
+
+        $triggerListener();
+
+        $this->assertNotNull($capturedConfig);
+        $this->assertSame($expected, $capturedConfig->nameservers);
+    }
 }
