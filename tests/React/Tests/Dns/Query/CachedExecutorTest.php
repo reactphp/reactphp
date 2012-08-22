@@ -3,14 +3,16 @@
 namespace React\Tests\Dns\Query;
 
 use React\Dns\Query\CachedExecutor;
-use React\Dns\Query\RecordCache;
 use React\Dns\Query\Query;
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;
 
 class CachedExecutorTest extends \PHPUnit_Framework_TestCase
 {
-    /** @test */
+    /**
+    * @covers React\Dns\Query\CachedExecutor
+    * @test
+    */
     public function queryShouldDelegateToDecoratedExecutor()
     {
         $executor = $this->createExecutorMock();
@@ -19,14 +21,17 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
             ->method('query')
             ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'), $this->isInstanceOf('Closure'));
 
-        $cache = new RecordCache();
+        $cache = $this->getMock('React\Dns\Query\RecordCache');
         $cachedExecutor = new CachedExecutor($executor, $cache);
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN);
         $cachedExecutor->query('8.8.8.8', $query, function () {});
     }
 
-    /** @test */
+    /**
+    * @covers React\Dns\Query\CachedExecutor
+    * @test
+    */
     public function callingQueryTwiceShouldUseCachedResult()
     {
         $executor = $this->createExecutorMock();
@@ -35,7 +40,21 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
             ->method('query')
             ->will($this->callQueryCallbackWithAddress('178.79.169.131'));
 
-        $cache = new RecordCache();
+        $cache = $this->getMock('React\Dns\Query\RecordCache');
+        $cache
+            ->expects($this->at(0))
+            ->method('lookup')
+            ->with($this->isInstanceOf('React\Dns\Query\Query'));
+        $cache
+            ->expects($this->at(1))
+            ->method('storeResponseMessage')
+            ->with($this->isInstanceOf('React\Dns\Model\Message'));
+        $cache
+            ->expects($this->at(2))
+            ->method('lookup')
+            ->with($this->isInstanceOf('React\Dns\Query\Query'))
+            ->will($this->returnValue(new Record('igor.io', Message::TYPE_A, Message::CLASS_IN)));
+
         $cachedExecutor = new CachedExecutor($executor, $cache);
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN);
