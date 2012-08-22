@@ -14,7 +14,7 @@ class Factory
     public function create($nameserver, LoopInterface $loop)
     {
         $nameserver = $this->addPortToServerIfMissing($nameserver);
-        $executor = $this->createExecutor($nameserver, $loop);
+        $executor = $this->createExecutor($loop);
 
         return new Resolver($nameserver, $executor);
     }
@@ -22,19 +22,19 @@ class Factory
     public function createCached($nameserver, LoopInterface $loop)
     {
         $nameserver = $this->addPortToServerIfMissing($nameserver);
-        $executor = $this->createCachedExecutor($nameserver, $loop);
+        $executor = $this->createCachedExecutor($loop);
 
         return new Resolver($nameserver, $executor);
     }
 
-    protected function createExecutor($nameserver, LoopInterface $loop)
+    protected function createExecutor(LoopInterface $loop)
     {
         return new Executor($loop, new Parser(), new BinaryDumper());
     }
 
-    protected function createCachedExecutor($nameserver, LoopInterface $loop)
+    protected function createCachedExecutor(LoopInterface $loop)
     {
-        return new CachedExecutor($this->createExecutor(), new RecordCache());
+        return new CachedExecutor($this->createExecutor($loop), new RecordCache());
     }
 
     protected function addPortToServerIfMissing($nameserver)

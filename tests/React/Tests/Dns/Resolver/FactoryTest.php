@@ -26,10 +26,25 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $resolver = $factory->create('8.8.8.8', $loop);
 
         $this->assertInstanceOf('React\Dns\Resolver\Resolver', $resolver);
+        $this->assertSame('8.8.8.8:53', $this->getResolverPrivateMemberValue($resolver, 'nameserver'));
+    }
 
-        $reflector = new \ReflectionProperty('React\Dns\Resolver\Resolver', 'nameserver');
+    /** @test */
+    public function createCachedShouldCreateResolverWithCachedExecutor()
+    {
+        $loop = $this->getMock('React\EventLoop\LoopInterface');
+
+        $factory = new Factory();
+        $resolver = $factory->createCached('8.8.8.8:53', $loop);
+
+        $this->assertInstanceOf('React\Dns\Resolver\Resolver', $resolver);
+        $this->assertInstanceOf('React\Dns\Query\CachedExecutor', $this->getResolverPrivateMemberValue($resolver, 'executor'));
+    }
+
+    private function getResolverPrivateMemberValue($resolver, $field)
+    {
+        $reflector = new \ReflectionProperty('React\Dns\Resolver\Resolver', $field);
         $reflector->setAccessible(true);
-        $nameserver = $reflector->getValue($resolver);
-        $this->assertSame('8.8.8.8:53', $nameserver);
+        return $reflector->getValue($resolver);
     }
 }
