@@ -11,31 +11,39 @@ class RecordCache
 
     public function lookup(Query $query)
     {
-        $id = $this->serializeQuery($query);
-        $record = isset($this->records[$id]) ? $this->records[$id] : null;
+        $id = $this->serializeQueryToIdentity($query);
+        $records = isset($this->records[$id]) ? $this->records[$id]->all() : array();
 
-        return $record;
+        return $records;
     }
 
-    public function storeResponseMessage(Message $message)
+    public function storeResponseMessage($currentTime, Message $message)
     {
         foreach ($message->answers as $record) {
-            $this->storeRecord($record);
+            $this->storeRecord($currentTime, $record);
         }
     }
 
-    public function storeRecord(Record $record)
+    public function storeRecord($currentTime, Record $record)
     {
-        $id = $this->serializeRecord($record);
-        $this->records[$id] = $record;
+        $id = $this->serializeRecordToIdentity($record);
+        $this->records[$id] = isset($this->records[$id]) ? $this->records[$id] : new RecordBag();
+        $this->records[$id]->set($currentTime, $record);
     }
 
-    public function serializeQuery(Query $query)
+    public function expire($currentTime)
+    {
+        foreach ($records as $recordBag) {
+            $recordBag->expire($currentTime);
+        }
+    }
+
+    public function serializeQueryToIdentity(Query $query)
     {
         return sprintf('%s:%s:%s', $query->name, $query->type, $query->class);
     }
 
-    public function serializeRecord(Record $record)
+    public function serializeRecordToIdentity(Record $record)
     {
         return sprintf('%s:%s:%s', $record->name, $record->type, $record->class);
     }

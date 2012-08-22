@@ -27,7 +27,7 @@ class Resolver
     {
         $that = $this;
 
-        $query = new Query($domain, Message::TYPE_A, Message::CLASS_IN);
+        $query = new Query($domain, Message::TYPE_A, Message::CLASS_IN, time());
 
         $this->executor->query($this->nameserver, $query, function (Message $response) use ($that, $callback, $errback) {
             try {

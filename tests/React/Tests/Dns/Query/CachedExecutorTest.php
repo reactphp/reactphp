@@ -24,7 +24,7 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
         $cache = $this->getMock('React\Dns\Query\RecordCache');
         $cachedExecutor = new CachedExecutor($executor, $cache);
 
-        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN);
+        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
         $cachedExecutor->query('8.8.8.8', $query, function () {});
     }
 
@@ -34,6 +34,8 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
     */
     public function callingQueryTwiceShouldUseCachedResult()
     {
+        $cachedRecords = array(new Record('igor.io', Message::TYPE_A, Message::CLASS_IN));
+
         $executor = $this->createExecutorMock();
         $executor
             ->expects($this->once())
@@ -44,20 +46,21 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
         $cache
             ->expects($this->at(0))
             ->method('lookup')
-            ->with($this->isInstanceOf('React\Dns\Query\Query'));
+            ->with($this->isInstanceOf('React\Dns\Query\Query'))
+            ->will($this->returnValue(array()));
         $cache
             ->expects($this->at(1))
             ->method('storeResponseMessage')
-            ->with($this->isInstanceOf('React\Dns\Model\Message'));
+            ->with($this->isType('integer'), $this->isInstanceOf('React\Dns\Model\Message'));
         $cache
             ->expects($this->at(2))
             ->method('lookup')
             ->with($this->isInstanceOf('React\Dns\Query\Query'))
-            ->will($this->returnValue(new Record('igor.io', Message::TYPE_A, Message::CLASS_IN)));
+            ->will($this->returnValue($cachedRecords));
 
         $cachedExecutor = new CachedExecutor($executor, $cache);
 
-        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN);
+        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
         $cachedExecutor->query('8.8.8.8', $query, function () {});
         $cachedExecutor->query('8.8.8.8', $query, function () {});
     }

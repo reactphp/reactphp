@@ -15,12 +15,12 @@ class RecordCacheTest extends \PHPUnit_Framework_TestCase
     */
     public function lookupOnEmptyCacheShouldReturnNull()
     {
-        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN);
+        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
 
         $cache = new RecordCache();
-        $cachedRecord = $cache->lookup($query);
+        $cachedRecords = $cache->lookup($query);
 
-        $this->assertSame(null, $cachedRecord);
+        $this->assertSame(array(), $cachedRecords);
     }
 
     /**
@@ -29,29 +29,32 @@ class RecordCacheTest extends \PHPUnit_Framework_TestCase
     */
     public function storeRecordShouldMakeLookupSucceed()
     {
-        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN);
+        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
 
         $cache = new RecordCache();
-        $cache->storeRecord(new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 8400, '178.79.169.131'));
-        $cachedRecord = $cache->lookup($query);
+        $cache->storeRecord($query->currentTime, new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 8400, '178.79.169.131'));
+        $cachedRecords = $cache->lookup($query);
 
-        $this->assertSame('178.79.169.131', $cachedRecord->data);
+        $this->assertCount(1, $cachedRecords);
+        $this->assertSame('178.79.169.131', $cachedRecords[0]->data);
     }
 
     /**
     * @covers React\Dns\Query\RecordCache
     * @test
     */
-    public function storeRecordTwiceShouldOverridePreviousValue()
+    public function storeTwoRecordsShouldReturnBoth()
     {
-        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN);
+        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
 
         $cache = new RecordCache();
-        $cache->storeRecord(new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 8400, '178.79.169.131'));
-        $cache->storeRecord(new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 8400, '178.79.169.132'));
-        $cachedRecord = $cache->lookup($query);
+        $cache->storeRecord($query->currentTime, new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 8400, '178.79.169.131'));
+        $cache->storeRecord($query->currentTime, new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 8400, '178.79.169.132'));
+        $cachedRecords = $cache->lookup($query);
 
-        $this->assertSame('178.79.169.132', $cachedRecord->data);
+        $this->assertCount(2, $cachedRecords);
+        $this->assertSame('178.79.169.131', $cachedRecords[0]->data);
+        $this->assertSame('178.79.169.132', $cachedRecords[1]->data);
     }
 
     /**
@@ -60,7 +63,7 @@ class RecordCacheTest extends \PHPUnit_Framework_TestCase
     */
     public function storeResponseMessageShouldStoreAllAnswerValues()
     {
-        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN);
+        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
 
         $response = new Message();
         $response->answers[] = new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 8400, '178.79.169.131');
@@ -68,9 +71,11 @@ class RecordCacheTest extends \PHPUnit_Framework_TestCase
         $response->prepare();
 
         $cache = new RecordCache();
-        $cache->storeResponseMessage($response);
-        $cachedRecord = $cache->lookup($query);
+        $cache->storeResponseMessage($query->currentTime, $response);
+        $cachedRecords = $cache->lookup($query);
 
-        $this->assertSame('178.79.169.132', $cachedRecord->data);
+        $this->assertCount(2, $cachedRecords);
+        $this->assertSame('178.79.169.131', $cachedRecords[0]->data);
+        $this->assertSame('178.79.169.132', $cachedRecords[1]->data);
     }
 }

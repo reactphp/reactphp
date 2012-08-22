@@ -22,7 +22,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function prepareRequestShouldCreateRequestWithRecursionDesired()
     {
-        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN);
+        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
         $request = $this->executor->prepareRequest($query);
 
         $this->assertTrue($request->header->isQuery());
@@ -41,7 +41,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->with('8.8.8.8:53', 'udp')
             ->will($this->returnNewConnectionMock());
 
-        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN);
+        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
         $this->executor->query('8.8.8.8:53', $query, function () {});
     }
 
@@ -57,7 +57,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->with('8.8.8.8:53', 'tcp')
             ->will($this->returnNewConnectionMock());
 
-        $query = new Query(str_repeat('a', 512).'.igor.io', Message::TYPE_A, Message::CLASS_IN);
+        $query = new Query(str_repeat('a', 512).'.igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
         $this->executor->query('8.8.8.8:53', $query, function () {});
     }
 
@@ -89,7 +89,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->with('8.8.8.8:53', 'tcp')
             ->will($this->returnNewConnectionMock());
 
-        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN);
+        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
         $this->executor->query('8.8.8.8:53', $query, function () {});
     }
 
@@ -115,7 +115,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->with('8.8.8.8:53', 'tcp')
             ->will($this->returnNewConnectionMock());
 
-        $query = new Query(str_repeat('a', 512).'.igor.io', Message::TYPE_A, Message::CLASS_IN);
+        $query = new Query(str_repeat('a', 512).'.igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
         $this->executor->query('8.8.8.8:53', $query, function () {});
     }
 
