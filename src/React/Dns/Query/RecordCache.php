@@ -33,7 +33,7 @@ class RecordCache
 
     public function expire($currentTime)
     {
-        foreach ($records as $recordBag) {
+        foreach ($this->records as $recordBag) {
             $recordBag->expire($currentTime);
         }
     }

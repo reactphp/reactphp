@@ -32,7 +32,7 @@ class RecordCacheTest extends \PHPUnit_Framework_TestCase
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
 
         $cache = new RecordCache();
-        $cache->storeRecord($query->currentTime, new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 8400, '178.79.169.131'));
+        $cache->storeRecord($query->currentTime, new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 3600, '178.79.169.131'));
         $cachedRecords = $cache->lookup($query);
 
         $this->assertCount(1, $cachedRecords);
@@ -48,8 +48,8 @@ class RecordCacheTest extends \PHPUnit_Framework_TestCase
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
 
         $cache = new RecordCache();
-        $cache->storeRecord($query->currentTime, new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 8400, '178.79.169.131'));
-        $cache->storeRecord($query->currentTime, new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 8400, '178.79.169.132'));
+        $cache->storeRecord($query->currentTime, new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 3600, '178.79.169.131'));
+        $cache->storeRecord($query->currentTime, new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 3600, '178.79.169.132'));
         $cachedRecords = $cache->lookup($query);
 
         $this->assertCount(2, $cachedRecords);
@@ -66,8 +66,8 @@ class RecordCacheTest extends \PHPUnit_Framework_TestCase
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
 
         $response = new Message();
-        $response->answers[] = new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 8400, '178.79.169.131');
-        $response->answers[] = new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 8400, '178.79.169.132');
+        $response->answers[] = new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 3600, '178.79.169.131');
+        $response->answers[] = new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 3600, '178.79.169.132');
         $response->prepare();
 
         $cache = new RecordCache();
@@ -77,5 +77,24 @@ class RecordCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(2, $cachedRecords);
         $this->assertSame('178.79.169.131', $cachedRecords[0]->data);
         $this->assertSame('178.79.169.132', $cachedRecords[1]->data);
+    }
+
+    /**
+    * @covers React\Dns\Query\RecordCache
+    * @test
+    */
+    public function expireShouldExpireDeadRecords()
+    {
+        $cachedTime = 1345656451;
+        $currentTime = $cachedTime + 3605;
+
+        $cache = new RecordCache();
+        $cache->storeRecord($cachedTime, new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 3600, '178.79.169.131'));
+        $cache->expire($currentTime);
+
+        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, $currentTime);
+        $cachedRecords = $cache->lookup($query);
+
+        $this->assertCount(0, $cachedRecords);
     }
 }
