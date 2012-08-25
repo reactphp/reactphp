@@ -33,17 +33,29 @@ class Process extends EventEmitter
 
         $self = $this;
 
-        $this->stdout->on('end', function () use ($self, $stderr) {
-            if ($stderr->isReadable() === false) {
-                $self->exits();
-            }
+        $this->stdout->on('end', function () use ($self) {
+            $self->updateStatus();
+            $self->observeStatus();
         });
 
-        $this->stderr->on('end', function () use ($self, $stdout) {
-            if ($stdout->isReadable() === false) {
-                $self->exits();
-            }
+        $this->stderr->on('end', function () use ($self) {
+            $self->updateStatus();
+            $self->observeStatus();
         });
+    }
+
+    public function updateStatus()
+    {
+        if ($this->process) {
+            $this->status = proc_get_status($this->process);
+        }
+    }
+
+    public function observeStatus()
+    {
+        if (!$this->stdout->isReadable() && !$this->stderr->isReadable()) {
+            $this->exits();
+        }
     }
 
     public function exits()
@@ -125,7 +137,7 @@ class Process extends EventEmitter
     private function getCachedStatus()
     {
         if (is_null($this->status)) {
-            $this->status = proc_get_status($this->process);
+            $this->updateStatus();
         }
 
         return $this->status;
@@ -133,7 +145,7 @@ class Process extends EventEmitter
 
     private function getFreshStatus()
     {
-        $this->status = proc_get_status($this->process);
+        $this->updateStatus();
 
         return $this->status;
     }
