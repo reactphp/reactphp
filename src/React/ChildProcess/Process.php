@@ -50,10 +50,10 @@ class Process extends EventEmitter
     {
         $exitCode = proc_close($this->process);
 
-        $this->handleExit($exitCode);
+        $this->handleExit($exitCode, $this->signalCode);
     }
 
-    public function handleExit($exitCode)
+    public function handleExit($exitCode, $signalCode)
     {
         if ($this->exited) {
             return;
@@ -62,9 +62,10 @@ class Process extends EventEmitter
         $this->exited = true;
 
         $this->exitCode = $exitCode;
+        $this->signalCode = $signalCode;
 
-        $this->emit('exit', array($exitCode));
-        $this->emit('close', array($exitCode));
+        $this->emit('exit', array($exitCode, $signalCode));
+        $this->emit('close', array($exitCode, $signalCode));
     }
 
     public function getPid()
