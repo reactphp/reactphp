@@ -38,6 +38,39 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($process->getSignalCode());
     }
 
+    public function testHandleExitExitEvent()
+    {
+        $process = $this->createProcess('sleep 1');
+
+        $exitIsCalled = false;
+
+        $process->on('exit', function ($exitCode, $signalCode) use (&$exitIsCalled) {
+            $exitIsCalled = true;
+        });
+
+        $process->handleExit(0, null);
+
+        $this->assertTrue($exitIsCalled);
+
+        return $process;
+    }
+
+    /**
+     * @depends testHandleExitExitEvent
+     */
+    public function testGetExitCode($process)
+    {
+        $this->assertEquals(0, $process->getExitCode());
+    }
+
+    /**
+     * @depends testHandleExitExitEvent
+     */
+    public function testGetSignalCode($process)
+    {
+        $this->assertNull($process->getSignalCode());
+    }
+
     public function testIsRunningIsFalseWhenTerminated()
     {
         $process = $this->createProcess('sleep 1');
@@ -86,8 +119,8 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             $counter++;
         });
 
-        $process->handleExit(0);
-        $process->handleExit(0);
+        $process->handleExit(0, null);
+        $process->handleExit(0, null);
 
         $this->assertEquals(1, $counter);
     }
@@ -132,8 +165,8 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             $counter++;
         });
 
-        $process->handleExit(0);
-        $process->handleExit(0);
+        $process->handleExit(0, null);
+        $process->handleExit(0, null);
 
         $this->assertEquals(1, $counter);
     }
