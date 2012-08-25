@@ -15,7 +15,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testIsRunning()
     {
-        $process = $this->createProcess('sleep 10');
+        $process = $this->createProcess('sleep 1');
 
         $this->assertTrue($process->isRunning());
 
@@ -40,7 +40,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testIsRunningIsFalseWhenTerminated()
     {
-        $process = $this->createProcess('sleep 10');
+        $process = $this->createProcess('sleep 1');
         $process->exits();
 
         $this->assertFalse($process->isRunning());
