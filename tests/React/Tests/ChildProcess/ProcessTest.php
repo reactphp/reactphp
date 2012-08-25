@@ -15,14 +15,14 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testIsRunning()
     {
-        $process = $this->createProcess('echo foo bar');
+        $process = $this->createProcess('sleep 1');
 
         $this->assertTrue($process->isRunning());
     }
 
     public function testIsRunningIsFalseWhenTerminated()
     {
-        $process = $this->createProcess('echo foo bar');
+        $process = $this->createProcess('sleep 1');
         $process->handleExit();
 
         $this->assertFalse($process->isRunning());
