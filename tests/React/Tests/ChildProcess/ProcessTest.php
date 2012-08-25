@@ -190,6 +190,35 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($capturedSignalCodeOfClose);
     }
 
+    public function testGetSignalCodeUsingSelectStreamLoop()
+    {
+        $loop = new StreamSelectLoop;
+        $process = $this->createProcessWithFactory($loop, 'php', array('-r', 'sleep(10); exit(0);'));
+
+        $capturedExitCodeOfExit = 'initial';
+        $capturedSignalCodeOfExit = 'initial';
+        $capturedExitCodeOfClose = 'initial';
+        $capturedSignalCodeOfClose = 'initial';
+
+        $process->on('exit', function ($exitCode, $signalCode) use (&$capturedExitCodeOfExit, &$capturedSignalCodeOfExit) {
+            $capturedExitCodeOfExit = $exitCode;
+            $capturedSignalCodeOfExit = $signalCode;
+        });
+        $process->on('close', function ($exitCode, $signalCode) use (&$capturedExitCodeOfClose, &$capturedSignalCodeOfClose) {
+            $capturedExitCodeOfClose = $exitCode;
+            $capturedSignalCodeOfClose = $signalCode;
+        });
+
+        $process->terminate(self::SIGNAL_CODE_SIGTERM);
+
+        $loop->run();
+
+        $this->assertNull($capturedExitCodeOfExit);
+        $this->assertNull($capturedExitCodeOfClose);
+        $this->assertSame(self::SIGNAL_CODE_SIGTERM, $capturedSignalCodeOfExit);
+        $this->assertSame(self:: SIGNAL_CODE_SIGTERM, $capturedSignalCodeOfClose);
+    }
+
     private function createProcess($command)
     {
         return new Process(
