@@ -8,6 +8,9 @@ use Evenement\EventEmitter;
 
 class Process extends EventEmitter
 {
+    const SIGNAL_CODE_SIGKILL = 9;
+    const SIGNAL_CODE_SIGTERM = 15;
+
     public $stdin;
 
     public $stdout;
@@ -46,8 +49,12 @@ class Process extends EventEmitter
 
     public function updateStatus()
     {
-        if ($this->process) {
+        if ($this->process && is_null($this->signalCode)) {
             $this->status = proc_get_status($this->process);
+
+            if ($this->status['signaled']) {
+                $this->signalCode = $this->status['termsig'];
+            }
         }
     }
 
@@ -61,8 +68,13 @@ class Process extends EventEmitter
     public function exits()
     {
         $exitCode = proc_close($this->process);
+        $this->process = null;
 
-        $this->handleExit($exitCode, $this->signalCode);
+        if ($this->signalCode) {
+            $this->handleExit(null, $this->signalCode);
+        } else {
+            $this->handleExit($exitCode, null);
+        }
     }
 
     public function handleExit($exitCode, $signalCode)
@@ -119,9 +131,9 @@ class Process extends EventEmitter
         return $status['stopped'];
     }
 
-    public function terminate()
+    public function terminate($signalCode = self::SIGNAL_CODE_SIGTERM)
     {
-        proc_terminate($this->process);
+        proc_terminate($this->process, $signalCode);
     }
 
     public function getExitCode()
