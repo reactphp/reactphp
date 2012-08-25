@@ -6,7 +6,7 @@ use React\ChildProcess\Process;
 
 class ProcessTest extends \PHPUnit_Framework_TestCase
 {
-    const USLEEP_TIME_FOR_PROCESS_TERMINATION = 500000;
+    const USLEEP_TIME_FOR_PROCESS_TERMINATION = 1000000; // 1 sec
 
     public function testGetCommand()
     {
