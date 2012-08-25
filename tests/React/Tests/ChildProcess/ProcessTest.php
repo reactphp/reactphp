@@ -96,9 +96,9 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     {
         return new Process(
             $this->createProcessStream($command),
-            $this->getMock('\\React\\Stream\\WritableStreamInterface'),
-            $this->getMock('\\React\\Stream\\ReadableStreamInterface'),
-            $this->getMock('\\React\\Stream\\ReadableStreamInterface')
+            $this->getMock('React\Stream\WritableStreamInterface'),
+            $this->getMock('React\Stream\ReadableStreamInterface'),
+            $this->getMock('React\Stream\ReadableStreamInterface')
         );
     }
 
