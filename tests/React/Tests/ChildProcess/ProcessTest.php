@@ -3,6 +3,9 @@
 namespace React\Tests\ChildProcess;
 
 use React\ChildProcess\Process;
+use React\ChildProcess\Factory;
+use React\EventLoop\LoopInterface;
+use React\EventLoop\StreamSelectLoop;
 
 class ProcessTest extends \PHPUnit_Framework_TestCase
 {
@@ -160,6 +163,33 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $counter);
     }
 
+    public function testGetExitCodeUsingSelectStreamLoop()
+    {
+        $loop = new StreamSelectLoop;
+        $process = $this->createProcessWithFactory($loop, 'php', array('-r', 'exit(0);'));
+
+        $capturedExitCodeOfExit = 'initial';
+        $capturedSignalCodeOfExit = 'initial';
+        $capturedExitCodeOfClose = 'initial';
+        $capturedSignalCodeOfClose = 'initial';
+
+        $process->on('exit', function ($exitCode, $signalCode) use (&$capturedExitCodeOfExit, &$capturedSignalCodeOfExit) {
+            $capturedExitCodeOfExit = $exitCode;
+            $capturedSignalCodeOfExit = $signalCode;
+        });
+        $process->on('close', function ($exitCode, $signalCode) use (&$capturedExitCodeOfClose, &$capturedSignalCodeOfClose) {
+            $capturedExitCodeOfClose = $exitCode;
+            $capturedSignalCodeOfClose = $signalCode;
+        });
+
+        $loop->run();
+
+        $this->assertSame($capturedExitCodeOfExit, 0);
+        $this->assertSame($capturedExitCodeOfClose, 0);
+        $this->assertNull($capturedSignalCodeOfExit);
+        $this->assertNull($capturedSignalCodeOfClose);
+    }
+
     private function createProcess($command)
     {
         return new Process(
@@ -178,5 +208,11 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             array('pipe', 'w'),
         );
         return proc_open($command, $fdSpecs, $pipes);
+    }
+
+    private function createProcessWithFactory(LoopInterface $loop, $command, $args)
+    {
+        $factory = new Factory($loop);
+        return $factory->spawn($command, $args);
     }
 }
