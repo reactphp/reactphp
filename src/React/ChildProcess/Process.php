@@ -22,7 +22,7 @@ class Process extends EventEmitter
 
     private $signalCode = null;
 
-    private $closed = false;
+    private $exited = false;
 
     public function __construct($process, WritableStreamInterface $stdin, ReadableStreamInterface $stdout, ReadableStreamInterface $stderr)
     {
@@ -48,12 +48,12 @@ class Process extends EventEmitter
 
     public function exits()
     {
-        if ($this->closed) {
+        if ($this->exited) {
             return;
         }
 
         $exitCode = proc_close($this->process);
-        $this->closed = true;
+        $this->exited = true;
 
         $this->handleExit($exitCode);
     }
@@ -82,7 +82,7 @@ class Process extends EventEmitter
 
     public function isRunning()
     {
-        if ($this->closed) {
+        if ($this->exited) {
             return false;
         } else {
             $status = $this->getFreshStatus();
