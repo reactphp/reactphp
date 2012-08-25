@@ -82,6 +82,11 @@ class Process extends EventEmitter
         return $status['stopped'];
     }
 
+    public function terminate()
+    {
+        proc_terminate($this->process);
+    }
+
     private function getCachedStatus()
     {
         if (is_null($this->status)) {
