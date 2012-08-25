@@ -71,11 +71,11 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($process->getSignalCode());
     }
 
-    public function testIsRunningIsFalseWhenTerminated()
+    /**
+     * @depends testHandleExitExitEvent
+     */
+    public function testIsRunningWhenExited($process)
     {
-        $process = $this->createProcess('sleep 1');
-        $process->exits();
-
         $this->assertFalse($process->isRunning());
     }
 
