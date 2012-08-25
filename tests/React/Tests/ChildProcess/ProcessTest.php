@@ -45,14 +45,20 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $process = $this->createProcess('sleep 1');
 
         $exitIsCalled = false;
+        $closeIsCalled = false;
 
         $process->on('exit', function ($exitCode, $signalCode) use (&$exitIsCalled) {
             $exitIsCalled = true;
         });
+        $process->on('close', function ($exitCode, $signalCode) use (&$closeIsCalled) {
+            $closeIsCalled = true;
+        });
+
 
         $process->handleExit(0, null);
 
         $this->assertTrue($exitIsCalled);
+        $this->assertTrue($closeIsCalled);
 
         return $process;
     }
@@ -120,21 +126,6 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     public function testIsRunningWhenTerminated($process)
     {
         $this->assertFalse($process->isRunning());
-    }
-
-    public function testExitEvent()
-    {
-        $process = $this->createProcess("php '-r' 'exit(0);'");
-
-        $capturedExitStatus = null;
-
-        $process->on('exit', function ($status) use (&$capturedExitStatus) {
-            $capturedExitStatus = $status;
-        });
-
-        $process->exits();
-
-        $this->assertEquals(0, $capturedExitStatus);
     }
 
     public function testExitEventCanBeCalledOnlyOnce()
