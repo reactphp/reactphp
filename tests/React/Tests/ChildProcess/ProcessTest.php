@@ -6,6 +6,8 @@ use React\ChildProcess\Process;
 
 class ProcessTest extends \PHPUnit_Framework_TestCase
 {
+    const SIGNAL_CODE_SIGTERM = 15;
+
     public function testGetCommand()
     {
         $process = $this->createProcess('echo foo bar');
@@ -75,6 +77,47 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
      * @depends testHandleExitExitEvent
      */
     public function testIsRunningWhenExited($process)
+    {
+        $this->assertFalse($process->isRunning());
+    }
+
+    public function testHandleExitExitEventWhenTerminated()
+    {
+        $process = $this->createProcess('sleep 1');
+
+        $exitIsCalled = false;
+
+        $process->on('exit', function ($exitCode, $signalCode) use (&$exitIsCalled) {
+            $exitIsCalled = true;
+        });
+
+        $process->handleExit(null, self::SIGNAL_CODE_SIGTERM);
+
+        $this->assertTrue($exitIsCalled);
+
+        return $process;
+    }
+
+    /**
+     * @depends testHandleExitExitEventWhenTerminated
+     */
+    public function testGetExitCodeWhenTerminated($process)
+    {
+        $this->assertNull($process->getExitCode());
+    }
+
+    /**
+     * @depends testHandleExitExitEventWhenTerminated
+     */
+    public function testGetSignalCodeWhenTerminated($process)
+    {
+        $this->assertEquals(self::SIGNAL_CODE_SIGTERM, $process->getSignalCode());
+    }
+
+    /**
+     * @depends testHandleExitExitEventWhenTerminated
+     */
+    public function testIsRunningWhenTerminated($process)
     {
         $this->assertFalse($process->isRunning());
     }
