@@ -6,6 +6,8 @@ use React\ChildProcess\Process;
 
 class ProcessTest extends \PHPUnit_Framework_TestCase
 {
+    const USLEEP_TIME_FOR_PROCESS_TERMINATION = 500000;
+
     public function testGetCommand()
     {
         $process = $this->createProcess('echo foo bar');
@@ -23,10 +25,9 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     public function testIsRunningIsFalseWhenTerminated()
     {
         $process = $this->createProcess('sleep 5');
+        $process->terminate();
 
-        // proc_terminate() seems not work well
-        // https://bugs.php.net/bug.php?id=39992
-        exec('kill -9 ' . $process->getPid());
+        usleep(self::USLEEP_TIME_FOR_PROCESS_TERMINATION);
 
         $this->assertFalse($process->isRunning());
     }
