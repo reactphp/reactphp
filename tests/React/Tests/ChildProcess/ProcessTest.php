@@ -86,8 +86,8 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             $counter++;
         });
 
-        $process->exits();
-        $process->exits();
+        $process->handleExit(0);
+        $process->handleExit(0);
 
         $this->assertEquals(1, $counter);
     }
@@ -132,8 +132,8 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             $counter++;
         });
 
-        $process->exits();
-        $process->exits();
+        $process->handleExit(0);
+        $process->handleExit(0);
 
         $this->assertEquals(1, $counter);
     }

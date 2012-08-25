@@ -48,18 +48,19 @@ class Process extends EventEmitter
 
     public function exits()
     {
-        if ($this->exited) {
-            return;
-        }
-
         $exitCode = proc_close($this->process);
-        $this->exited = true;
 
         $this->handleExit($exitCode);
     }
 
     public function handleExit($exitCode)
     {
+        if ($this->exited) {
+            return;
+        }
+
+        $this->exited = true;
+
         $this->exitCode = $exitCode;
 
         $this->emit('exit', array($exitCode));
