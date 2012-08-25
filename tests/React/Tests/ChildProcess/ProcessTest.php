@@ -40,13 +40,13 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testIsRunningIsFalseWhenTerminated()
     {
-        $process = $this->createProcess('sleep 1');
-        $process->handleExit();
+        $process = $this->createProcess('sleep 10');
+        $process->exits();
 
         $this->assertFalse($process->isRunning());
     }
 
-    public function testHandleExitExitEvent()
+    public function testExitEvent()
     {
         $process = $this->createProcess("php '-r' 'exit(0);'");
 
@@ -56,12 +56,12 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             $capturedExitStatus = $status;
         });
 
-        $process->handleExit();
+        $process->exits();
 
         $this->assertEquals(0, $capturedExitStatus);
     }
 
-    public function testHandleExitExitEventStatus1()
+    public function testExitEventWhenExitCodeIs1()
     {
         $process = $this->createProcess("php '-r' 'exit(1);'");
 
@@ -71,12 +71,12 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             $capturedExitStatus = $status;
         });
 
-        $process->handleExit();
+        $process->exits();
 
         $this->assertEquals(1, $capturedExitStatus);
     }
 
-    public function testHandleExitExitEventCanBeCalledOnlyOnce()
+    public function testExitEventCanBeCalledOnlyOnce()
     {
         $process = $this->createProcess('php -v');
 
@@ -86,8 +86,8 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             $counter++;
         });
 
-        $process->handleExit();
-        $process->handleExit();
+        $process->exits();
+        $process->exits();
 
         $this->assertEquals(1, $counter);
     }
@@ -102,7 +102,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             $capturedExitStatus = $status;
         });
 
-        $process->handleExit();
+        $process->exits();
 
         $this->assertEquals(0, $capturedExitStatus);
     }
@@ -117,12 +117,12 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             $capturedExitStatus = $status;
         });
 
-        $process->handleExit();
+        $process->exits();
 
         $this->assertEquals(1, $capturedExitStatus);
     }
 
-    public function testHandleExitCloseEventCanBeCalledOnlyOnce()
+    public function testCloseEventCanBeCalledOnlyOnce()
     {
         $process = $this->createProcess('php -v');
 
@@ -132,8 +132,8 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             $counter++;
         });
 
-        $process->handleExit();
-        $process->handleExit();
+        $process->exits();
+        $process->exits();
 
         $this->assertEquals(1, $counter);
     }
