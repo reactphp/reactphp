@@ -35,28 +35,35 @@ class Process extends EventEmitter
 
         $this->stdout->on('end', function () use ($self, $stderr) {
             if ($stderr->isReadable() === false) {
-                $self->handleExit();
+                $self->exits();
             }
         });
 
         $this->stderr->on('end', function () use ($self, $stdout) {
             if ($stdout->isReadable() === false) {
-                $self->handleExit();
+                $self->exits();
             }
         });
     }
 
-    public function handleExit()
+    public function exits()
     {
         if ($this->closed) {
             return;
         }
 
-        $status = proc_close($this->process);
+        $exitCode = proc_close($this->process);
         $this->closed = true;
 
-        $this->emit('exit', array($status));
-        $this->emit('close', array($status));
+        $this->handleExit($exitCode);
+    }
+
+    public function handleExit($exitCode)
+    {
+        $this->exitCode = $exitCode;
+
+        $this->emit('exit', array($exitCode));
+        $this->emit('close', array($exitCode));
     }
 
     public function getPid()
