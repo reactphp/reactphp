@@ -18,6 +18,10 @@ class Process extends EventEmitter
 
     private $status = null;
 
+    private $exitCode = null;
+
+    private $signalCode = null;
+
     private $closed = false;
 
     public function __construct($process, WritableStreamInterface $stdin, ReadableStreamInterface $stdout, ReadableStreamInterface $stderr)
@@ -97,6 +101,16 @@ class Process extends EventEmitter
     public function terminate()
     {
         proc_terminate($this->process);
+    }
+
+    public function getExitCode()
+    {
+        return $this->exitCode;
+    }
+
+    public function getSignalCode()
+    {
+        return $this->signalCode;
     }
 
     private function getCachedStatus()

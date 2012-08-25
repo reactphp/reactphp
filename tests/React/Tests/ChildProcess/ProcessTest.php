@@ -15,9 +15,27 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testIsRunning()
     {
-        $process = $this->createProcess('sleep 1');
+        $process = $this->createProcess('sleep 10');
 
         $this->assertTrue($process->isRunning());
+
+        return $process;
+    }
+
+    /**
+     * @depends testIsRunning
+     */
+    public function testGetExitCodeWhenRunning($process)
+    {
+        $this->assertNull($process->getExitCode());
+    }
+
+    /**
+     * @depends testIsRunning
+     */
+    public function testGetSignalCodeWhenRunning($process)
+    {
+        $this->assertNull($process->getSignalCode());
     }
 
     public function testIsRunningIsFalseWhenTerminated()
