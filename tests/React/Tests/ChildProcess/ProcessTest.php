@@ -40,7 +40,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($process->getSignalCode());
     }
 
-    public function testHandleExitExitEvent()
+    public function testHandleExit()
     {
         $process = $this->createProcess('sleep 1');
 
@@ -58,7 +58,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testHandleExitExitEvent
+     * @depends testHandleExit
      */
     public function testGetExitCode($process)
     {
@@ -66,7 +66,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testHandleExitExitEvent
+     * @depends testHandleExit
      */
     public function testGetSignalCode($process)
     {
@@ -74,14 +74,14 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testHandleExitExitEvent
+     * @depends testHandleExit
      */
     public function testIsRunningWhenExited($process)
     {
         $this->assertFalse($process->isRunning());
     }
 
-    public function testHandleExitExitEventWhenTerminated()
+    public function testHandleExitWhenTerminated()
     {
         $process = $this->createProcess('sleep 1');
 
@@ -99,7 +99,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testHandleExitExitEventWhenTerminated
+     * @depends testHandleExitWhenTerminated
      */
     public function testGetExitCodeWhenTerminated($process)
     {
@@ -107,7 +107,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testHandleExitExitEventWhenTerminated
+     * @depends testHandleExitWhenTerminated
      */
     public function testGetSignalCodeWhenTerminated($process)
     {
@@ -115,7 +115,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testHandleExitExitEventWhenTerminated
+     * @depends testHandleExitWhenTerminated
      */
     public function testIsRunningWhenTerminated($process)
     {
