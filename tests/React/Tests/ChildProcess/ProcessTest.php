@@ -144,36 +144,6 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $counter);
     }
 
-    public function testHandleCloseExitEvent()
-    {
-        $process = $this->createProcess("php '-r' 'exit(0);'");
-
-        $capturedExitStatus = null;
-
-        $process->on('close', function ($status) use (&$capturedExitStatus) {
-            $capturedExitStatus = $status;
-        });
-
-        $process->exits();
-
-        $this->assertEquals(0, $capturedExitStatus);
-    }
-
-    public function testHandleCloseExitEventStatus1()
-    {
-        $process = $this->createProcess("php '-r' 'exit(1);'");
-
-        $capturedExitStatus = null;
-
-        $process->on('close', function ($status) use (&$capturedExitStatus) {
-            $capturedExitStatus = $status;
-        });
-
-        $process->exits();
-
-        $this->assertEquals(1, $capturedExitStatus);
-    }
-
     public function testCloseEventCanBeCalledOnlyOnce()
     {
         $process = $this->createProcess('php -v');
