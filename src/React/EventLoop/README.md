@@ -39,7 +39,7 @@ Here is an async HTTP server built with just the event loop.
                 fclose($conn);
                 $loop->removeStream($conn);
             } else {
-                $data = substr($data, 0, $swritten);
+                $data = substr($data, 0, $written);
             }
         });
     });
