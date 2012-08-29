@@ -15,6 +15,9 @@
         "guzzle/parser": "2.8.*",
         "silex/silex": "1.0.*"
     },
+    "require-dev": {
+        "ext-eio": ">=1.2.0"
+    },
     "replace": {
         "react/event-loop": "self.version",
         "react/stream": "self.version",
