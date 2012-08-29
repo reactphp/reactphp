@@ -18,6 +18,9 @@
         "ext-libevent": "*",
         "ext-libev": "*"
     },
+    "require-dev": {
+        "ext-eio": ">=1.2.0"
+    },
     "replace": {
         "react/event-loop": "self.version",
         "react/stream": "self.version",
