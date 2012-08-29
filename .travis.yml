@@ -6,12 +6,9 @@ php:
   - 5.4
 
 before_script:
-  - sudo apt-get install -y libevent-dev libev-dev
-  - yes "" | pecl install libevent-beta
-  - echo "extension=libevent.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
-  - (git clone --recursive https://github.com/m4rw3r/php-libev && cd php-libev && phpize && ./configure && make && make install)
-  - echo "extension=libev.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
-  - composer self-update
-  - composer install --dev
+  - pecl install eio
+  - echo "extension=eio.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  - curl -s http://getcomposer.org/installer | php
+  - php composer.phar install
 
 script: phpunit --coverage-text
