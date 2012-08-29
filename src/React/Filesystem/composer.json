@@ -1,0 +1,20 @@
+{
+    "name": "react/filesystem",
+    "description": "Evented filesystem access.",
+    "keywords": ["filesystem", "eio"],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.3",
+        "ext-eio": ">=1.2.0",
+        "react/event-loop": "0.1.*"
+    },
+    "autoload": {
+        "psr-0": { "React\\Filesystem": "" }
+    },
+    "target-dir": "React/Filesystem",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1"
+        }
+    }
+}
