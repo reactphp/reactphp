@@ -74,27 +74,12 @@ class Parser
             return;
         }
 
-        $labels = array();
-
         $consumed = $message->consumed;
 
-        $length = ord(substr($message->data, $consumed, 1));
-        $consumed += 1;
+        list($labels, $consumed) = $this->readLabels($message->data, $consumed);
 
-        if (strlen($message->data) - $consumed < $length) {
+        if (null === $labels) {
             return;
-        }
-
-        while ($length !== 0) {
-            $labels[] = substr($message->data, $consumed, $length);
-            $consumed += $length;
-
-            $length = ord(substr($message->data, $consumed, 1));
-            $consumed += 1;
-
-            if (strlen($message->data) - $consumed < $length) {
-                return;
-            }
         }
 
         if (strlen($message->data) - $consumed < 4) {
@@ -127,28 +112,10 @@ class Parser
 
         $consumed = $message->consumed;
 
-        $mask = 0xc000; // 1100000000000000
-        list($nameOffset) = array_merge(unpack('n', substr($message->data, $consumed, 2)));
+        list($labels, $consumed) = $this->readLabels($message->data, $consumed);
 
-        if ($nameOffset & $mask) {
-            $consumed += 2;
-            $labels[] = $message->questions[0]['name'];
-            // TODO: get proper offset
-        } else {
-            $length = ord(substr($message->data, $consumed, 1));
-            $consumed += 1;
-
-            while ($length !== 0) {
-                $labels[] = substr($message->data, $consumed, $length);
-                $consumed += $length;
-
-                $length = ord(substr($message->data, $consumed, 1));
-                $consumed += 1;
-
-                if (strlen($message->data) - $consumed < $length) {
-                    return;
-                }
-            }
+        if (null === $labels) {
+            return;
         }
 
         if (strlen($message->data) - $consumed < 10) {
@@ -165,11 +132,18 @@ class Parser
         $consumed += 2;
 
         $rdata = null;
+
         if (Message::TYPE_A === $type) {
             $ip = substr($message->data, $consumed, $rdLength);
             $consumed += $rdLength;
 
             $rdata = inet_ntop($ip);
+        }
+
+        if (Message::TYPE_CNAME === $type) {
+            list($bodyLabels, $consumed) = $this->readLabels($message->data, $consumed);
+
+            $rdata = implode('.', $bodyLabels);
         }
 
         $message->consumed = $consumed;
@@ -181,6 +155,66 @@ class Parser
         $message->answers[] = $record;
 
         return $message;
+    }
+
+    private function readLabels($data, $consumed)
+    {
+        $labels = array();
+
+        while (true) {
+            if ($this->isEndOfLabels($data, $consumed)) {
+                $consumed += 1;
+                break;
+            }
+
+            if ($this->isCompressedLabel($data, $consumed)) {
+                list($newLabels, $consumed) = $this->getCompressedLabel($data, $consumed);
+                $labels = array_merge($labels, $newLabels);
+                break;
+            }
+
+            $length = ord(substr($data, $consumed, 1));
+            $consumed += 1;
+
+            if (strlen($data) - $consumed < $length) {
+                return array(null, null);
+            }
+
+            $labels[] = substr($data, $consumed, $length);
+            $consumed += $length;
+        }
+
+        return array($labels, $consumed);
+    }
+
+    public function isEndOfLabels($data, $consumed)
+    {
+        $length = ord(substr($data, $consumed, 1));
+        return 0 === $length;
+    }
+
+    public function getCompressedLabel($data, $consumed)
+    {
+        list($nameOffset, $consumed) = $this->getCompressedLabelOffset($data, $consumed);
+        list($labels) = $this->readLabels($data, $nameOffset);
+
+        return array($labels, $consumed);
+    }
+
+    public function isCompressedLabel($data, $consumed)
+    {
+        $mask = 0xc000; // 1100000000000000
+        list($peek) = array_merge(unpack('n', substr($data, $consumed, 2)));
+
+        return (bool) ($peek & $mask);
+    }
+
+    public function getCompressedLabelOffset($data, $consumed)
+    {
+        $mask = 0x3fff; // 0011111111111111
+        list($peek) = array_merge(unpack('n', substr($data, $consumed, 2)));
+
+        return array($peek & $mask, $consumed + 2);
     }
 
     public function signedLongToUnsignedLong($i)

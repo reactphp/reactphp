@@ -159,6 +159,39 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('178.79.169.131', $response->answers[0]->data);
     }
 
+    public function testParseResponseWithCnameAndOffsetPointers()
+    {
+        $data = "";
+        $data .= "9e 8d 81 80 00 01 00 01 00 00 00 00";                 // header
+        $data .= "04 6d 61 69 6c 06 67 6f 6f 67 6c 65 03 63 6f 6d 00";  // question: mail.google.com
+        $data .= "00 05 00 01";                                         // question: type CNAME, class IN
+        $data .= "c0 0c";                                               // answer: offset pointer to mail.google.com
+        $data .= "00 05 00 01";                                         // answer: type CNAME, class IN
+        $data .= "00 00 a8 9c";                                         // answer: ttl 43164
+        $data .= "00 0f";                                               // answer: rdlength 15
+        $data .= "0a 67 6f 6f 67 6c 65 6d 61 69 6c 01 6c";              // answer: rdata googlemail.l.
+        $data .= "c0 11";                                               // answer: rdata offset pointer to google.com
+
+        $data = $this->convertTcpDumpToBinary($data);
+
+        $response = new Message();
+
+        $parser = new Parser();
+        $parser->parseChunk($data, $response);
+
+        $this->assertCount(1, $response->questions);
+        $this->assertSame('mail.google.com', $response->questions[0]['name']);
+        $this->assertSame(Message::TYPE_CNAME, $response->questions[0]['type']);
+        $this->assertSame(Message::CLASS_IN, $response->questions[0]['class']);
+
+        $this->assertCount(1, $response->answers);
+        $this->assertSame('mail.google.com', $response->answers[0]->name);
+        $this->assertSame(Message::TYPE_CNAME, $response->answers[0]->type);
+        $this->assertSame(Message::CLASS_IN, $response->answers[0]->class);
+        $this->assertSame(43164, $response->answers[0]->ttl);
+        $this->assertSame('googlemail.l.google.com', $response->answers[0]->data);
+    }
+
     private function convertTcpDumpToBinary($input)
     {
         // sudo ngrep -d en1 -x port 53
