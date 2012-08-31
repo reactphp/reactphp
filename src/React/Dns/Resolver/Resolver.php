@@ -51,6 +51,9 @@ class Resolver
 
     public function pickRandomAnswerOfType(Message $response, $type)
     {
+        // TODO: filter by name to make sure domain matches
+        // TODO: resolve CNAME aliases
+
         $filteredAnswers = array_filter($response->answers, function ($answer) use ($type) {
             return $type === $answer->type;
         });
