@@ -44,7 +44,7 @@ class Parser
         }
 
         $header = substr($message->data, 0, 12);
-        $message->data = substr($message->data, 12);
+        $message->consumed += 12;
 
         list($id, $fields, $qdCount, $anCount, $nsCount, $arCount) = array_merge(unpack('n*', $header));
 
@@ -76,7 +76,7 @@ class Parser
 
         $labels = array();
 
-        $consumed = 0;
+        $consumed = $message->consumed;
 
         $length = ord(substr($message->data, $consumed, 1));
         $consumed += 1;
@@ -104,7 +104,7 @@ class Parser
         list($type, $class) = array_merge(unpack('n*', substr($message->data, $consumed, 4)));
         $consumed += 4;
 
-        $message->data = substr($message->data, $consumed) ?: '';
+        $message->consumed = $consumed;
 
         $message->questions[] = array(
             'name' => implode('.', $labels),
@@ -125,7 +125,7 @@ class Parser
             return;
         }
 
-        $consumed = 0;
+        $consumed = $message->consumed;
 
         $mask = 0xc000; // 1100000000000000
         list($nameOffset) = array_merge(unpack('n', substr($message->data, $consumed, 2)));
@@ -172,7 +172,7 @@ class Parser
             $rdata = inet_ntop($ip);
         }
 
-        $message->data = substr($message->data, $consumed) ?: '';
+        $message->consumed = $consumed;
 
         $name = implode('.', $labels);
         $ttl = $this->signedLongToUnsignedLong($ttl);

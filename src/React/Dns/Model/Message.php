@@ -33,6 +33,8 @@ class Message
     public $authority = array();
     public $additional = array();
 
+    public $consumed = 0;
+
     public function __construct()
     {
         $this->header = new HeaderBag();
