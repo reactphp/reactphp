@@ -154,6 +154,10 @@ class Parser
 
         $message->answers[] = $record;
 
+        if ($message->header->get('anCount') != count($message->answers)) {
+            return $this->parseAnswer($message);
+        }
+
         return $message;
     }
 
