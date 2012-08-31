@@ -192,6 +192,51 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('googlemail.l.google.com', $response->answers[0]->data);
     }
 
+    public function testParseResponseWithTwoAnswers()
+    {
+        $data = "";
+        $data .= "bc 73 81 80 00 01 00 02 00 00 00 00";                 // header
+        $data .= "02 69 6f 0d 77 68 6f 69 73 2d 73 65 72 76 65 72 73 03 6e 65 74 00";
+                                                                        // question: io.whois-servers.net
+        $data .= "00 01 00 01";                                         // question: type A, class IN
+        $data .= "c0 0c";                                               // answer: offset pointer to io.whois-servers.net
+        $data .= "00 05 00 01";                                         // answer: type CNAME, class IN
+        $data .= "00 00 00 29";                                         // answer: ttl 41
+        $data .= "00 0e";                                               // answer: rdlength 14
+        $data .= "05 77 68 6f 69 73 03 6e 69 63 02 69 6f 00";           // answer: rdata whois.nic.io
+        $data .= "c0 32";                                               // answer: offset pointer to whois.nic.io
+        $data .= "00 01 00 01";                                         // answer: type CNAME, class IN
+        $data .= "00 00 0d f7";                                         // answer: ttl 3575
+        $data .= "00 04";                                               // answer: rdlength 4
+        $data .= "c1 df 4e 98";                                         // answer: rdata 193.223.78.152
+
+        $data = $this->convertTcpDumpToBinary($data);
+
+        $response = new Message();
+
+        $parser = new Parser();
+        $parser->parseChunk($data, $response);
+
+        $this->assertCount(1, $response->questions);
+        $this->assertSame('io.whois-servers.net', $response->questions[0]['name']);
+        $this->assertSame(Message::TYPE_A, $response->questions[0]['type']);
+        $this->assertSame(Message::CLASS_IN, $response->questions[0]['class']);
+
+        $this->assertCount(2, $response->answers);
+
+        $this->assertSame('io.whois-servers.net', $response->answers[0]->name);
+        $this->assertSame(Message::TYPE_CNAME, $response->answers[0]->type);
+        $this->assertSame(Message::CLASS_IN, $response->answers[0]->class);
+        $this->assertSame(41, $response->answers[0]->ttl);
+        $this->assertSame('whois.nic.io', $response->answers[0]->data);
+
+        $this->assertSame('whois.nic.io', $response->answers[1]->name);
+        $this->assertSame(Message::TYPE_A, $response->answers[1]->type);
+        $this->assertSame(Message::CLASS_IN, $response->answers[1]->class);
+        $this->assertSame(3575, $response->answers[1]->ttl);
+        $this->assertSame('193.223.78.152', $response->answers[1]->data);
+    }
+
     private function convertTcpDumpToBinary($input)
     {
         // sudo ngrep -d en1 -x port 53
