@@ -1,9 +1,9 @@
 <?php
 
-namespace React\Tests\Http\Client;
+namespace React\Tests\HttpClient;
 
 use Guzzle\Http\Message\Request as GuzzleRequest;
-use React\Http\Client\Request;
+use React\HttpClient\Request;
 use React\Stream\Stream;
 use React\Tests\Socket\TestCase;
 
@@ -17,7 +17,7 @@ class RequestTest extends TestCase
     {
         $this->loop = $this->getMock('React\EventLoop\LoopInterface');
 
-        $this->connectionManager = $this->getMockBuilder('React\Http\Client\ConnectionManagerInterface')
+        $this->connectionManager = $this->getMockBuilder('React\HttpClient\ConnectionManagerInterface')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -25,7 +25,7 @@ class RequestTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->response = $this->getMockBuilder('React\Http\Client\Response')
+        $this->response = $this->getMockBuilder('React\HttpClient\Response')
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -123,8 +123,8 @@ class RequestTest extends TestCase
             ->method('__invoke')
             ->with(
                 null,
-                $this->isInstanceof('React\Http\Client\Response'),
-                $this->isInstanceof('React\Http\Client\Request')
+                $this->isInstanceof('React\HttpClient\Response'),
+                $this->isInstanceof('React\HttpClient\Request')
             )
             ; 
 
@@ -161,7 +161,7 @@ class RequestTest extends TestCase
             ->method('__invoke')
             ->with(
                 $this->isInstanceOf('RuntimeException'),
-                $this->isInstanceOf('React\Http\Client\Request')
+                $this->isInstanceOf('React\HttpClient\Request')
             )
             ;
 
@@ -173,7 +173,7 @@ class RequestTest extends TestCase
             ->with(
                 $this->isInstanceOf('RuntimeException'),
                 null,
-                $this->isInstanceOf('React\Http\Client\Request')
+                $this->isInstanceOf('React\HttpClient\Request')
             )
             ;
 
@@ -207,7 +207,7 @@ class RequestTest extends TestCase
             ->method('__invoke')
             ->with(
                 $this->isInstanceOf('RuntimeException'),
-                $this->isInstanceOf('React\Http\Client\Request')
+                $this->isInstanceOf('React\HttpClient\Request')
             );
 
         $request->on('error', $handler);
@@ -218,7 +218,7 @@ class RequestTest extends TestCase
             ->with(
                 $this->isInstanceOf('RuntimeException'),
                 null,
-                $this->isInstanceOf('React\Http\Client\Request')
+                $this->isInstanceOf('React\HttpClient\Request')
             )
             ;
 
@@ -253,7 +253,7 @@ class RequestTest extends TestCase
             ->method('__invoke')
             ->with(
                 $this->isInstanceOf('Exception'),
-                $this->isInstanceOf('React\Http\Client\Request')
+                $this->isInstanceOf('React\HttpClient\Request')
             )
             ;
 
@@ -265,7 +265,7 @@ class RequestTest extends TestCase
             ->with(
                 $this->isInstanceOf('Exception'),
                 null,
-                $this->isInstanceOf('React\Http\Client\Request')
+                $this->isInstanceOf('React\HttpClient\Request')
             )
             ;
 

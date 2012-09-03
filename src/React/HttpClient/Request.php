@@ -1,15 +1,15 @@
 <?php
 
-namespace React\Http\Client;
+namespace React\HttpClient;
 
 use Evenement\EventEmitter;
 use Guzzle\Http\Message\Request as GuzzleRequest;
 use Guzzle\Http\Url;
 use Guzzle\Parser\Message\MessageParser;
 use React\EventLoop\LoopInterface;
-use React\Http\Client\ConnectionManagerInterface;
-use React\Http\Client\Response;
-use React\Http\Client\ResponseHeaderParser;
+use React\HttpClient\ConnectionManagerInterface;
+use React\HttpClient\Response;
+use React\HttpClient\ResponseHeaderParser;
 use React\Stream\Stream;
 use React\Stream\WritableStreamInterface;
 

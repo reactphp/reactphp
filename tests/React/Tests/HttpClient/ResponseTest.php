@@ -1,8 +1,8 @@
 <?php
 
-namespace React\Tests\Http\Client;
+namespace React\Tests\HttpClient;
 
-use React\Http\Client\Response;
+use React\HttpClient\Response;
 use React\Tests\Socket\TestCase;
 
 class ResponseTest extends TestCase
@@ -47,7 +47,7 @@ class ResponseTest extends TestCase
         $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
-            ->with(null, $this->isInstanceOf('React\Http\Client\Response'))
+            ->with(null, $this->isInstanceOf('React\HttpClient\Response'))
             ;
 
         $response->on('end', $handler);

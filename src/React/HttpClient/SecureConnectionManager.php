@@ -1,6 +1,6 @@
 <?php
 
-namespace React\Http\Client;
+namespace React\HttpClient;
 
 use React\EventLoop\LoopInterface;
 use React\Stream\Stream;

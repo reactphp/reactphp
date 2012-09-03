@@ -1,6 +1,6 @@
 <?php
 
-namespace React\Http\Client;
+namespace React\HttpClient;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
