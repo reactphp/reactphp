@@ -24,6 +24,7 @@ no-heads      do not publish any heads
 tags=         only publish for listed tags instead of all tags
 no-tags       do not publish any tags
 update        fetch updates from repository before publishing
+rebuild-tags  rebuild all tags (as opposed to skipping tags that are already synced)
 "
 eval "$(echo "$OPTS_SPEC" | git rev-parse --parseopt -- "$@" || echo exit $?)"
 
@@ -34,6 +35,11 @@ PATH=$PATH:$(git --exec-path)
 
 . git-sh-setup
 
+if [ "$(hash git-subtree &>/dev/null && echo OK)" = "" ]
+then
+    die "Git subplit needs git subtree; install git subtree or upgrade git to >=1.7.11"
+fi
+
 ANNOTATE=
 QUIET=
 COMMAND=
@@ -42,6 +48,7 @@ REPO_URL=
 WORK_DIR="${PWD}/.subsplit"
 HEADS=
 TAGS=
+REBUILD_TAGS=
 DRY_RUN=
 
 subsplit_main()
@@ -58,6 +65,7 @@ subsplit_main()
             --update) UPDATE=1 ;;
             -n) DRY_RUN="--dry-run" ;;
             --dry-run) DRY_RUN="--dry-run" ;;
+            --rebuild-tags) REBUILD_TAGS=1 ;;
             --) break ;;
             *) die "Unexpected option: $opt" ;;
         esac
@@ -132,7 +140,7 @@ subsplit_publish()
     if [ -z "$TAGS" ] && [ -z "$NO_TAGS" ]
     then
         # If tags are not specified and we want tags, discover them.
-        TAGS="$(git ls-remote origin 2>/dev/null | grep -v "^{}" | grep "refs/tags/" | cut -f3 -d/)"
+        TAGS="$(git ls-remote origin 2>/dev/null | grep -v "\^{}" | grep "refs/tags/" | cut -f3 -d/)"
     fi
 
     for SPLIT in $SPLITS
@@ -171,6 +179,11 @@ subsplit_publish()
         for TAG in $TAGS
         do
             LOCAL_TAG="${REMOTE_NAME}-tag-${TAG}"
+            if git branch | grep "${LOCAL_TAG}$" >/dev/null && [ -z "$REBUILD_TAGS" ]
+            then
+                say " - skpping tag ${TAG} (already synced)"
+                continue
+            fi
             say " - syncing tag ${TAG}"
             git branch -D "$LOCAL_TAG" >/dev/null 2>&1
             git subtree split -q --annotate="${ANNOTATE}" --prefix="$SUBPATH" --branch="$LOCAL_TAG" "$TAG" >/dev/null 2>&1
@@ -182,7 +195,7 @@ subsplit_publish()
                     echo \# $PUSH_CMD
                     $PUSH_CMD
                 else
-                    $PUSH_CM
+                    $PUSH_CMD
                 fi
             fi
         done
