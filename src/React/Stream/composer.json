@@ -8,7 +8,7 @@
         "evenement/evenement": "1.0.*"
     },
     "suggest": {
-        "react/event-loop": "dev-master"
+        "react/event-loop": "0.2.*"
     },
     "autoload": {
         "psr-0": { "React\\Stream": "" }
