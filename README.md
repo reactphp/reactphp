@@ -12,7 +12,7 @@ The recommended way to install react is [through composer](http://getcomposer.or
 {
     "minimum-stability": "dev",
     "require": {
-        "react/react": "0.1.*"
+        "react/react": "0.2.*"
     }
 }
 ```

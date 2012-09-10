@@ -6,8 +6,8 @@
     "require": {
         "php": ">=5.3.3",
         "evenement/evenement": "1.0.*",
-        "react/event-loop": "0.1.*",
-        "react/stream": "0.1.*"
+        "react/event-loop": "0.2.*",
+        "react/stream": "0.2.*"
     },
     "autoload": {
         "psr-0": { "React\\Socket": "" }
