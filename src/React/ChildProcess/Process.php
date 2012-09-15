@@ -61,6 +61,9 @@ class Process extends EventEmitter
     public function observeStatus()
     {
         if (!$this->stdout->isReadable() && !$this->stderr->isReadable()) {
+            $this->stdin->close();
+            $this->stdout->close();
+            $this->stderr->close();
             $this->exits();
         }
     }
