@@ -184,8 +184,8 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
         $loop->run();
 
-        $this->assertSame($capturedExitCodeOfExit, 0);
-        $this->assertSame($capturedExitCodeOfClose, 0);
+        $this->assertSame(0, $capturedExitCodeOfExit);
+        $this->assertSame(0, $capturedExitCodeOfClose);
         $this->assertNull($capturedSignalCodeOfExit);
         $this->assertNull($capturedSignalCodeOfClose);
     }
