@@ -16,38 +16,22 @@ $commands = array(
 foreach ($commands as $id => $command) {
     $idLabel = "[{$id}] ";
     $process = $factory->spawn($command['cmd'], $command['args']);
-    echo $idLabel, blue('[PID]') . '    pid is ', (string) $process->getPid(), PHP_EOL;
-    echo $idLabel, blue('[CMD]') . '    ', $process->getCommand(), PHP_EOL;
+    echo $idLabel, '[PID]    pid is ', (string) $process->getPid(), PHP_EOL;
+    echo $idLabel, '[CMD]    ', $process->getCommand(), PHP_EOL;
 
     $process->stdout->on('data', function ($data) use ($idLabel) {
-        echo $idLabel, green('[STDOUT]') . ' ';
+        echo $idLabel, '[STDOUT] ';
         var_dump($data);
     });
 
     $process->stderr->on('data', function ($data) use ($idLabel) {
-        echo $idLabel, red('[STDERR]') . ' ';
+        echo $idLabel, '[STDERR] ';
         var_dump($data);
     });
 
     $process->on('exit', function ($status) use ($idLabel) {
-        echo $idLabel, yellow('[EXIT]') . '   exited with status code ', (string) $status, PHP_EOL;
+        echo $idLabel, '[EXIT]   exited with status code ', (string) $status, PHP_EOL;
     });
 }
 
 $loop->run();
-
-function red($str) {
-    return "\033[31m{$str}\033[0m";
-}
-
-function green($str) {
-    return "\033[32m{$str}\033[0m";
-}
-
-function yellow($str) {
-    return "\033[33m{$str}\033[0m";
-}
-
-function blue($str) {
-    return "\033[34m{$str}\033[0m";
-}
