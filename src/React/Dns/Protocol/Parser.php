@@ -46,7 +46,7 @@ class Parser
         $header = substr($message->data, 0, 12);
         $message->consumed += 12;
 
-        list($id, $fields, $qdCount, $anCount, $nsCount, $arCount) = array_merge(unpack('n*', $header));
+        list($id, $fields, $qdCount, $anCount, $nsCount, $arCount) = array_values(unpack('n*', $header));
 
         $rcode = $fields & bindec('1111');
         $z = ($fields >> 4) & bindec('111');
@@ -86,7 +86,7 @@ class Parser
             return;
         }
 
-        list($type, $class) = array_merge(unpack('n*', substr($message->data, $consumed, 4)));
+        list($type, $class) = array_values(unpack('n*', substr($message->data, $consumed, 4)));
         $consumed += 4;
 
         $message->consumed = $consumed;
@@ -122,13 +122,13 @@ class Parser
             return;
         }
 
-        list($type, $class) = array_merge(unpack('n*', substr($message->data, $consumed, 4)));
+        list($type, $class) = array_values(unpack('n*', substr($message->data, $consumed, 4)));
         $consumed += 4;
 
-        list($ttl) = array_merge(unpack('N', substr($message->data, $consumed, 4)));
+        list($ttl) = array_values(unpack('N', substr($message->data, $consumed, 4)));
         $consumed += 4;
 
-        list($rdLength) = array_merge(unpack('n', substr($message->data, $consumed, 2)));
+        list($rdLength) = array_values(unpack('n', substr($message->data, $consumed, 2)));
         $consumed += 2;
 
         $rdata = null;
@@ -208,7 +208,7 @@ class Parser
     public function isCompressedLabel($data, $consumed)
     {
         $mask = 0xc000; // 1100000000000000
-        list($peek) = array_merge(unpack('n', substr($data, $consumed, 2)));
+        list($peek) = array_values(unpack('n', substr($data, $consumed, 2)));
 
         return (bool) ($peek & $mask);
     }
@@ -216,7 +216,7 @@ class Parser
     public function getCompressedLabelOffset($data, $consumed)
     {
         $mask = 0x3fff; // 0011111111111111
-        list($peek) = array_merge(unpack('n', substr($data, $consumed, 2)));
+        list($peek) = array_values(unpack('n', substr($data, $consumed, 2)));
 
         return array($peek & $mask, $consumed + 2);
     }
