@@ -48,13 +48,13 @@ class Parser
 
         list($id, $fields, $qdCount, $anCount, $nsCount, $arCount) = array_merge(unpack('n*', $header));
 
-        $rcode = $fields & chr(bindec('1111'));
-        $z = ($fields >> 4) & chr(bindec('111'));
+        $rcode = $fields & bindec('1111');
+        $z = ($fields >> 4) & bindec('111');
         $ra = ($fields >> 7) & 1;
         $rd = ($fields >> 8) & 1;
         $tc = ($fields >> 9) & 1;
         $aa = ($fields >> 10) & 1;
-        $opcode = ($fields >> 11) & chr(bindec('1111'));
+        $opcode = ($fields >> 11) & bindec('1111');
         $qr = ($fields >> 15) & 1;
 
         $vars = compact('id', 'qdCount', 'anCount', 'nsCount', 'arCount',
