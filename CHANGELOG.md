@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+* 0.2.1 (2012-10-xx)
+
+ * Check for EOF in `Buffer::write()`
+
 * 0.2.0 (2012-09-10)
 
  * Feature: DNS resolver
