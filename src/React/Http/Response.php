@@ -24,6 +24,15 @@ class Response extends EventEmitter implements WritableStreamInterface
         return $this->writable;
     }
 
+    public function writeContinue()
+    {
+        if ($this->headWritten) {
+            throw new \Exception('Response head has already been written.');
+        }
+
+        $this->conn->write("HTTP/1.1 100 Continue\r\n");
+    }
+
     public function writeHead($status = 200, array $headers = array())
     {
         if ($this->headWritten) {
