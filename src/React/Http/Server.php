@@ -69,7 +69,7 @@ class Server extends EventEmitter implements ServerInterface
             $parser->removeAllListeners();
         } else {
             $response->on('end', function () use ($conn, $parser) {
-                $parser->rewind();
+                $parser->reset();
                 $conn->on('data', array($parser, 'feed'));
             });
         }

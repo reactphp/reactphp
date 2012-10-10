@@ -50,7 +50,7 @@ class RequestHeaderParser extends EventEmitter
         return array($request, $bodyBuffer);
     }
 
-    public function rewind()
+    public function reset()
     {
         $this->buffer = '';
     }
