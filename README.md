@@ -10,8 +10,9 @@ The recommended way to install react is [through composer](http://getcomposer.or
 
 ```JSON
 {
+    "minimum-stability": "dev",
     "require": {
-        "react/react": "dev-master"
+        "react/react": "0.2.*"
     }
 }
 ```
@@ -38,16 +39,9 @@ Here is an example of a simple HTTP server listening on port 1337:
 ```php
 <?php
 
-$i = 1;
+$i = 0;
 
-$app = new React\Espresso\Application();
-
-$app->get('/favicon.ico', function ($request, $response) {
-    $response->writeHead(204);
-    $response->end();
-});
-
-$app->get('/', function ($request, $response) use (&$i) {
+$app = function ($request, $response) use (&$i) {
     $i++;
 
     $text = "This is request number $i.\n";
@@ -55,7 +49,7 @@ $app->get('/', function ($request, $response) use (&$i) {
 
     $response->writeHead(200, $headers);
     $response->end($text);
-});
+};
 
 $stack = new React\Espresso\Stack($app);
 $stack->listen(1337);

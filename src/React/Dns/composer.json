@@ -1,0 +1,14 @@
+{
+    "name": "react/dns",
+    "description": "Async DNS resolver.",
+    "keywords": ["dns", "dns-resolver"],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.2",
+        "react/socket": "0.2.*"
+    },
+    "autoload": {
+        "psr-0": { "React\\Dns": "" }
+    },
+    "target-dir": "React/Dns"
+}
