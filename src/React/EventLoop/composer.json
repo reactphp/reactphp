@@ -4,7 +4,7 @@
     "keywords": ["event-loop"],
     "license": "MIT",
     "require": {
-        "php": ">=5.3.2"
+        "php": ">=5.3.3"
     },
     "suggest": {
         "ext-libevent": ">=0.0.5"
@@ -12,5 +12,10 @@
     "autoload": {
         "psr-0": { "React\\EventLoop": "" }
     },
-    "target-dir": "React/EventLoop"
+    "target-dir": "React/EventLoop",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2"
+        }
+    }
 }

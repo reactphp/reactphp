@@ -71,4 +71,22 @@ class ResponseTest extends TestCase
         $response->write("World\n");
         $response->end();
     }
+
+    /** @test */
+    public function writeContinueShouldSendContinueLineBeforeRealHeaders()
+    {
+        $conn = $this->getMock('React\Socket\ConnectionInterface');
+        $conn
+            ->expects($this->at(0))
+            ->method('write')
+            ->with("HTTP/1.1 100 Continue\r\n");
+        $conn
+            ->expects($this->at(1))
+            ->method('write')
+            ->with($this->stringContains("HTTP/1.1 200 OK\r\n"));
+
+        $response = new Response($conn);
+        $response->writeContinue();
+        $response->writeHead();
+    }
 }
