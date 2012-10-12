@@ -86,12 +86,18 @@ class LibEvLoop implements LoopInterface
 
     public function addTimer($interval, $callback)
     {
-        return $this->createTimer($interval, $callback, 0);
+        $dummyCallback = function () {};
+        $timer = new \libev\TimerEvent($dummyCallback, $interval);
+
+        return $this->createTimer($timer, $interval, $callback, 0);
     }
 
     public function addPeriodicTimer($interval, $callback)
     {
-        return $this->createTimer($interval, $callback, 1);
+        $dummyCallback = function () {};
+        $timer = new \libev\PeriodicEvent($dummyCallback, 1, $interval);
+
+        return $this->createTimer($timer, $interval, $callback, 1);
     }
 
     public function cancelTimer($signature)
@@ -100,16 +106,8 @@ class LibEvLoop implements LoopInterface
         unset($this->timers[$signature]);
     }
 
-    private function createTimer($interval, $callback, $periodic)
+    private function createTimer($timer, $interval, $callback, $periodic)
     {
-        $dummyCallback = function () {};
-
-        if ($periodic) {
-            $timer = new \libev\PeriodicEvent($dummyCallback, 1, $interval);
-        } else {
-            $timer = new \libev\TimerEvent($dummyCallback, $interval);
-        }
-
         $signature = spl_object_hash($timer);
         $callback = $this->wrapTimerCallback($signature, $callback, $periodic);
         $timer->setCallback($callback);
