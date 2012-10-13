@@ -220,8 +220,8 @@ class Request extends EventEmitter implements WritableStreamInterface
         $connectionManager = $this->connectionManager;
         $that = $this;
 
-        $connectionManager->getConnection(function ($stream) use ($that, $callback) {
-            call_user_func($callback, $stream);
+        $connectionManager->getConnection(function ($stream, $error = null) use ($that, $callback) {
+            call_user_func($callback, $stream, $error);
         }, $host, $port);
     }
 

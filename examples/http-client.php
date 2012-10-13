@@ -5,9 +5,14 @@
 require __DIR__.'/../vendor/autoload.php';
 
 $loop = React\EventLoop\Factory::create();
-$client = new React\HttpClient\Client($loop);
 
-$request = $client->request('GET', 'https://api.github.com/repos/react-php/react/commits');
+$dnsResolverFactory = new React\Dns\Resolver\Factory();
+$dnsResolver = $dnsResolverFactory->createCached('8.8.8.8', $loop);
+
+$factory = new React\HttpClient\Factory();
+$client = $factory->create($loop, $dnsResolver);
+
+$request = $client->request('GET', 'https://api.github.com/repos/reactphp/react/commits');
 $request->on('response', function ($response) {
     $buffer = '';
 
@@ -26,6 +31,9 @@ $request->on('response', function ($response) {
         echo "Latest commit on react was done by {$author} on {$date}\n";
         echo "{$latest['message']}\n";
     });
+});
+$request->on('end', function ($error, $response) {
+    echo $error;
 });
 $request->end();
 

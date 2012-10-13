@@ -16,9 +16,11 @@ class Client
 
     private $secureConnectionManager;
 
-    public function __construct(LoopInterface $loop)
+    public function __construct(LoopInterface $loop, ConnectionManagerInterface $connectionManager, ConnectionManagerInterface $secureConnectionManager)
     {
         $this->loop = $loop;
+        $this->connectionManager = $connectionManager;
+        $this->secureConnectionManager = $secureConnectionManager;
     }
 
     public function request($method, $url, array $headers = array())
@@ -35,9 +37,6 @@ class Client
 
     public function getConnectionManager()
     {
-        if (null === $this->connectionManager) {
-            $this->connectionManager = new ConnectionManager($this->loop);
-        }
         return $this->connectionManager;
     }
 
@@ -48,9 +47,6 @@ class Client
 
     public function getSecureConnectionManager()
     {
-        if (null === $this->secureConnectionManager) {
-            $this->secureConnectionManager = new SecureConnectionManager($this->loop);
-        }
         return $this->secureConnectionManager;
     }
 

@@ -26,7 +26,12 @@ Interesting events emitted by Response:
 <?php
 
 $loop = React\EventLoop\Factory::create();
-$client = new React\HttpClient\Client($loop);
+
+$dnsResolverFactory = new React\Dns\Resolver\Factory();
+$dnsResolver = $dnsResolverFactory->createCached('8.8.8.8', $loop);
+
+$factory = new React\HttpClient\Factory();
+$client = $factory->create($loop, $dnsResolver);
 
 $request = $client->request('GET', 'https://github.com/');
 $request->on('response', function ($response) {
