@@ -3,7 +3,10 @@ CHANGELOG
 
 * 0.2.1 (2012-10-xx)
 
- * Check for EOF in `Buffer::write()`
+ * Feature: Support HTTP 1.1 continue
+ * Bug fix: Check for EOF in `Buffer::write()`
+ * Bug fix: Make `Espresso\Stack` work with invokables (such as `Espresso\Application`)
+ * Minor adjustments to DNS parser
 
 * 0.2.0 (2012-09-10)
 
