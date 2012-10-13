@@ -15,10 +15,10 @@ class Buffer extends EventEmitter implements WritableStreamInterface
     private $loop;
     private $data = '';
     private $lastError = array(
-        'number'  => '',
+        'number'  => 0,
         'message' => '',
         'file'    => '',
-        'line'    => '',
+        'line'    => 0,
     );
 
     public function __construct($stream, LoopInterface $loop)
