@@ -184,7 +184,7 @@ class BufferTest extends TestCase
 
         $buffer->write('Attempting to write to bad stream');
         $this->assertInstanceOf('Exception', $error);
-        $this->assertSame('fwrite() expects parameter 1 to be resource, null given', $error->getMessage());
+        $this->assertSame('Tried to write to closed or invalid stream.', $error->getMessage());
     }
 
     private function createWriteableLoopMock()

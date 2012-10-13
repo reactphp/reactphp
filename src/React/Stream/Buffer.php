@@ -77,13 +77,19 @@ class Buffer extends EventEmitter implements WritableStreamInterface
 
     public function handleWrite()
     {
+        if (!is_resource($this->stream) || feof($this->stream)) {
+            $this->emit('error', array(new \RuntimeException('Tried to write to closed or invalid stream.')));
+
+            return;
+        }
+
         set_error_handler(array($this, 'errorHandler'));
 
         $sent = fwrite($this->stream, $this->data);
 
         restore_error_handler();
 
-        if (false === $sent || feof($this->stream)) {
+        if (false === $sent) {
             $this->emit('error', array(new \ErrorException(
                 $this->lastError['message'],
                 0,
