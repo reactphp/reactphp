@@ -89,7 +89,7 @@ class Buffer extends EventEmitter implements WritableStreamInterface
 
         restore_error_handler();
 
-        if (false === $sent || feof($this->stream)) {
+        if (false === $sent) {
             $this->emit('error', array(new \ErrorException(
                 $this->lastError['message'],
                 0,
