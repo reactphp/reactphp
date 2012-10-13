@@ -12,15 +12,13 @@
         "php": ">=5.3.3",
         "evenement/evenement": "1.0.*",
         "guzzle/http": "2.8.*",
-        "guzzle/parser": "2.8.*",
-        "silex/silex": "1.0.*"
+        "guzzle/parser": "2.8.*"
     },
     "replace": {
         "react/event-loop": "self.version",
         "react/stream": "self.version",
         "react/socket": "self.version",
-        "react/http": "self.version",
-        "react/espresso": "self.version"
+        "react/http": "self.version"
     },
     "autoload": {
         "psr-0": { "React": "src" }

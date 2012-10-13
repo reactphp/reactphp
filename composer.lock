@@ -1,71 +1,223 @@
 {
-    "hash": "7105e6538b78173ea6a32ec85648fed7",
+    "hash": "71406449926dab2271b4e043aba44da5",
     "packages": [
         {
-            "package": "evenement/evenement",
+            "name": "evenement/evenement",
             "version": "1.0.x-dev",
-            "source-reference": "v1.0.0",
-            "commit-date": "1338390068"
+            "source": {
+                "type": "git",
+                "url": "https://github.com/igorw/evenement",
+                "reference": "v1.0.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/igorw/evenement/zipball/v1.0.0",
+                "reference": "v1.0.0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "time": "1338390068",
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "psr-0": {
+                    "Evenement": "src"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Igor Wiedler",
+                    "email": "igor@wiedler.ch",
+                    "homepage": "http://wiedler.ch/igor/",
+                    "role": null
+                }
+            ],
+            "description": "Événement is a very simple event dispatching library for PHP 5.3",
+            "keywords": [
+                "event-dispatcher"
+            ]
         },
         {
-            "package": "guzzle/common",
-            "version": "v2.8.6"
+            "name": "guzzle/common",
+            "version": "v2.8.6",
+            "target-dir": "Guzzle/Common",
+            "source": {
+                "type": "git",
+                "url": "git://github.com/guzzle/common.git",
+                "reference": "v2.8.6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/guzzle/common/zipball/v2.8.6",
+                "reference": "v2.8.6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2",
+                "symfony/event-dispatcher": "2.1.*"
+            },
+            "time": "2012-09-05 19:30:30",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-0": {
+                    "Guzzle\\Common": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Common libraries used by Guzzle",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "log",
+                "event",
+                "cache",
+                "validation",
+                "Socket",
+                "common",
+                "batch",
+                "inflection"
+            ]
         },
         {
-            "package": "guzzle/http",
-            "version": "v2.8.6"
+            "name": "guzzle/http",
+            "version": "v2.8.6",
+            "target-dir": "Guzzle/Http",
+            "source": {
+                "type": "git",
+                "url": "git://github.com/guzzle/http.git",
+                "reference": "v2.8.6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/guzzle/http/zipball/v2.8.6",
+                "reference": "v2.8.6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2",
+                "guzzle/common": "self.version",
+                "guzzle/parser": "self.version"
+            },
+            "time": "2012-09-02 15:01:34",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-0": {
+                    "Guzzle\\Http": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "HTTP libraries used by Guzzle",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "curl",
+                "http",
+                "http client",
+                "client",
+                "Guzzle"
+            ]
         },
         {
-            "package": "guzzle/parser",
-            "version": "v2.8.6"
+            "name": "guzzle/parser",
+            "version": "v2.8.6",
+            "target-dir": "Guzzle/Parser",
+            "source": {
+                "type": "git",
+                "url": "git://github.com/guzzle/parser.git",
+                "reference": "v2.8.6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/guzzle/parser/zipball/v2.8.6",
+                "reference": "v2.8.6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "time": "2012-08-17 01:22:25",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-0": {
+                    "Guzzle\\Parser": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Interchangeable parsers used by Guzzle",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "http",
+                "url",
+                "message",
+                "cookie",
+                "URI Template"
+            ]
         },
         {
-            "package": "pimple/pimple",
-            "version": "dev-master",
-            "alias-pretty-version": "1.0.x-dev",
-            "alias-version": "1.0.9999999.9999999-dev"
-        },
-        {
-            "package": "pimple/pimple",
-            "version": "dev-master",
-            "source-reference": "b9f27b8dc18c08f00627dec02359b46a24791dc3",
-            "commit-date": "1347278988"
-        },
-        {
-            "package": "silex/silex",
-            "version": "dev-master",
-            "alias-pretty-version": "1.0.x-dev",
-            "alias-version": "1.0.9999999.9999999-dev"
-        },
-        {
-            "package": "silex/silex",
-            "version": "dev-master",
-            "source-reference": "ad563dde113092aa603e2b399d10ea43aece8006",
-            "commit-date": "1347084669"
-        },
-        {
-            "package": "symfony/event-dispatcher",
+            "name": "symfony/event-dispatcher",
             "version": "2.1.x-dev",
-            "source-reference": "6e9726a4e82fe95fcb243e7c4021f7fb2de19b70",
-            "commit-date": "1347274422"
-        },
-        {
-            "package": "symfony/http-foundation",
-            "version": "2.1.x-dev",
-            "source-reference": "v2.1.0",
-            "commit-date": "1346761482"
-        },
-        {
-            "package": "symfony/http-kernel",
-            "version": "2.1.x-dev",
-            "source-reference": "cb91ebb2c104f3c24b20ef34b785f8ab75f1ea2d",
-            "commit-date": "1347274422"
-        },
-        {
-            "package": "symfony/routing",
-            "version": "2.1.x-dev",
-            "source-reference": "5069cbd8bf02ed33cfd640b227bb43e816d55f14",
-            "commit-date": "1347274422"
+            "target-dir": "Symfony/Component/EventDispatcher",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/EventDispatcher",
+                "reference": "fb273317c0505ba657aa3d727530d36ae671fb82"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/symfony/EventDispatcher/zipball/fb273317c0505ba657aa3d727530d36ae671fb82",
+                "reference": "fb273317c0505ba657aa3d727530d36ae671fb82",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "symfony/dependency-injection": "2.1.*"
+            },
+            "suggest": {
+                "symfony/dependency-injection": "2.1.*",
+                "symfony/http-kernel": "2.1.*"
+            },
+            "time": "1349363877",
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.1-dev"
+                }
+            },
+            "installation-source": "source",
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\EventDispatcher": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony EventDispatcher Component",
+            "homepage": "http://symfony.com"
         }
     ],
     "packages-dev": [
