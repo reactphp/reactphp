@@ -17,7 +17,8 @@
         "react/event-loop": "self.version",
         "react/stream": "self.version",
         "react/socket": "self.version",
-        "react/http": "self.version"
+        "react/http": "self.version",
+        "react/dns": "self.version"
     },
     "autoload": {
         "psr-0": { "React": "src" }
