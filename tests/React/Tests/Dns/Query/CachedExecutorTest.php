@@ -25,7 +25,7 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
         $cachedExecutor = new CachedExecutor($executor, $cache);
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $cachedExecutor->query('8.8.8.8', $query, function () {});
+        $cachedExecutor->query('8.8.8.8', $query, function () {}, function () {});
     }
 
     /**
@@ -61,8 +61,8 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
         $cachedExecutor = new CachedExecutor($executor, $cache);
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $cachedExecutor->query('8.8.8.8', $query, function () {});
-        $cachedExecutor->query('8.8.8.8', $query, function () {});
+        $cachedExecutor->query('8.8.8.8', $query, function () {}, function () {});
+        $cachedExecutor->query('8.8.8.8', $query, function () {}, function () {});
     }
 
     private function callQueryCallbackWithAddress($address)

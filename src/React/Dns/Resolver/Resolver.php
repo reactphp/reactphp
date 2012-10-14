@@ -27,19 +27,21 @@ class Resolver
     {
         $that = $this;
 
+        if (!$errback) {
+            $errback = function ($error) {
+                throw $error;
+            };
+        }
+
         $query = new Query($domain, Message::TYPE_A, Message::CLASS_IN, time());
 
         $this->executor->query($this->nameserver, $query, function (Message $response) use ($that, $callback, $errback) {
             try {
                 $that->extractAddress($response, Message::TYPE_A, $callback);
             } catch (RecordNotFoundException $e) {
-                if (!$errback) {
-                    throw $e;
-                }
-
                 $errback($e);
             }
-        });
+        }, $errback);
     }
 
     public function extractAddress(Message $response, $type, $callback)
