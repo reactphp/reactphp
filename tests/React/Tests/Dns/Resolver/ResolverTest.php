@@ -74,9 +74,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
         $resolver->resolve('igor.io', $this->expectCallableNever(), $errback);
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function resolveSouldProvideDefaultErrorbackToExecutor()
     {
         $executor = $this->createExecutorMock();
@@ -88,7 +86,6 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
         $resolver = new Resolver('8.8.8.8:53', $executor);
         $resolver->resolve('igor.io', $this->expectCallableNever());
     }
-
 
     protected function expectCallableOnceWith($with)
     {
