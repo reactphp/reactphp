@@ -10,7 +10,6 @@ The recommended way to install react is [through composer](http://getcomposer.or
 
 ```JSON
 {
-    "minimum-stability": "dev",
     "require": {
         "react/react": "0.2.*"
     }
