@@ -14,6 +14,5 @@ $GIT_SUBSPLIT publish "
     src/React/Stream/:git@github.com:react-php/stream.git
     src/React/Socket/:git@github.com:react-php/socket.git
     src/React/Http/:git@github.com:react-php/http.git
-    src/React/Espresso/:git@github.com:react-php/espresso.git
     src/React/Dns/:git@github.com:react-php/dns.git
 " --heads=master
