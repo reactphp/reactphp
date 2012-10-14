@@ -1,7 +1,11 @@
 CHANGELOG
 =========
 
-* 0.2.1 (2012-10-xx)
+* 0.2.2 (2012-10-xx)
+
+ * Dropped Espresso as a core component, now available as `react/espresso` only
+
+* 0.2.1 (2012-10-14)
 
  * Feature: Support HTTP 1.1 continue
  * Bug fix: Check for EOF in `Buffer::write()`
