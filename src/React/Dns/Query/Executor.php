@@ -32,7 +32,7 @@ class Executor implements ExecutorInterface
         $queryData = $this->dumper->toBinary($request);
         $transport = strlen($queryData) > 512 ? 'tcp' : 'udp';
 
-        $this->doQuery($nameserver, $transport, $queryData, $callback, $errorback);
+        $this->doQuery($nameserver, $transport, $queryData, $query->name, $callback, $errorback);
     }
 
     public function prepareRequest(Query $query)
@@ -46,7 +46,7 @@ class Executor implements ExecutorInterface
         return $request;
     }
 
-    public function doQuery($nameserver, $transport, $queryData, $callback, $errorback)
+    public function doQuery($nameserver, $transport, $queryData, $name, $callback, $errorback)
     {
         $that = $this;
         $parser = $this->parser;
@@ -54,13 +54,13 @@ class Executor implements ExecutorInterface
 
         $response = new Message();
 
-        $retryWithTcp = function () use ($that, $nameserver, $queryData, $callback, $errorback) {
-            $that->doQuery($nameserver, 'tcp', $queryData, $callback, $errorback);
+        $retryWithTcp = function () use ($that, $nameserver, $queryData, $name, $callback, $errorback) {
+            $that->doQuery($nameserver, 'tcp', $queryData, $name, $callback, $errorback);
         };
 
-        $timer = $this->loop->addTimer($this->timeout, function () use (&$conn, $errorback) {
+        $timer = $this->loop->addTimer($this->timeout, function () use (&$conn, $name, $errorback) {
             $conn->close();
-            $errorback(new TimeoutException("query timed out"));
+            $errorback(new TimeoutException(sprintf("DNS query for %s timed out", $name)));
         });
 
         $conn = $this->createConnection($nameserver, $transport);

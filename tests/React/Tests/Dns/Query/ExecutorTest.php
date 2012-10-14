@@ -155,6 +155,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function resolveShouldCloseConnectionOnTimeout()
     {
+        $that = $this;
         $conn = $this->createConnectionMock();
 
         $this->executor = $this->createExecutorMock();
@@ -182,7 +183,10 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
         $errorback
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->isInstanceOf('React\Dns\Query\TimeoutException'));
+            ->with($this->logicalAnd(
+                $this->isInstanceOf('React\Dns\Query\TimeoutException'),
+                $this->attribute($this->equalTo('DNS query for igor.io timed out'), 'message')
+            ));
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
         $this->executor->query('8.8.8.8:53', $query, $callback, $errorback);
