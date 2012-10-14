@@ -16,7 +16,7 @@ class CachedExecutor implements ExecutorInterface
         $this->cache = $cache;
     }
 
-    public function query($nameserver, Query $query, $callback)
+    public function query($nameserver, Query $query, $callback, $errorback)
     {
         $cachedRecords = $this->cache->lookup($query);
         if (count($cachedRecords)) {
@@ -29,7 +29,7 @@ class CachedExecutor implements ExecutorInterface
         $this->executor->query($nameserver, $query, function ($response) use ($cache, $query, $callback) {
             $callback($response);
             $cache->storeResponseMessage($query->currentTime, $response);
-        });
+        }, $errorback);
     }
 
     private function buildResponse(Query $query, array $cachedRecords)

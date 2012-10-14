@@ -15,22 +15,24 @@ class Executor implements ExecutorInterface
     private $loop;
     private $parser;
     private $dumper;
+    private $timeout;
 
-    public function __construct(LoopInterface $loop, Parser $parser, BinaryDumper $dumper)
+    public function __construct(LoopInterface $loop, Parser $parser, BinaryDumper $dumper, $timeout = 5)
     {
         $this->loop = $loop;
         $this->parser = $parser;
         $this->dumper = $dumper;
+        $this->timeout = $timeout;
     }
 
-    public function query($nameserver, Query $query, $callback)
+    public function query($nameserver, Query $query, $callback, $errorback)
     {
         $request = $this->prepareRequest($query);
 
         $queryData = $this->dumper->toBinary($request);
         $transport = strlen($queryData) > 512 ? 'tcp' : 'udp';
 
-        $this->doQuery($nameserver, $transport, $queryData, $callback);
+        $this->doQuery($nameserver, $transport, $queryData, $callback, $errorback);
     }
 
     public function prepareRequest(Query $query)
@@ -44,24 +46,32 @@ class Executor implements ExecutorInterface
         return $request;
     }
 
-    public function doQuery($nameserver, $transport, $queryData, $callback)
+    public function doQuery($nameserver, $transport, $queryData, $callback, $errorback)
     {
         $that = $this;
         $parser = $this->parser;
+        $loop = $this->loop;
 
         $response = new Message();
 
-        $retryWithTcp = function () use ($that, $nameserver, $queryData, $callback) {
-            $that->doQuery($nameserver, 'tcp', $queryData, $callback);
+        $retryWithTcp = function () use ($that, $nameserver, $queryData, $callback, $errorback) {
+            $that->doQuery($nameserver, 'tcp', $queryData, $callback, $errorback);
         };
 
+        $timer = $this->loop->addTimer($this->timeout, function () use (&$conn, $errorback) {
+            $conn->close();
+            $errorback(new TimeoutException("query timed out"));
+        });
+
         $conn = $this->createConnection($nameserver, $transport);
-        $conn->on('data', function ($data) use ($that, $retryWithTcp, $conn, $parser, $response, $transport, $callback) {
+        $conn->on('data', function ($data) use ($that, $retryWithTcp, $conn, $parser, $response, $transport, $callback, $loop, $timer) {
             $responseReady = $parser->parseChunk($data, $response);
 
             if (!$responseReady) {
                 return;
             }
+
+            $loop->cancelTimer($timer);
 
             if ($response->header->isTruncated()) {
                 if ('tcp' === $transport) {
