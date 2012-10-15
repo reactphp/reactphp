@@ -13,6 +13,9 @@
         "guzzle/http": "2.8.*",
         "guzzle/parser": "2.8.*"
     },
+    "require-dev": {
+        "pecl-libevent": "*"
+    },
     "replace": {
         "react/event-loop": "self.version",
         "react/stream": "self.version",
