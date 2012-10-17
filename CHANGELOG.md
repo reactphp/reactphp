@@ -1,9 +1,17 @@
 CHANGELOG
 =========
 
-* 0.2.1 (2012-10-xx)
+* 0.2.2 (2012-10-xx)
 
- * Check for EOF in `Buffer::write()`
+ * Major: Dropped Espresso as a core component now available as `react/espresso` only
+ * Feature: DNS resolver timeout handling (patch by arnaud-lb)
+
+* 0.2.1 (2012-10-14)
+
+ * Feature: Support HTTP 1.1 continue
+ * Bug fix: Check for EOF in `Buffer::write()`
+ * Bug fix: Make `Espresso\Stack` work with invokables (such as `Espresso\Application`)
+ * Minor adjustments to DNS parser
 
 * 0.2.0 (2012-09-10)
 

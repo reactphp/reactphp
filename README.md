@@ -10,7 +10,6 @@ The recommended way to install react is [through composer](http://getcomposer.or
 
 ```JSON
 {
-    "minimum-stability": "dev",
     "require": {
         "react/react": "0.2.*"
     }
@@ -51,8 +50,14 @@ $app = function ($request, $response) use (&$i) {
     $response->end($text);
 };
 
-$stack = new React\Espresso\Stack($app);
-$stack->listen(1337);
+$loop = React\EventLoop\Factory::create();
+$socket = new React\Socket\Server($loop);
+$http = new React\Http\Server($socket, $loop);
+
+$http->on('request', $app);
+
+$socket->listen(1337);
+$loop->run();
 ```
 
 ## Community

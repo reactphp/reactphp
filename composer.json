@@ -1,5 +1,4 @@
 {
-    "minimum-stability": "dev",
     "name": "react/react",
     "description": "Nuclear Reactor written in PHP.",
     "keywords": ["event-loop", "reactor"],
@@ -12,8 +11,7 @@
         "php": ">=5.3.3",
         "evenement/evenement": "1.0.*",
         "guzzle/http": "2.8.*",
-        "guzzle/parser": "2.8.*",
-        "silex/silex": "1.0.*"
+        "guzzle/parser": "2.8.*"
     },
     "require-dev": {
         "pecl-libevent": "*"
@@ -23,7 +21,7 @@
         "react/stream": "self.version",
         "react/socket": "self.version",
         "react/http": "self.version",
-        "react/espresso": "self.version"
+        "react/dns": "self.version"
     },
     "autoload": {
         "psr-0": { "React": "src" }

@@ -4,5 +4,5 @@ namespace React\Dns\Query;
 
 interface ExecutorInterface
 {
-    public function query($nameserver, Query $query, $callback);
+    public function query($nameserver, Query $query, $callback, $errorback);
 }
