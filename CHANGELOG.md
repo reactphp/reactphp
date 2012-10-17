@@ -5,6 +5,7 @@ CHANGELOG
 
  * Major: Dropped Espresso as a core component now available as `react/espresso` only
  * Feature: DNS resolver timeout handling (patch by arnaud-lb)
+ * Feature: LibEvLoop, integration of `php-libev`
 
 * 0.2.1 (2012-10-14)
 
