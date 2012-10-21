@@ -1,5 +1,5 @@
 {
-    "hash": "7b920c02e3dcedcc677c33ebfb473a49",
+    "hash": "d8e2d385b75b63b5f55dca9229758be1",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -43,24 +43,24 @@
         },
         {
             "name": "guzzle/common",
-            "version": "v2.8.6",
+            "version": "v2.8.8",
             "target-dir": "Guzzle/Common",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/common.git",
-                "reference": "v2.8.6"
+                "reference": "v2.8.8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/common/zipball/v2.8.6",
-                "reference": "v2.8.6",
+                "url": "https://github.com/guzzle/common/zipball/v2.8.8",
+                "reference": "v2.8.8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2",
                 "symfony/event-dispatcher": "2.1.*"
             },
-            "time": "2012-09-05 16:30:30",
+            "time": "2012-10-15 17:42:47",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -86,17 +86,17 @@
         },
         {
             "name": "guzzle/http",
-            "version": "v2.8.6",
+            "version": "v2.8.8",
             "target-dir": "Guzzle/Http",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/http.git",
-                "reference": "v2.8.6"
+                "reference": "v2.8.8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/http/zipball/v2.8.6",
-                "reference": "v2.8.6",
+                "url": "https://github.com/guzzle/http/zipball/v2.8.8",
+                "reference": "v2.8.8",
                 "shasum": ""
             },
             "require": {
@@ -104,7 +104,7 @@
                 "guzzle/common": "self.version",
                 "guzzle/parser": "self.version"
             },
-            "time": "2012-09-02 12:01:34",
+            "time": "2012-10-15 17:42:47",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -127,23 +127,23 @@
         },
         {
             "name": "guzzle/parser",
-            "version": "v2.8.6",
+            "version": "v2.8.8",
             "target-dir": "Guzzle/Parser",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/parser.git",
-                "reference": "v2.8.6"
+                "reference": "v2.8.8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/parser/zipball/v2.8.6",
-                "reference": "v2.8.6",
+                "url": "https://github.com/guzzle/parser/zipball/v2.8.8",
+                "reference": "v2.8.8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2"
             },
-            "time": "2012-08-16 22:22:25",
+            "time": "2012-09-20 13:28:06",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -219,7 +219,9 @@
             "homepage": "http://symfony.com"
         }
     ],
-    "packages-dev": null,
+    "packages-dev": [
+
+    ],
     "aliases": [
 
     ],
