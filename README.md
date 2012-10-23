@@ -16,6 +16,18 @@ The recommended way to install react is [through composer](http://getcomposer.or
 }
 ```
 
+## What is it?
+
+React is a low-level library for event-driven programming in PHP. At its core
+is an event loop, on top of which it  provides low-level utilities, such as:
+Streams abstraction, async dns resolver, network client/server, http
+client/server, interaction with processes. Third-party libraries can use these
+components to create async network clients/servers and more.
+
+The event loop is based on the reactor pattern (hence the name) and strongly
+inspired by libraries such as EventMachine (Ruby), Twisted (Python) and
+Node.js (V8).
+
 ## Design goals
 
 * Usable with a bare minimum of PHP extensions, add more extensions to get better performance.
