@@ -5,7 +5,8 @@
     "license": "MIT",
     "require": {
         "php": ">=5.3.2",
-        "react/socket": "0.2.*"
+        "react/socket": "0.2.*",
+        "react/promise": "dev-master"
     },
     "autoload": {
         "psr-0": { "React\\Dns": "" }

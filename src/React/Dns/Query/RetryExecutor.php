@@ -2,6 +2,8 @@
 
 namespace React\Dns\Query;
 
+use React\Promise\Deferred;
+
 class RetryExecutor implements ExecutorInterface
 {
     private $executor;
@@ -14,17 +16,20 @@ class RetryExecutor implements ExecutorInterface
         $this->retries = $retries;
     }
 
-    public function query($nameserver, Query $query, $callback, $errorback)
+    public function query($nameserver, Query $query)
     {
-        $this->tryQuery($nameserver, $query, $callback, $errorback, $this->retries);
+        $deferred = new Deferred();
+        $this->tryQuery($nameserver, $query, $deferred->resolver(), $this->retries);
+
+        return $deferred->promise();
     }
 
-    public function tryQuery($nameserver, Query $query, $callback, $errorback, $retries)
+    public function tryQuery($nameserver, Query $query, $resolver, $retries)
     {
         $that = $this;
-        $errorback = function ($error) use ($nameserver, $query, $callback, $errorback, $retries, $that) {
+        $errorback = function ($error) use ($nameserver, $query, $resolver, $retries, $that) {
             if (!$error instanceof TimeoutException) {
-                $errorback($error);
+                $resolver->reject($error);
                 return;
             }
             if (0 >= $retries) {
@@ -33,11 +38,14 @@ class RetryExecutor implements ExecutorInterface
                     0,
                     $error
                 );
-                $errorback($error);
+                $resolver->reject($error);
                 return;
             }
-            $that->tryQuery($nameserver, $query, $callback, $errorback, $retries-1);
+            $that->tryQuery($nameserver, $query, $resolver, $retries-1);
         };
-        $this->executor->query($nameserver, $query, $callback, $errorback);
+
+        return $this->executor
+            ->query($nameserver, $query)
+            ->then(array($resolver, 'resolve'), $errorback);
     }
 }

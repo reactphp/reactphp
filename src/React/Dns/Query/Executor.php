@@ -3,11 +3,11 @@
 namespace React\Dns\Query;
 
 use React\Dns\BadServerException;
-use React\Dns\RecordNotFoundException;
 use React\Dns\Model\Message;
 use React\Dns\Protocol\Parser;
 use React\Dns\Protocol\BinaryDumper;
 use React\EventLoop\LoopInterface;
+use React\Promise\Deferred;
 use React\Socket\Connection;
 
 class Executor implements ExecutorInterface
@@ -25,14 +25,17 @@ class Executor implements ExecutorInterface
         $this->timeout = $timeout;
     }
 
-    public function query($nameserver, Query $query, $callback, $errorback)
+    public function query($nameserver, Query $query)
     {
         $request = $this->prepareRequest($query);
 
         $queryData = $this->dumper->toBinary($request);
         $transport = strlen($queryData) > 512 ? 'tcp' : 'udp';
 
-        $this->doQuery($nameserver, $transport, $queryData, $query->name, $callback, $errorback);
+        $deferred = new Deferred();
+        $this->doQuery($nameserver, $transport, $queryData, $query->name, $deferred->resolver());
+
+        return $deferred->promise();
     }
 
     public function prepareRequest(Query $query)
@@ -46,7 +49,7 @@ class Executor implements ExecutorInterface
         return $request;
     }
 
-    public function doQuery($nameserver, $transport, $queryData, $name, $callback, $errorback)
+    public function doQuery($nameserver, $transport, $queryData, $name, $resolver)
     {
         $that = $this;
         $parser = $this->parser;
@@ -54,17 +57,19 @@ class Executor implements ExecutorInterface
 
         $response = new Message();
 
-        $retryWithTcp = function () use ($that, $nameserver, $queryData, $name, $callback, $errorback) {
-            $that->doQuery($nameserver, 'tcp', $queryData, $name, $callback, $errorback);
+        $retryWithTcp = function () use ($that, $nameserver, $queryData, $name) {
+            $that->doQuery($nameserver, 'tcp', $queryData, $name, $resolver);
         };
 
-        $timer = $this->loop->addTimer($this->timeout, function () use (&$conn, $name, $errorback) {
+        $timer = $this->loop->addTimer($this->timeout, function () use (&$conn, $name, $resolver) {
             $conn->close();
-            $errorback(new TimeoutException(sprintf("DNS query for %s timed out", $name)));
+
+            $e = new TimeoutException(sprintf("DNS query for %s timed out", $name));
+            $resolver->reject($e);
         });
 
         $conn = $this->createConnection($nameserver, $transport);
-        $conn->on('data', function ($data) use ($that, $retryWithTcp, $conn, $parser, $response, $transport, $callback, $loop, $timer) {
+        $conn->on('data', function ($data) use ($that, $retryWithTcp, $conn, $parser, $response, $transport, $resolver, $loop, $timer) {
             $responseReady = $parser->parseChunk($data, $response);
 
             if (!$responseReady) {
@@ -84,7 +89,7 @@ class Executor implements ExecutorInterface
             }
 
             $conn->end();
-            $callback($response);
+            $resolver->resolve($response);
         });
         $conn->write($queryData);
     }

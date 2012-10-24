@@ -4,13 +4,8 @@ namespace React\Dns\Resolver;
 
 use React\Dns\Query\ExecutorInterface;
 use React\Dns\Query\Query;
-use React\Dns\BadServerException;
 use React\Dns\RecordNotFoundException;
 use React\Dns\Model\Message;
-use React\Dns\Protocol\Parser;
-use React\Dns\Protocol\BinaryDumper;
-use React\EventLoop\LoopInterface;
-use React\Socket\Connection;
 
 class Resolver
 {
@@ -23,32 +18,24 @@ class Resolver
         $this->executor = $executor;
     }
 
-    public function resolve($domain, $callback, $errback = null)
+    public function resolve($domain)
     {
         $that = $this;
 
-        if (!$errback) {
-            $errback = function ($error) {
-                throw $error;
-            };
-        }
-
         $query = new Query($domain, Message::TYPE_A, Message::CLASS_IN, time());
 
-        $this->executor->query($this->nameserver, $query, function (Message $response) use ($that, $callback, $errback) {
-            try {
-                $that->extractAddress($response, Message::TYPE_A, $callback);
-            } catch (RecordNotFoundException $e) {
-                $errback($e);
-            }
-        }, $errback);
+        return $this->executor
+            ->query($this->nameserver, $query)
+            ->then(function (Message $response) use ($that) {
+                return $that->extractAddress($response, Message::TYPE_A);
+            });
     }
 
-    public function extractAddress(Message $response, $type, $callback)
+    public function extractAddress(Message $response, $type)
     {
         $answer = $this->pickRandomAnswerOfType($response, $type);
         $address = $answer->data;
-        $callback($address);
+        return $address;
     }
 
     public function pickRandomAnswerOfType(Message $response, $type)
