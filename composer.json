@@ -11,7 +11,8 @@
         "php": ">=5.3.3",
         "evenement/evenement": "1.0.*",
         "guzzle/http": "2.8.*",
-        "guzzle/parser": "2.8.*"
+        "guzzle/parser": "2.8.*",
+        "react/promise": "dev-master"
     },
     "replace": {
         "react/event-loop": "self.version",

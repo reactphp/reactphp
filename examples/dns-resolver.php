@@ -10,9 +10,11 @@ $resolver = $factory->create('8.8.8.8', $loop);
 
 $domain = 'igor.io';
 
-$resolver->resolve($domain, function ($ip) {
-    echo "Host: $ip\n";
-});
+$resolver
+    ->resolve($domain)
+    ->then(function ($ip) {
+        echo "Host: $ip\n";
+    });
 
 echo "Resolving domain $domain...\n";
 
