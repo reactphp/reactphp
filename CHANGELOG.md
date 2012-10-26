@@ -6,6 +6,7 @@ CHANGELOG
  * Major: Dropped Espresso as a core component now available as `react/espresso` only
  * Feature: DNS executor timeout handling (@arnaud-lb)
  * Feature: DNS retry executor (@arnaud-lb)
+ * Bug fix: Forward drain events from HTTP response (@cs278)
 
 * 0.2.1 (2012-10-14)
 
