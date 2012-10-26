@@ -20,12 +20,13 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
         $executor
             ->expects($this->once())
             ->method('query')
-            ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'), $this->isType('callable'));
+            ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'))
+            ->will($this->returnValue($this->expectPromiseOnce()));
 
         $retryExecutor = new RetryExecutor($executor, 2);
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $retryExecutor->query('8.8.8.8', $query, function () {}, function () {});
+        $retryExecutor->query('8.8.8.8', $query);
     }
 
     /**
@@ -153,6 +154,17 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
 
         return $mock;
     }
+    
+    protected function expectPromiseOnce($return = null)
+    {
+        $mock = $this->createPromiseMock();
+        $mock
+            ->expects($this->once())
+            ->method('then')
+            ->will($this->returnValue($return));
+
+        return $mock;
+    }
 
     protected function createCallableMock()
     {
@@ -162,6 +174,11 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
     protected function createExecutorMock()
     {
         return $this->getMock('React\Dns\Query\ExecutorInterface');
+    }
+    
+    protected function createPromiseMock()
+    {
+        return $this->getMock('React\Promise\PromiseInterface');
     }
 
     protected function createStandardResponse()

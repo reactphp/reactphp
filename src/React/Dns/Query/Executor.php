@@ -8,6 +8,7 @@ use React\Dns\Protocol\Parser;
 use React\Dns\Protocol\BinaryDumper;
 use React\EventLoop\LoopInterface;
 use React\Promise\Deferred;
+use React\Promise\Util;
 use React\Socket\Connection;
 
 class Executor implements ExecutorInterface
@@ -32,10 +33,7 @@ class Executor implements ExecutorInterface
         $queryData = $this->dumper->toBinary($request);
         $transport = strlen($queryData) > 512 ? 'tcp' : 'udp';
 
-        $deferred = new Deferred();
-        $this->doQuery($nameserver, $transport, $queryData, $query->name, $deferred->resolver());
-
-        return $deferred->promise();
+        return $this->doQuery($nameserver, $transport, $queryData, $query->name);
     }
 
     public function prepareRequest(Query $query)
@@ -49,27 +47,26 @@ class Executor implements ExecutorInterface
         return $request;
     }
 
-    public function doQuery($nameserver, $transport, $queryData, $name, $resolver)
+    public function doQuery($nameserver, $transport, $queryData, $name)
     {
         $that = $this;
         $parser = $this->parser;
         $loop = $this->loop;
 
         $response = new Message();
+        $deferred = new Deferred();
 
         $retryWithTcp = function () use ($that, $nameserver, $queryData, $name) {
-            $that->doQuery($nameserver, 'tcp', $queryData, $name, $resolver);
+            return $that->doQuery($nameserver, 'tcp', $queryData, $name);
         };
 
-        $timer = $this->loop->addTimer($this->timeout, function () use (&$conn, $name, $resolver) {
+        $timer = $this->loop->addTimer($this->timeout, function () use (&$conn, $name, $deferred) {
             $conn->close();
-
-            $e = new TimeoutException(sprintf("DNS query for %s timed out", $name));
-            $resolver->reject($e);
+            $deferred->reject(new TimeoutException(sprintf("DNS query for %s timed out", $name)));
         });
 
         $conn = $this->createConnection($nameserver, $transport);
-        $conn->on('data', function ($data) use ($that, $retryWithTcp, $conn, $parser, $response, $transport, $resolver, $loop, $timer) {
+        $conn->on('data', function ($data) use ($retryWithTcp, $conn, $parser, $response, $transport, $callback, $loop, $timer) {
             $responseReady = $parser->parseChunk($data, $response);
 
             if (!$responseReady) {
@@ -80,18 +77,21 @@ class Executor implements ExecutorInterface
 
             if ($response->header->isTruncated()) {
                 if ('tcp' === $transport) {
-                    throw new BadServerException('The server set the truncated bit although we issued a TCP request');
+                    $deferred->reject(new BadServerException('The server set the truncated bit although we issued a TCP request'));
+                } else {
+                    $conn->end();
+                    $deferred->resolve($retryWithTcp());
                 }
 
-                $conn->end();
-                $retryWithTcp();
                 return;
             }
 
             $conn->end();
-            $resolver->resolve($response);
+            $deferred->resolve($response);
         });
         $conn->write($queryData);
+
+        return $deferred->promise();
     }
 
     protected function generateId()

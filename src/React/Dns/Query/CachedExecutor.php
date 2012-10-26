@@ -5,6 +5,7 @@ namespace React\Dns\Query;
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;
 use React\Promise\Deferred;
+use React\Promise\Util;
 
 class CachedExecutor implements ExecutorInterface
 {
@@ -17,26 +18,26 @@ class CachedExecutor implements ExecutorInterface
         $this->cache = $cache;
     }
 
-    public function query($nameserver, Query $query)
+   public function query($nameserver, Query $query)
     {
         $deferred = new Deferred();
 
         $cachedRecords = $this->cache->lookup($query);
+
         if (count($cachedRecords)) {
             $cachedResponse = $this->buildResponse($query, $cachedRecords);
-            $deferred->resolve($cachedResponse);
-            return;
+
+            return Util::resolve($cachedResponse);
         }
 
         $cache = $this->cache;
-        $this->executor
-            ->query($nameserver, $query)
-            ->then(function ($response) use ($cache, $query, $deferred) {
-                $deferred->resolve($response);
-                $cache->storeResponseMessage($query->currentTime, $response);
-            }, array($deferred, 'reject'));
 
-        return $deferred->promise();
+        return $this->executor
+            ->query($nameserver, $query)
+            ->then(function ($response) use ($cache, $query) {
+                $cache->storeResponseMessage($query->currentTime, $response);
+                return $response;
+            });
     }
 
     private function buildResponse(Query $query, array $cachedRecords)

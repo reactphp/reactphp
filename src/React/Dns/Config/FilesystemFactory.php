@@ -3,6 +3,8 @@
 namespace React\Dns\Config;
 
 use React\EventLoop\LoopInterface;
+use React\Promise\Deferred;
+use React\Promise\Util;
 use React\Stream\Stream;
 
 class FilesystemFactory
@@ -14,16 +16,13 @@ class FilesystemFactory
         $this->loop = $loop;
     }
 
-    public function create($filename, $callback)
+    public function create($filename)
     {
-        $that = $this;
-
-        $this->loadEtcResolvConf($filename, function ($contents) use ($that, $callback) {
-            return $that->parseEtcResolvConf($contents, $callback);
-        });
+        return $this->loadEtcResolvConf($filename)
+                   ->then(array($this, 'parseEtcResolvConf'));
     }
 
-    public function parseEtcResolvConf($contents, $callback)
+    public function parseEtcResolvConf($contents)
     {
         $nameservers = array();
 
@@ -38,26 +37,37 @@ class FilesystemFactory
         $config = new Config();
         $config->nameservers = $nameservers;
 
-        $callback($config);
+        return Util::resolve($config);
     }
 
-    public function loadEtcResolvConf($filename, $callback)
+    public function loadEtcResolvConf($filename)
     {
         if (!file_exists($filename)) {
-            throw new \InvalidArgumentException("The filename for /etc/resolv.conf given does not exist: $filename");
+            return Util::reject(new \InvalidArgumentException("The filename for /etc/resolv.conf given does not exist: $filename"));
         }
 
-        $fd = fopen($filename, 'r');
-        stream_set_blocking($fd, 0);
+        try {
+            $deferred = new Deferred();
 
-        $contents = '';
+            $fd = fopen($filename, 'r');
+            stream_set_blocking($fd, 0);
 
-        $stream = new Stream($fd, $this->loop);
-        $stream->on('data', function ($data) use (&$contents) {
-            $contents .= $data;
-        });
-        $stream->on('end', function () use (&$contents, $callback) {
-            call_user_func($callback, $contents);
-        });
+            $contents = '';
+
+            $stream = new Stream($fd, $this->loop);
+            $stream->on('data', function ($data) use (&$contents) {
+                $contents .= $data;
+            });
+            $stream->on('end', function () use (&$contents, $deferred) {
+                $deferred->resolve($contents);
+            });
+            $stream->on('error', function ($error) use ($deferred) {
+                $deferred->reject($error);
+            });
+            
+            return $deferred->promise();
+        } catch (\Exception $e) {
+            return Util::reject($e);
+        }
     }
 }
