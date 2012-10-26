@@ -28,7 +28,7 @@ nameserver 8.8.8.8
 
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $factory = new FilesystemFactory($loop);
-        $factory->parseEtcResolvConf($contents, function ($config) use (&$capturedConfig) {
+        $factory->parseEtcResolvConf($contents)->then(function ($config) use (&$capturedConfig) {
             $capturedConfig = $config;
         });
 
@@ -55,7 +55,7 @@ nameserver 8.8.8.8
             }));
 
         $factory = new FilesystemFactory($loop);
-        $factory->create(__DIR__.'/../Fixtures/etc/resolv.conf', function ($config) use (&$capturedConfig) {
+        $factory->create(__DIR__.'/../Fixtures/etc/resolv.conf')->then(function ($config) use (&$capturedConfig) {
             $capturedConfig = $config;
         });
 
