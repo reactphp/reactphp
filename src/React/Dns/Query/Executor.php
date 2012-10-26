@@ -66,7 +66,7 @@ class Executor implements ExecutorInterface
         });
 
         $conn = $this->createConnection($nameserver, $transport);
-        $conn->on('data', function ($data) use ($retryWithTcp, $conn, $parser, $response, $transport, $callback, $loop, $timer) {
+        $conn->on('data', function ($data) use ($retryWithTcp, $conn, $parser, $response, $transport, $deferred, $loop, $timer) {
             $responseReady = $parser->parseChunk($data, $response);
 
             if (!$responseReady) {
