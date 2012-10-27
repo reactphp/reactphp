@@ -4,7 +4,7 @@
     "keywords": ["event-loop", "reactor"],
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/react-php/react/issues",
+        "issues": "https://github.com/reactphp/react/issues",
         "irc": "irc://irc.freenode.org/reactphp"
     },
     "require": {
