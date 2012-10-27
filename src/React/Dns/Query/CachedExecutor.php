@@ -4,7 +4,6 @@ namespace React\Dns\Query;
 
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;
-use React\Promise\Deferred;
 use React\Promise\Util;
 
 class CachedExecutor implements ExecutorInterface
@@ -20,8 +19,6 @@ class CachedExecutor implements ExecutorInterface
 
     public function query($nameserver, Query $query)
     {
-        $deferred = new Deferred();
-
         $cachedRecords = $this->cache->lookup($query);
 
         if (count($cachedRecords)) {
