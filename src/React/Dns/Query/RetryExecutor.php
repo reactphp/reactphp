@@ -2,8 +2,6 @@
 
 namespace React\Dns\Query;
 
-use React\Promise\Deferred;
-
 class RetryExecutor implements ExecutorInterface
 {
     private $executor;
@@ -38,7 +36,7 @@ class RetryExecutor implements ExecutorInterface
             }
             return $that->tryQuery($nameserver, $query, $retries-1);
         };
-        
+
         return $this->executor->query($nameserver, $query, $errorback)
                    ->then(null, $errorback);
     }
