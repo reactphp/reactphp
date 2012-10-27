@@ -18,7 +18,7 @@ class CachedExecutor implements ExecutorInterface
         $this->cache = $cache;
     }
 
-   public function query($nameserver, Query $query)
+    public function query($nameserver, Query $query)
     {
         $deferred = new Deferred();
 
