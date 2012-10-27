@@ -64,7 +64,7 @@ class FilesystemFactory
             $stream->on('error', function ($error) use ($deferred) {
                 $deferred->reject($error);
             });
-            
+
             return $deferred->promise();
         } catch (\Exception $e) {
             return Util::reject($e);
