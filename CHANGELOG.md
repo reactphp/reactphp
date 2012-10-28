@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-* 0.2.2 (2012-10-xx)
+* 0.2.2 (2012-10-28)
 
  * Major: Dropped Espresso as a core component now available as `react/espresso` only
  * Feature: DNS executor timeout handling (@arnaud-lb)
