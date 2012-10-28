@@ -10,10 +10,15 @@ The recommended way to install react is [through composer](http://getcomposer.or
 
 ```JSON
 {
+    "minimum-stability": "dev",
     "require": {
+        "silex/silex": "1.0.*",
         "react/react": "0.2.*"
     }
 }
+
+or .. copy composer.json from this folder.
+
 ```
 
 ## What is it?
