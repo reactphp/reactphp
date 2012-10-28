@@ -21,15 +21,18 @@ class ResponseTest extends TestCase
 
     public function testResponse()
     {
-        $this->stream->expects($this->at(0))
+        $this->stream
+            ->expects($this->at(0))
             ->method('on')
             ->with('data', $this->anything())
             ;
-        $this->stream->expects($this->at(1))
+        $this->stream
+            ->expects($this->at(1))
             ->method('on')
             ->with('error', $this->anything())
             ;
-        $this->stream->expects($this->at(2))
+        $this->stream
+            ->expects($this->at(2))
             ->method('on')
             ->with('end', $this->anything())
             ;
@@ -54,7 +57,8 @@ class ResponseTest extends TestCase
 
         $response->on('close', $this->expectCallableNever());
 
-        $this->stream->expects($this->at(0))
+        $this->stream
+            ->expects($this->at(0))
             ->method('end')
             ;
 
@@ -67,10 +71,12 @@ class ResponseTest extends TestCase
     {
         $response = new response($this->loop, $this->stream, 'http', '1.0', '200', 'ok', array('content-type' => 'text/plain'));
 
-        $this->stream->expects($this->never())
+        $this->stream
+            ->expects($this->never())
             ->method('pause');
 
-        $this->stream->expects($this->never())
+        $this->stream
+            ->expects($this->never())
             ->method('resume');
 
         $response->handleEnd();

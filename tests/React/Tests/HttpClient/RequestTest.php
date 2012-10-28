@@ -40,7 +40,8 @@ class RequestTest extends TestCase
 
         $stream = $this->stream;
 
-        $this->connectionManager->expects($this->once())
+        $this->connectionManager
+            ->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function ($cb) use ($stream) {
@@ -48,41 +49,44 @@ class RequestTest extends TestCase
             }))
             ;
 
-        $this->stream->expects($this->at(0))
+        $this->stream
+            ->expects($this->at(0))
             ->method('on')
             ->with('drain', $this->identicalTo(array($request, 'handleDrain')))
             ;
-        $this->stream->expects($this->at(1))
+        $this->stream
+            ->expects($this->at(1))
             ->method('on')
             ->with('data', $this->identicalTo(array($request, 'handleData')))
             ;
-        $this->stream->expects($this->at(2))
+        $this->stream
+            ->expects($this->at(2))
             ->method('on')
             ->with('end', $this->identicalTo(array($request, 'handleEnd')))
             ;
-        $this->stream->expects($this->at(3))
+        $this->stream
+            ->expects($this->at(3))
             ->method('on')
             ->with('error', $this->identicalTo(array($request, 'handleError')))
             ;
 
-        $this->stream->expects($this->at(4))
-            ->method('write')
-            ->with($this->matchesRegularExpression("#^GET / HTTP/1\.0\r\nHost: www.example.com\r\n.*\r\n\r\n$#"))
-            ;
-
-        $this->stream->expects($this->at(5))
+        $this->stream
+            ->expects($this->at(5))
             ->method('removeListener')
             ->with('drain', $this->identicalTo(array($request, 'handleDrain')))
             ;
-        $this->stream->expects($this->at(6))
+        $this->stream
+            ->expects($this->at(6))
             ->method('removeListener')
             ->with('data', $this->identicalTo(array($request, 'handleData')))
             ;
-        $this->stream->expects($this->at(7))
+        $this->stream
+            ->expects($this->at(7))
             ->method('removeListener')
             ->with('end', $this->identicalTo(array($request, 'handleEnd')))
             ;
-        $this->stream->expects($this->at(8))
+        $this->stream
+            ->expects($this->at(8))
             ->method('removeListener')
             ->with('error', $this->identicalTo(array($request, 'handleError')))
             ;
@@ -148,7 +152,8 @@ class RequestTest extends TestCase
 
         $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
 
-        $this->connectionManager->expects($this->once())
+        $this->connectionManager
+            ->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function ($cb) {
@@ -194,7 +199,8 @@ class RequestTest extends TestCase
 
         $stream = $this->stream;
 
-        $this->connectionManager->expects($this->once())
+        $this->connectionManager
+            ->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function ($cb) use ($stream) {
@@ -240,7 +246,8 @@ class RequestTest extends TestCase
 
         $stream = $this->stream;
 
-        $this->connectionManager->expects($this->once())
+        $this->connectionManager
+            ->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function ($cb) use ($stream) {
@@ -287,7 +294,8 @@ class RequestTest extends TestCase
 
         $stream = $this->stream;
 
-        $this->connectionManager->expects($this->once())
+        $this->connectionManager
+            ->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function ($cb) use ($stream) {
@@ -295,12 +303,14 @@ class RequestTest extends TestCase
             }))
             ;
 
-        $this->stream->expects($this->at(4))
+        $this->stream
+            ->expects($this->at(4))
             ->method('write')
             ->with($this->matchesRegularExpression("#^POST / HTTP/1\.0\r\nHost: www.example.com\r\nUser-Agent:.*\r\n\r\n$#"))
             ;
 
-        $this->stream->expects($this->at(5))
+        $this->stream
+            ->expects($this->at(5))
             ->method('write')
             ->with($this->identicalTo("some post data"))
             ;
@@ -329,7 +339,8 @@ class RequestTest extends TestCase
 
         $stream = $this->stream;
 
-        $this->connectionManager->expects($this->once())
+        $this->connectionManager
+            ->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function ($cb) use ($stream) {
@@ -337,19 +348,23 @@ class RequestTest extends TestCase
             }))
             ;
 
-        $this->stream->expects($this->at(4))
+        $this->stream
+            ->expects($this->at(4))
             ->method('write')
             ->with($this->matchesRegularExpression("#^POST / HTTP/1\.0\r\nHost: www.example.com\r\nUser-Agent:.*\r\n\r\n$#"))
             ;
-        $this->stream->expects($this->at(5))
+        $this->stream
+            ->expects($this->at(5))
             ->method('write')
             ->with($this->identicalTo("some"))
             ;
-        $this->stream->expects($this->at(6))
+        $this->stream
+            ->expects($this->at(6))
             ->method('write')
             ->with($this->identicalTo("post"))
             ;
-        $this->stream->expects($this->at(7))
+        $this->stream
+            ->expects($this->at(7))
             ->method('write')
             ->with($this->identicalTo("data"))
             ;
@@ -380,7 +395,8 @@ class RequestTest extends TestCase
 
         $stream = $this->stream;
 
-        $this->connectionManager->expects($this->once())
+        $this->connectionManager
+            ->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function ($cb) use ($stream) {
@@ -388,19 +404,23 @@ class RequestTest extends TestCase
             }))
             ;
 
-        $this->stream->expects($this->at(4))
+        $this->stream
+            ->expects($this->at(4))
             ->method('write')
             ->with($this->matchesRegularExpression("#^POST / HTTP/1\.0\r\nHost: www.example.com\r\nUser-Agent:.*\r\n\r\n$#"))
             ;
-        $this->stream->expects($this->at(5))
+        $this->stream
+            ->expects($this->at(5))
             ->method('write')
             ->with($this->identicalTo("some"))
             ;
-        $this->stream->expects($this->at(6))
+        $this->stream
+            ->expects($this->at(6))
             ->method('write')
             ->with($this->identicalTo("post"))
             ;
-        $this->stream->expects($this->at(7))
+        $this->stream
+            ->expects($this->at(7))
             ->method('write')
             ->with($this->identicalTo("data"))
             ;
@@ -450,7 +470,8 @@ class RequestTest extends TestCase
 
         $stream = $this->stream;
 
-        $this->connectionManager->expects($this->once())
+        $this->connectionManager
+            ->expects($this->once())
             ->method('getConnection')
             ->with($this->anything(), 'www.example.com', 80)
             ->will($this->returnCallback(function ($cb) use ($stream) {
