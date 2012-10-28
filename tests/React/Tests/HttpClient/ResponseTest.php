@@ -19,62 +19,55 @@ class ResponseTest extends TestCase
             ->getMock();
     }
 
-    public function testResponse()
+    /** @test */
+    public function responseShouldEmitEndEventOnEnd()
     {
         $this->stream
             ->expects($this->at(0))
             ->method('on')
-            ->with('data', $this->anything())
-            ;
+            ->with('data', $this->anything());
         $this->stream
             ->expects($this->at(1))
             ->method('on')
-            ->with('error', $this->anything())
-            ;
+            ->with('error', $this->anything());
         $this->stream
             ->expects($this->at(2))
             ->method('on')
-            ->with('end', $this->anything())
-            ;
+            ->with('end', $this->anything());
 
         $response = new Response($this->loop, $this->stream, 'HTTP', '1.0', '200', 'OK', array('Content-Type' => 'text/plain'));
 
         $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
-            ->with('some data', $this->anything())
-            ;
+            ->with('some data', $this->anything());
 
         $response->on('data', $handler);
 
         $handler = $this->createCallableMock();
         $handler->expects($this->once())
             ->method('__invoke')
-            ->with(null, $this->isInstanceOf('React\HttpClient\Response'))
-            ;
+            ->with(null, $this->isInstanceOf('React\HttpClient\Response'));
 
         $response->on('end', $handler);
-
         $response->on('close', $this->expectCallableNever());
 
         $this->stream
             ->expects($this->at(0))
-            ->method('end')
-            ;
+            ->method('end');
 
         $response->handleData('some data');
-
         $response->handleEnd();
     }
 
-    public function testClosedResponseCannotBeResumedOrPaused()
+    /** @test */
+    public function closedResponseShouldNotBeResumedOrPaused()
     {
         $response = new Response($this->loop, $this->stream, 'http', '1.0', '200', 'ok', array('content-type' => 'text/plain'));
 
         $this->stream
             ->expects($this->never())
             ->method('pause');
-
         $this->stream
             ->expects($this->never())
             ->method('resume');

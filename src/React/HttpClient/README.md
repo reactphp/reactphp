@@ -13,17 +13,17 @@ it. Response implements ReadableStreamInterface.
 
 Interesting events emitted by Request:
 
-* response: the response headers were received from the server and successfully
+* `response`: The response headers were received from the server and successfully
   parsed. The first argument is a Response instance.
-* error: an error occured
-* end: the request is finished. If an error occured, it is passed as first
+* `error`: An error occured.
+* `end`: The request is finished. If an error occured, it is passed as first
   argument. Second and third arguments are the Response and the Request.
 
 Interesting events emitted by Response:
 
-* data: passes a chunk of the response body as first argument * error:
-  an error occured
-* end: the response has been fully received. If an error
+* `data`: Passes a chunk of the response body as first argument
+* `error`: An error occured.
+* `end`: The response has been fully received. If an error
   occured, it is passed as first argument
 
 ### Example
@@ -54,4 +54,3 @@ $request->end();
 * chunked transfer encoding
 * keep-alive connections
 * following redirections
-
