@@ -69,7 +69,7 @@ class ResponseTest extends TestCase
 
     public function testClosedResponseCannotBeResumedOrPaused()
     {
-        $response = new response($this->loop, $this->stream, 'http', '1.0', '200', 'ok', array('content-type' => 'text/plain'));
+        $response = new Response($this->loop, $this->stream, 'http', '1.0', '200', 'ok', array('content-type' => 'text/plain'));
 
         $this->stream
             ->expects($this->never())
