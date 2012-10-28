@@ -4,21 +4,27 @@ Basic HTTP/1.0 client.
 
 ## Basic usage
 
-Requests are prepared using the ``Client#request()`` method. Body can be sent with ``Request#write()``. ``Request#end()`` finishes sending the request (or sends it at all if no body was written).
+Requests are prepared using the ``Client#request()`` method. Body can be
+sent with ``Request#write()``. ``Request#end()`` finishes sending the request
+(or sends it at all if no body was written).
 
-Request implements WritableStreamInterface, so a Stream can be piped to it. Response implements ReadableStreamInterface.
+Request implements WritableStreamInterface, so a Stream can be piped to
+it. Response implements ReadableStreamInterface.
 
 Interesting events emitted by Request:
 
-* response: the response headers were received from the server and successfully parsed. The first argument is a Response instance.
+* response: the response headers were received from the server and successfully
+  parsed. The first argument is a Response instance.
 * error: an error occured
-* end: the request is finished. If an error occured, it is passed as first argument. Second and third arguments are the Response and the Request.
+* end: the request is finished. If an error occured, it is passed as first
+  argument. Second and third arguments are the Response and the Request.
 
 Interesting events emitted by Response:
 
-* data: passes a chunk of the response body as first argument
-* error: an error occured
-* end: the response has been fully received. If an error occured, it is passed as first argument
+* data: passes a chunk of the response body as first argument * error:
+  an error occured
+* end: the response has been fully received. If an error
+  occured, it is passed as first argument
 
 ### Example
 
