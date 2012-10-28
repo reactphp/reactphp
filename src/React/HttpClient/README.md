@@ -44,7 +44,6 @@ $request->end();
 
 ## TODO
 
-* async name resolving with the DNS component
 * gzip content encoding
 * chunked transfer encoding
 * keep-alive connections
