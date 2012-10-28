@@ -18,6 +18,7 @@
         "react/stream": "self.version",
         "react/socket": "self.version",
         "react/http": "self.version",
+        "react/http-client": "self.version",
         "react/dns": "self.version"
     },
     "autoload": {
