@@ -117,7 +117,7 @@ class Stream extends EventEmitter implements ReadableStreamInterface, WritableSt
 
         $this->emit('data', array($data, $this));
 
-        if (feof($stream)) {
+        if (!is_resource($stream) || feof($stream)) {
             $this->end();
         }
     }
