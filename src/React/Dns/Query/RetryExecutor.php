@@ -38,6 +38,6 @@ class RetryExecutor implements ExecutorInterface
         };
 
         return $this->executor->query($nameserver, $query, $errorback)
-                   ->then(null, $errorback);
+            ->then(null, $errorback);
     }
 }
