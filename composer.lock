@@ -1,5 +1,5 @@
 {
-    "hash": "01246d4d155dda6b1e580baa656828c6",
+    "hash": "b2c66ebc3b96233ef928351281469d2b",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -43,24 +43,24 @@
         },
         {
             "name": "guzzle/common",
-            "version": "v2.8.8",
+            "version": "v3.0.2",
             "target-dir": "Guzzle/Common",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/common.git",
-                "reference": "v2.8.8"
+                "reference": "v3.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/common/zipball/v2.8.8",
-                "reference": "v2.8.8",
+                "url": "https://github.com/guzzle/common/zipball/v3.0.2",
+                "reference": "v3.0.2",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2",
                 "symfony/event-dispatcher": "2.1.*"
             },
-            "time": "2012-10-15 17:42:47",
+            "time": "2012-10-24 21:55:19",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -74,37 +74,34 @@
             "description": "Common libraries used by Guzzle",
             "homepage": "http://guzzlephp.org/",
             "keywords": [
-                "log",
                 "event",
-                "cache",
-                "validation",
-                "Socket",
+                "exception",
                 "common",
-                "batch",
-                "inflection"
+                "collection"
             ]
         },
         {
             "name": "guzzle/http",
-            "version": "v2.8.8",
+            "version": "v3.0.2",
             "target-dir": "Guzzle/Http",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/http.git",
-                "reference": "v2.8.8"
+                "reference": "v3.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/http/zipball/v2.8.8",
-                "reference": "v2.8.8",
+                "url": "https://github.com/guzzle/http/zipball/v3.0.2",
+                "reference": "v3.0.2",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2",
                 "guzzle/common": "self.version",
-                "guzzle/parser": "self.version"
+                "guzzle/parser": "self.version",
+                "guzzle/stream": "self.version"
             },
-            "time": "2012-10-15 17:42:47",
+            "time": "2012-10-15 16:38:40",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -114,6 +111,13 @@
             },
             "license": [
                 "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
             ],
             "description": "HTTP libraries used by Guzzle",
             "homepage": "http://guzzlephp.org/",
@@ -127,23 +131,23 @@
         },
         {
             "name": "guzzle/parser",
-            "version": "v2.8.8",
+            "version": "v3.0.2",
             "target-dir": "Guzzle/Parser",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/parser.git",
-                "reference": "v2.8.8"
+                "reference": "v3.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/parser/zipball/v2.8.8",
-                "reference": "v2.8.8",
+                "url": "https://github.com/guzzle/parser/zipball/v3.0.2",
+                "reference": "v3.0.2",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2"
             },
-            "time": "2012-09-20 13:28:06",
+            "time": "2012-10-15 16:38:32",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -165,18 +169,63 @@
             ]
         },
         {
+            "name": "guzzle/stream",
+            "version": "v3.0.2",
+            "target-dir": "Guzzle/Stream",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/stream",
+                "reference": "v3.0.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/guzzle/stream/zipball/v3.0.2",
+                "reference": "v3.0.2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2",
+                "guzzle/common": "self.version"
+            },
+            "time": "2012-10-15 16:38:32",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-0": {
+                    "Guzzle\\Stream": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Guzzle stream wrapper component",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "stream",
+                "Guzzle",
+                "component"
+            ]
+        },
+        {
             "name": "symfony/event-dispatcher",
-            "version": "v2.1.2",
+            "version": "v2.1.3",
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/EventDispatcher",
-                "reference": "v2.1.2"
+                "reference": "v2.1.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/EventDispatcher/zipball/v2.1.2",
-                "reference": "v2.1.2",
+                "url": "https://github.com/symfony/EventDispatcher/zipball/v2.1.3",
+                "reference": "v2.1.3",
                 "shasum": ""
             },
             "require": {
@@ -189,7 +238,7 @@
                 "symfony/dependency-injection": "2.1.*",
                 "symfony/http-kernel": "2.1.*"
             },
-            "time": "2012-09-10 03:53:42",
+            "time": "2012-10-04 08:17:57",
             "type": "library",
             "extra": {
                 "branch-alias": {
