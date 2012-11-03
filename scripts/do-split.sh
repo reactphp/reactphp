@@ -5,14 +5,15 @@
 
 GIT_SUBSPLIT=$(pwd)/$(dirname $0)/git-subsplit.sh
 
-$GIT_SUBSPLIT init https://github.com/react-php/react
+$GIT_SUBSPLIT init https://github.com/reactphp/react
 
 $GIT_SUBSPLIT update
 
 $GIT_SUBSPLIT publish "
-    src/React/EventLoop:git@github.com:react-php/event-loop.git
-    src/React/Stream/:git@github.com:react-php/stream.git
-    src/React/Socket/:git@github.com:react-php/socket.git
-    src/React/Http/:git@github.com:react-php/http.git
-    src/React/Dns/:git@github.com:react-php/dns.git
+    src/React/EventLoop:git@github.com:reactphp/event-loop.git
+    src/React/Stream/:git@github.com:reactphp/stream.git
+    src/React/Socket/:git@github.com:reactphp/socket.git
+    src/React/Http/:git@github.com:reactphp/http.git
+    src/React/HttpClient/:git@github.com:reactphp/http-client.git
+    src/React/Dns/:git@github.com:reactphp/dns.git
 " --heads=master

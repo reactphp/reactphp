@@ -1,11 +1,16 @@
 CHANGELOG
 =========
 
-* 0.2.2 (2012-10-xx)
+* 0.2.3 (2012-11-xx)
+
+ * Feature: LibEvLoop, integration of `php-libev`
+
+* 0.2.2 (2012-10-28)
 
  * Major: Dropped Espresso as a core component now available as `react/espresso` only
- * Feature: DNS resolver timeout handling (patch by arnaud-lb)
- * Feature: LibEvLoop, integration of `php-libev`
+ * Feature: DNS executor timeout handling (@arnaud-lb)
+ * Feature: DNS retry executor (@arnaud-lb)
+ * Feature: HTTP client (@arnaud-lb)
 
 * 0.2.1 (2012-10-14)
 

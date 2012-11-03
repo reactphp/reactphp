@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
     "hash": "fa8d96e035a3d505414fbd627f1bd06d",
+=======
+    "hash": "01246d4d155dda6b1e580baa656828c6",
+>>>>>>> master
     "packages": [
         {
             "name": "evenement/evenement",
