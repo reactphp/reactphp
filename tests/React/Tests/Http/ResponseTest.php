@@ -47,19 +47,19 @@ class ResponseTest extends TestCase
     {
         $conn = $this->getMock('React\Socket\ConnectionInterface');
         $conn
-            ->expects($this->at(3))
+            ->expects($this->at(4))
             ->method('write')
             ->with("5\r\nHello\r\n");
         $conn
-            ->expects($this->at(4))
+            ->expects($this->at(5))
             ->method('write')
             ->with("1\r\n \r\n");
         $conn
-            ->expects($this->at(5))
+            ->expects($this->at(6))
             ->method('write')
             ->with("6\r\nWorld\n\r\n");
         $conn
-            ->expects($this->at(6))
+            ->expects($this->at(7))
             ->method('write')
             ->with("0\r\n\r\n");
 
@@ -77,11 +77,11 @@ class ResponseTest extends TestCase
     {
         $conn = $this->getMock('React\Socket\ConnectionInterface');
         $conn
-            ->expects($this->at(2))
+            ->expects($this->at(3))
             ->method('write')
             ->with("HTTP/1.1 100 Continue\r\n");
         $conn
-            ->expects($this->at(3))
+            ->expects($this->at(4))
             ->method('write')
             ->with($this->stringContains("HTTP/1.1 200 OK\r\n"));
 
@@ -91,15 +91,19 @@ class ResponseTest extends TestCase
     }
 
     /** @test */
-    public function shouldForwardDrainAndErrorEvents()
+    public function shouldForwardEndDrainAndErrorEvents()
     {
         $conn = $this->getMock('React\Socket\ConnectionInterface');
         $conn
             ->expects($this->at(0))
             ->method('on')
-            ->with('error', $this->isInstanceOf('Closure'));
+            ->with('end', $this->isInstanceOf('Closure'));
         $conn
             ->expects($this->at(1))
+            ->method('on')
+            ->with('error', $this->isInstanceOf('Closure'));
+        $conn
+            ->expects($this->at(2))
             ->method('on')
             ->with('drain', $this->isInstanceOf('Closure'));
 

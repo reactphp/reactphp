@@ -9,6 +9,7 @@ use React\Stream\WritableStreamInterface;
 
 class Response extends EventEmitter implements WritableStreamInterface
 {
+    private $closed = false;
     private $writable = true;
     private $conn;
     private $headWritten = false;
@@ -19,6 +20,10 @@ class Response extends EventEmitter implements WritableStreamInterface
         $this->conn = $conn;
 
         $that = $this;
+
+        $this->conn->on('end', function () use ($that) {
+            $that->close();
+        });
 
         $this->conn->on('error', function ($error) use ($that) {
             $that->emit('error', array($error, $that));
@@ -93,15 +98,21 @@ class Response extends EventEmitter implements WritableStreamInterface
             $this->conn->write("0\r\n\r\n");
         }
 
-        $this->emit('end');
+        $this->emit('close');
         $this->removeAllListeners();
         $this->conn->end();
     }
 
     public function close()
     {
+        if ($this->closed) {
+            return;
+        }
+
+        $this->closed = true;
+
         $this->writable = false;
-        $this->emit('end');
+        $this->emit('close');
         $this->removeAllListeners();
         $this->conn->close();
     }
