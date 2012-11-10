@@ -31,6 +31,9 @@ class Server extends EventEmitter implements ServerInterface
                 $server->handleRequest($conn, $request, $bodyBuffer);
 
                 $conn->removeListener('data', array($parser, 'feed'));
+                $conn->on('end', function () use ($request) {
+                    $request->emit('end');
+                });
                 $conn->on('data', function ($data) use ($request) {
                     $request->emit('data', array($data));
                 });

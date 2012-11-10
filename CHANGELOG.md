@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+* 0.2.3 (2012-11-xx)
+
+  * Bug fix: Forward drain events from HTTP response (@cs278)
+
 * 0.2.2 (2012-10-28)
 
   * Major: Dropped Espresso as a core component now available as `react/espresso` only
