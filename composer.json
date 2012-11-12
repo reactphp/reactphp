@@ -14,7 +14,8 @@
         "guzzle/parser": "2.8.*"
     },
     "require-dev": {
-        "ext-libevent": "*"
+        "ext-libevent": "*",
+        "ext-libev": "*"
     },
     "replace": {
         "react/event-loop": "self.version",
