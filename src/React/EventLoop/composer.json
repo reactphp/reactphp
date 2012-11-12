@@ -16,7 +16,7 @@
     "target-dir": "React/EventLoop",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2"
+            "dev-master": "0.2-dev"
         }
     }
 }

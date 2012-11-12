@@ -14,9 +14,9 @@ names, baby!
 
     $loop = React\EventLoop\Factory::create();
     $factory = new React\Dns\Resolver\Factory();
-    $resolver = $factory->create('8.8.8.8', $loop);
+    $dns = $factory->create('8.8.8.8', $loop);
 
-    $resolver->resolve('igor.io', function ($ip) {
+    $dns->resolve('igor.io', function ($ip) {
         echo "Host: $ip\n";
     });
 
@@ -28,15 +28,15 @@ You can cache results by configuring the resolver to use a `CachedExecutor`:
 
     $loop = React\EventLoop\Factory::create();
     $factory = new React\Dns\Resolver\Factory();
-    $resolver = $factory->createCached('8.8.8.8', $loop);
+    $dns = $factory->createCached('8.8.8.8', $loop);
 
-    $resolver->resolve('igor.io', function ($ip) {
+    $dns->resolve('igor.io', function ($ip) {
         echo "Host: $ip\n";
     });
 
     ...
 
-    $resolver->resolve('igor.io', function ($ip) {
+    $dns->resolve('igor.io', function ($ip) {
         echo "Host: $ip\n";
     });
 
