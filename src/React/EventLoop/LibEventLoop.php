@@ -185,6 +185,9 @@ class LibEventLoop implements LoopInterface
                 if ($timer->periodic === true) {
                     event_add($timer->resource, $timer->interval);
                 }
+                else {
+                    $this->cancelTimer($timer->signature);
+                }
             }
         };
 
