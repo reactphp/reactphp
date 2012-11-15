@@ -9,8 +9,8 @@ class LibEventLoopTest extends AbstractLoopTest
 {
     public function createLoop()
     {
-        if (getenv('TRAVIS')) {
-            $this->markTestSkipped('libevent tests skipped on travis due to linux epoll issues.');
+        if ('Linux' === PHP_OS) {
+            $this->markTestSkipped('libevent tests skipped on linux due to linux epoll issues.');
         }
 
         if (!function_exists('event_base_new')) {
