@@ -1,5 +1,5 @@
 {
-    "hash": "b2c66ebc3b96233ef928351281469d2b",
+    "hash": "d08e3530f21d46bf6dbc03c455bfc946",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -43,24 +43,24 @@
         },
         {
             "name": "guzzle/common",
-            "version": "v3.0.2",
+            "version": "v3.0.4",
             "target-dir": "Guzzle/Common",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/common.git",
-                "reference": "v3.0.2"
+                "reference": "v3.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/common/zipball/v3.0.2",
-                "reference": "v3.0.2",
+                "url": "https://github.com/guzzle/common/archive/v3.0.4.zip",
+                "reference": "v3.0.4",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2",
                 "symfony/event-dispatcher": "2.1.*"
             },
-            "time": "2012-10-24 21:55:19",
+            "time": "2012-11-12 00:00:24",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -82,17 +82,17 @@
         },
         {
             "name": "guzzle/http",
-            "version": "v3.0.2",
+            "version": "v3.0.4",
             "target-dir": "Guzzle/Http",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/http.git",
-                "reference": "v3.0.2"
+                "reference": "v3.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/http/zipball/v3.0.2",
-                "reference": "v3.0.2",
+                "url": "https://github.com/guzzle/http/archive/v3.0.4.zip",
+                "reference": "v3.0.4",
                 "shasum": ""
             },
             "require": {
@@ -101,7 +101,7 @@
                 "guzzle/parser": "self.version",
                 "guzzle/stream": "self.version"
             },
-            "time": "2012-10-15 16:38:40",
+            "time": "2012-11-11 23:54:57",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -131,23 +131,23 @@
         },
         {
             "name": "guzzle/parser",
-            "version": "v3.0.2",
+            "version": "v3.0.4",
             "target-dir": "Guzzle/Parser",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/parser.git",
-                "reference": "v3.0.2"
+                "reference": "v3.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/parser/zipball/v3.0.2",
-                "reference": "v3.0.2",
+                "url": "https://github.com/guzzle/parser/archive/v3.0.4.zip",
+                "reference": "v3.0.4",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2"
             },
-            "time": "2012-10-15 16:38:32",
+            "time": "2012-11-01 18:03:45",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -170,24 +170,24 @@
         },
         {
             "name": "guzzle/stream",
-            "version": "v3.0.2",
+            "version": "v3.0.4",
             "target-dir": "Guzzle/Stream",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/stream",
-                "reference": "v3.0.2"
+                "reference": "v3.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/stream/zipball/v3.0.2",
-                "reference": "v3.0.2",
+                "url": "https://github.com/guzzle/stream/archive/v3.0.4.zip",
+                "reference": "v3.0.4",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2",
                 "guzzle/common": "self.version"
             },
-            "time": "2012-10-15 16:38:32",
+            "time": "2012-11-11 23:54:57",
             "type": "library",
             "installation-source": "dist",
             "autoload": {

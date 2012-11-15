@@ -9,12 +9,16 @@ single `run` call that is controlled by the user.
 
 In addition to the interface there are some implementations provided:
 
-* `stream_select`: This is the only implementation which works out of the box
-  with PHP. It does a simple `select` system call. It's not the most performant
-  of loops, but still does the job quite well.
+* `StreamSelectLoop`: This is the only implementation which works out of the
+  box with PHP. It does a simple `select` system call. It's not the most
+  performant of loops, but still does the job quite well.
 
-* `libevent`: This uses the `libevent` pecl extension. `libevent` itself
+* `LibEventLoop`: This uses the `libevent` pecl extension. `libevent` itself
   supports a number of system-specific backends (epoll, kqueue).
+
+* `LibEvLoop`: This uses the `libev` pecl extension
+  ([github](https://github.com/m4rw3r/php-libev)). It supports the same
+  backends as libevent.
 
 All of the loops support these features:
 
