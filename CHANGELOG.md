@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-* 0.2.3 (2012-11-xx)
+* 0.2.3 (2012-11-14)
 
   * Feature: LibEvLoop, integration of `php-libev`
   * Bug fix: Forward drain events from HTTP response (@cs278)
