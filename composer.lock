@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-    "hash": "d08e3530f21d46bf6dbc03c455bfc946",
-=======
-    "hash": "080935c1e52adc13dc6c0183d3fdb0d4",
->>>>>>> [Dns] Refactor DNS resolver to return promises
+    "hash": "db8f254e657053a020cd6117714b6f49",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -173,7 +169,6 @@
             ]
         },
         {
-<<<<<<< HEAD
             "name": "guzzle/stream",
             "version": "v3.0.4",
             "target-dir": "Guzzle/Stream",
@@ -198,30 +193,6 @@
             "autoload": {
                 "psr-0": {
                     "Guzzle\\Stream": ""
-=======
-            "name": "react/promise",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/react-php/promise",
-                "reference": "e7bdf9dab084b38c1de5c9d3a0952da0bdf10a9c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://github.com/react-php/promise/zipball/e7bdf9dab084b38c1de5c9d3a0952da0bdf10a9c",
-                "reference": "e7bdf9dab084b38c1de5c9d3a0952da0bdf10a9c",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3"
-            },
-            "time": "1351104737",
-            "type": "library",
-            "installation-source": "source",
-            "autoload": {
-                "psr-0": {
-                    "React\\Promise": "src/"
->>>>>>> [Dns] Refactor DNS resolver to return promises
                 }
             },
             "license": [
@@ -229,7 +200,6 @@
             ],
             "authors": [
                 {
-<<<<<<< HEAD
                     "name": "Michael Dowling",
                     "email": "mtdowling@gmail.com",
                     "homepage": "https://github.com/mtdowling"
@@ -242,7 +212,42 @@
                 "Guzzle",
                 "component"
             ]
-=======
+        },
+        {
+            "name": "react/promise",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reactphp/promise",
+                "reference": "v1.0.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/reactphp/promise/archive/v1.0.2.zip",
+                "reference": "v1.0.2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "time": "2012-11-14 20:01:47",
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-0": {
+                    "React\\Promise": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
                     "name": "Jan Sorgalla",
                     "email": "jsorgalla@googlemail.com",
                     "homepage": "http://sorgalla.com",
@@ -250,7 +255,6 @@
                 }
             ],
             "description": "A lightweight implementation of CommonJS Promises/A for PHP"
->>>>>>> [Dns] Refactor DNS resolver to return promises
         },
         {
             "name": "symfony/event-dispatcher",
@@ -307,14 +311,12 @@
             "homepage": "http://symfony.com"
         }
     ],
-    "packages-dev": [
-
-    ],
+    "packages-dev": null,
     "aliases": [
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "react/promise": 20
-    }
+    "stability-flags": [
+
+    ]
 }

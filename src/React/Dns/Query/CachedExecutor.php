@@ -4,7 +4,7 @@ namespace React\Dns\Query;
 
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;
-use React\Promise\Util;
+use React\Promise\When;
 
 class CachedExecutor implements ExecutorInterface
 {
@@ -24,7 +24,7 @@ class CachedExecutor implements ExecutorInterface
         if (count($cachedRecords)) {
             $cachedResponse = $this->buildResponse($query, $cachedRecords);
 
-            return Util::resolve($cachedResponse);
+            return When::resolve($cachedResponse);
         }
 
         $cache = $this->cache;
