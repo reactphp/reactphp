@@ -4,6 +4,7 @@ CHANGELOG
 * 0.2.4 (2012-xx-xx)
 
   * Feature: [Stream] Added ThroughStream, CompositeStream, ReadableStream and WritableStream
+  * Feature: [Dns] Change to promise-based API (@jsor)
 
 * 0.2.3 (2012-11-14)
 
