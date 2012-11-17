@@ -93,14 +93,10 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
         $this->executor->query('8.8.8.8:53', $query, function () {}, function () {});
     }
 
-    /**
-     * @test
-     * @expectedException React\Dns\BadServerException
-     * @expectedExceptionMessage The server set the truncated bit although we issued a TCP request
-     **/
+    /** @test */
     public function resolveShouldFailIfResponseIsTruncatedAfterTcpRequest()
     {
-        $conn = $this->createConnectionMock();
+        $self = $this;
 
         $this->parser
             ->expects($this->once())
@@ -114,9 +110,19 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->method('createConnection')
             ->with('8.8.8.8:53', 'tcp')
             ->will($this->returnNewConnectionMock());
+        
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->callback(function($e) {
+                return $e instanceof \React\Dns\BadServerException &&
+                       'The server set the truncated bit although we issued a TCP request' === $e->getMessage();
+            }));
 
         $query = new Query(str_repeat('a', 512).'.igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $this->executor->query('8.8.8.8:53', $query, function () {}, function () {});
+        $this->executor->query('8.8.8.8:53', $query)
+            ->then($this->expectCallableNever(), $mock);
     }
 
     /** @test */
@@ -155,9 +161,6 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function resolveShouldCloseConnectionOnTimeout()
     {
-        $that = $this;
-        $conn = $this->createConnectionMock();
-
         $this->executor = $this->createExecutorMock();
         $this->executor
             ->expects($this->at(0))
@@ -189,7 +192,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ));
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $this->executor->query('8.8.8.8:53', $query, $callback, $errorback);
+        $this->executor->query('8.8.8.8:53', $query)->then($callback, $errorback);
 
         $this->assertNotNull($timerCallback);
         $timerCallback();
