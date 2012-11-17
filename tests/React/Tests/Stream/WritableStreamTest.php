@@ -6,12 +6,12 @@ use React\Stream\ReadableStream;
 use React\Stream\WritableStream;
 use React\Tests\Socket\TestCase;
 
+/**
+ * @covers React\Stream\WritableStream
+ */
 class WritableStreamTest extends TestCase
 {
-    /**
-     * @test
-     * @covers React\Stream\WritableStream
-     */
+    /** @test */
     public function pipingStuffIntoItShouldWorkButDoNothing()
     {
         $readable = new ReadableStream();
@@ -21,10 +21,7 @@ class WritableStreamTest extends TestCase
         $readable->emit('data', array('foo'));
     }
 
-    /**
-     * @test
-     * @covers React\Stream\WritableStream
-     */
+    /** @test */
     public function endShouldCloseTheStream()
     {
         $through = new WritableStream();
@@ -34,10 +31,7 @@ class WritableStreamTest extends TestCase
         $this->assertFalse($through->isWritable());
     }
 
-    /**
-     * @test
-     * @covers React\Stream\WritableStream
-     */
+    /** @test */
     public function endShouldWriteDataBeforeClosing()
     {
         $through = $this->getMock('React\Stream\WritableStream', array('write'));

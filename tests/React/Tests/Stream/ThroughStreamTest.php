@@ -6,6 +6,9 @@ use React\Stream\ReadableStream;
 use React\Stream\ThroughStream;
 use React\Tests\Socket\TestCase;
 
+/**
+ * @covers React\Stream\ThroughStream
+ */
 class ThroughStreamTest extends TestCase
 {
     /** @test */
@@ -16,10 +19,7 @@ class ThroughStreamTest extends TestCase
         $through->write('foo');
     }
 
-    /**
-     * @test
-     * @covers React\Stream\ThroughStream
-     */
+    /** @test */
     public function pipingStuffIntoItShouldWork()
     {
         $readable = new ReadableStream();
@@ -31,10 +31,7 @@ class ThroughStreamTest extends TestCase
         $readable->emit('data', array('foo'));
     }
 
-    /**
-     * @test
-     * @covers React\Stream\ThroughStream
-     */
+    /** @test */
     public function endShouldCloseTheStream()
     {
         $through = new ThroughStream();
@@ -45,10 +42,7 @@ class ThroughStreamTest extends TestCase
         $this->assertFalse($through->isWritable());
     }
 
-    /**
-     * @test
-     * @covers React\Stream\ThroughStream
-     */
+    /** @test */
     public function endShouldWriteDataBeforeClosing()
     {
         $through = new ThroughStream();

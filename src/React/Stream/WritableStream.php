@@ -7,17 +7,6 @@ use Evenement\EventEmitter;
 class WritableStream extends EventEmitter implements WritableStreamInterface
 {
     public $closed = false;
-    private $pipeSource;
-
-    public function __construct()
-    {
-        $this->on('pipe', array($this, 'handlePipeEvent'));
-    }
-
-    public function handlePipeEvent($source)
-    {
-        $this->pipeSource = $source;
-    }
 
     public function write($data)
     {

@@ -2,18 +2,14 @@
 
 namespace React\Stream;
 
-class ThroughStream extends ReadableStream implements WritableStreamInterface
+class ThroughStream extends CompositeStream
 {
-    private $pipeSource;
-
     public function __construct()
     {
-        $this->on('pipe', array($this, 'handlePipeEvent'));
-    }
+        $readable = new ReadableStream();
+        $writable = new WritableStream();
 
-    public function handlePipeEvent($source)
-    {
-        $this->pipeSource = $source;
+        parent::__construct($readable, $writable);
     }
 
     public function filter($data)
@@ -23,44 +19,15 @@ class ThroughStream extends ReadableStream implements WritableStreamInterface
 
     public function write($data)
     {
-        $this->emit('data', array($this->filter($data)));
+        $this->readable->emit('data', array($this->filter($data)));
     }
 
     public function end($data = null)
     {
         if (null !== $data) {
-            $this->write($data);
+            $this->readable->emit('data', array($this->filter($data)));
         }
 
-        $this->close();
-    }
-
-    public function isWritable()
-    {
-        return !$this->closed;
-    }
-
-    public function pause()
-    {
-        if ($this->pipeSource) {
-            $this->pipeSource->pause();
-        }
-    }
-
-    public function resume()
-    {
-        if ($this->pipeSource) {
-            $this->pipeSource->resume();
-        }
-    }
-
-    public function close()
-    {
-        if ($this->closed) {
-            return;
-        }
-
-        parent::close();
-        $this->pipeSource = null;
+        $this->writable->end($data);
     }
 }
