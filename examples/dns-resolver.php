@@ -10,7 +10,7 @@ $dns = $factory->create('8.8.8.8', $loop);
 
 $domain = 'igor.io';
 
-$resolver
+$dns
     ->resolve($domain)
     ->then(function ($ip) {
         echo "Host: $ip\n";
