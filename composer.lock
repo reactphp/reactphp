@@ -1,5 +1,5 @@
 {
-    "hash": "080935c1e52adc13dc6c0183d3fdb0d4",
+    "hash": "28b6431dbc3e25ca80c01a837b69dd20",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -166,24 +166,29 @@
         },
         {
             "name": "react/promise",
-            "version": "dev-master",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/react-php/promise",
-                "reference": "e7bdf9dab084b38c1de5c9d3a0952da0bdf10a9c"
+                "url": "https://github.com/reactphp/promise",
+                "reference": "v1.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/react-php/promise/zipball/e7bdf9dab084b38c1de5c9d3a0952da0bdf10a9c",
-                "reference": "e7bdf9dab084b38c1de5c9d3a0952da0bdf10a9c",
+                "url": "https://github.com/reactphp/promise/archive/v1.0.2.zip",
+                "reference": "v1.0.2",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "1351104737",
+            "time": "2012-11-14 20:01:47",
             "type": "library",
-            "installation-source": "source",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "React\\Promise": "src/"
@@ -257,14 +262,12 @@
             "homepage": "http://symfony.com"
         }
     ],
-    "packages-dev": [
-
-    ],
+    "packages-dev": null,
     "aliases": [
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "react/promise": 20
-    }
+    "stability-flags": [
+
+    ]
 }

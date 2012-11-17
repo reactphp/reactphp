@@ -12,7 +12,7 @@
         "evenement/evenement": "1.0.*",
         "guzzle/http": "2.8.*",
         "guzzle/parser": "2.8.*",
-        "react/promise": "dev-master"
+        "react/promise": "1.0.*"
     },
     "replace": {
         "react/event-loop": "self.version",
