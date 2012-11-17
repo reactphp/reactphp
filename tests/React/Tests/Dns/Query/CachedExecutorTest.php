@@ -6,6 +6,7 @@ use React\Dns\Query\CachedExecutor;
 use React\Dns\Query\Query;
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;
+use React\Promise\When;
 
 class CachedExecutorTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,13 +20,14 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
         $executor
             ->expects($this->once())
             ->method('query')
-            ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'), $this->isInstanceOf('Closure'));
+            ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'))
+            ->will($this->returnValue($this->createPromiseMock()));
 
         $cache = $this->getMock('React\Dns\Query\RecordCache');
         $cachedExecutor = new CachedExecutor($executor, $cache);
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $cachedExecutor->query('8.8.8.8', $query, function () {}, function () {});
+        $cachedExecutor->query('8.8.8.8', $query);
     }
 
     /**
@@ -67,13 +69,13 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
 
     private function callQueryCallbackWithAddress($address)
     {
-        return $this->returnCallback(function ($nameserver, $query, $callback) use ($address) {
+        return $this->returnCallback(function ($nameserver, $query) use ($address) {
             $response = new Message();
             $response->header->set('qr', 1);
             $response->questions[] = new Record($query->name, $query->type, $query->class);
             $response->answers[] = new Record($query->name, $query->type, $query->class, 3600, $address);
 
-            $callback($response);
+            return When::resolve($response);
         });
     }
 
@@ -95,5 +97,10 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
     private function createExecutorMock()
     {
         return $this->getMock('React\Dns\Query\ExecutorInterface');
+    }
+    
+    private function createPromiseMock()
+    {
+        return $this->getMock('React\Promise\PromiseInterface');
     }
 }

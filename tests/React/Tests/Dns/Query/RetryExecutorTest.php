@@ -7,6 +7,7 @@ use React\Dns\Query\Query;
 use React\Dns\Model\Message;
 use React\Dns\Query\TimeoutException;
 use React\Dns\Model\Record;
+use React\Promise\When;
 
 class RetryExecutorTest extends \PHPUnit_Framework_TestCase
 {
@@ -35,17 +36,18 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
     */
     public function queryShouldRetryQueryOnTimeout()
     {
+        $that = $this;
         $executor = $this->createExecutorMock();
         $executor
             ->expects($this->exactly(2))
             ->method('query')
-            ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'), $this->isType('callable'), $this->isType('callable'))
+            ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'))
             ->will($this->onConsecutiveCalls(
-                $this->returnCallback(function ($domain, $query, $callback, $errorback) use (&$queryErrorback) {
-                    $queryErrorback = $errorback;
+                $this->returnCallback(function ($domain, $query) {
+                    return When::reject(new TimeoutException("timeout"));
                 }),
-                $this->returnCallback(function ($domain, $query, $callback, $errorback) use (&$queryCallback) {
-                    $queryCallback = $callback;
+                $this->returnCallback(function ($domain, $query) use ($that) {
+                    return When::resolve($that->createStandardResponse());
                 })
             ));
 
@@ -60,13 +62,7 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
         $retryExecutor = new RetryExecutor($executor, 2);
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $retryExecutor->query('8.8.8.8', $query, $callback, $errorback);
-
-        $this->assertNotNull($queryErrorback);
-        $queryErrorback(new TimeoutException("timeout"));
-
-        $this->assertNotNull($queryCallback);
-        $queryCallback($this->createStandardResponse());
+        $retryExecutor->query('8.8.8.8', $query)->then($callback, $errorback);
     }
 
     /**
@@ -79,9 +75,9 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
         $executor
             ->expects($this->exactly(3))
             ->method('query')
-            ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'), $this->isType('callable'), $this->isType('callable'))
-            ->will($this->returnCallback(function ($domain, $query, $callback, $errorback) use (&$queryErrorback) {
-                $queryErrorback = $errorback;
+            ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'))
+            ->will($this->returnCallback(function ($domain, $query) {
+                return When::reject(new TimeoutException("timeout"));
             }));
 
         $callback = $this->expectCallableNever();
@@ -95,12 +91,7 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
         $retryExecutor = new RetryExecutor($executor, 2);
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $retryExecutor->query('8.8.8.8', $query, $callback, $errorback);
-
-        for ($i = 0; $i < 3; $i++) {
-            $this->assertNotNull($queryErrorback);
-            $queryErrorback(new TimeoutException("timeout"));
-        }
+        $retryExecutor->query('8.8.8.8', $query)->then($callback, $errorback);
     }
 
     /**
@@ -113,9 +104,9 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
         $executor
             ->expects($this->once())
             ->method('query')
-            ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'), $this->isType('callable'), $this->isType('callable'))
-            ->will($this->returnCallback(function ($domain, $query, $callback, $errorback) use (&$queryErrorback) {
-                $queryErrorback = $errorback;
+            ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'))
+            ->will($this->returnCallback(function ($domain, $query) {
+                return When::reject(new \Exception);
             }));
 
         $callback = $this->expectCallableNever();
@@ -129,10 +120,7 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
         $retryExecutor = new RetryExecutor($executor, 2);
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $retryExecutor->query('8.8.8.8', $query, $callback, $errorback);
-
-        $this->assertNotNull($queryErrorback);
-        $queryErrorback(new \Exception);
+        $retryExecutor->query('8.8.8.8', $query)->then($callback, $errorback);
     }
 
     protected function expectCallableOnce()
