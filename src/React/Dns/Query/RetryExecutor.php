@@ -3,7 +3,6 @@
 namespace React\Dns\Query;
 
 use React\Promise\Deferred;
-use React\Promise\When;
 
 class RetryExecutor implements ExecutorInterface
 {
