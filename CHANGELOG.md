@@ -3,7 +3,7 @@ CHANGELOG
 
 * 0.2.4 (2012-xx-xx)
 
-  * Feature: [Stream] Added ThroughStream and ReadableStream
+  * Feature: [Stream] Added ThroughStream, ReadableStream and WritableStream
 
 * 0.2.3 (2012-11-14)
 

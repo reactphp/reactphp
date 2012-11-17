@@ -2,8 +2,11 @@
 
 namespace React\Stream;
 
-class ThroughStream extends ReadableStream implements WritableStreamInterface
+use Evenement\EventEmitter;
+
+class WritableStream extends EventEmitter implements WritableStreamInterface
 {
+    public $closed = false;
     private $pipeSource;
 
     public function __construct()
@@ -16,14 +19,8 @@ class ThroughStream extends ReadableStream implements WritableStreamInterface
         $this->pipeSource = $source;
     }
 
-    public function filter($data)
-    {
-        return $data;
-    }
-
     public function write($data)
     {
-        $this->emit('data', array($this->filter($data)));
     }
 
     public function end($data = null)
@@ -40,27 +37,15 @@ class ThroughStream extends ReadableStream implements WritableStreamInterface
         return !$this->closed;
     }
 
-    public function pause()
-    {
-        if ($this->pipeSource) {
-            $this->pipeSource->pause();
-        }
-    }
-
-    public function resume()
-    {
-        if ($this->pipeSource) {
-            $this->pipeSource->resume();
-        }
-    }
-
     public function close()
     {
         if ($this->closed) {
             return;
         }
 
-        parent::close();
-        $this->pipeSource = null;
+        $this->closed = true;
+        $this->emit('end', array($this));
+        $this->emit('close', array($this));
+        $this->removeAllListeners();
     }
 }
