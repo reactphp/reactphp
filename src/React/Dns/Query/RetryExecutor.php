@@ -45,7 +45,8 @@ class RetryExecutor implements ExecutorInterface
             $that->tryQuery($nameserver, $query, $retries-1, $resolver);
         };
 
-        $this->executor->query($nameserver, $query)
+        $this->executor
+            ->query($nameserver, $query)
             ->then(array($resolver, 'resolve'), $errorback);
     }
 }

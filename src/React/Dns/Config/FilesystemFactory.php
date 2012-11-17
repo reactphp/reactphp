@@ -18,7 +18,8 @@ class FilesystemFactory
 
     public function create($filename)
     {
-        return $this->loadEtcResolvConf($filename)
+        return $this
+            ->loadEtcResolvConf($filename)
             ->then(array($this, 'parseEtcResolvConf'));
     }
 
