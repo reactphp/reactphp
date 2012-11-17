@@ -1,5 +1,5 @@
 {
-    "hash": "d08e3530f21d46bf6dbc03c455bfc946",
+    "hash": "db8f254e657053a020cd6117714b6f49",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -214,6 +214,49 @@
             ]
         },
         {
+            "name": "react/promise",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reactphp/promise",
+                "reference": "v1.0.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/reactphp/promise/archive/v1.0.2.zip",
+                "reference": "v1.0.2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "time": "2012-11-14 20:01:47",
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-0": {
+                    "React\\Promise": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Sorgalla",
+                    "email": "jsorgalla@googlemail.com",
+                    "homepage": "http://sorgalla.com",
+                    "role": "maintainer"
+                }
+            ],
+            "description": "A lightweight implementation of CommonJS Promises/A for PHP"
+        },
+        {
             "name": "symfony/event-dispatcher",
             "version": "v2.1.3",
             "target-dir": "Symfony/Component/EventDispatcher",
@@ -268,9 +311,7 @@
             "homepage": "http://symfony.com"
         }
     ],
-    "packages-dev": [
-
-    ],
+    "packages-dev": null,
     "aliases": [
 
     ],
