@@ -36,7 +36,8 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
     */
     public function queryShouldRetryQueryOnTimeout()
     {
-        $that = $this;
+        $response = $this->createStandardResponse();
+
         $executor = $this->createExecutorMock();
         $executor
             ->expects($this->exactly(2))
@@ -46,8 +47,8 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
                 $this->returnCallback(function ($domain, $query) {
                     return When::reject(new TimeoutException("timeout"));
                 }),
-                $this->returnCallback(function ($domain, $query) use ($that) {
-                    return When::resolve($that->createStandardResponse());
+                $this->returnCallback(function ($domain, $query) use ($response) {
+                    return When::resolve($response);
                 })
             ));
 
@@ -142,7 +143,7 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
 
         return $mock;
     }
-    
+
     protected function expectPromiseOnce($return = null)
     {
         $mock = $this->createPromiseMock();
@@ -163,7 +164,7 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
     {
         return $this->getMock('React\Dns\Query\ExecutorInterface');
     }
-    
+
     protected function createPromiseMock()
     {
         return $this->getMock('React\Promise\PromiseInterface');
