@@ -6,7 +6,7 @@ use Evenement\EventEmitter;
 
 class ReadableStream extends EventEmitter implements ReadableStreamInterface
 {
-    public $closed = false;
+    protected $closed = false;
 
     public function isReadable()
     {

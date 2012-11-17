@@ -6,7 +6,7 @@ use Evenement\EventEmitter;
 
 class WritableStream extends EventEmitter implements WritableStreamInterface
 {
-    public $closed = false;
+    protected $closed = false;
 
     public function write($data)
     {
