@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-* 0.2.4 (2012-xx-xx)
+* 0.2.4 (2012-11-18)
 
   * Feature: [Stream] Added ThroughStream, CompositeStream, ReadableStream and WritableStream
   * Feature: [Stream] Added BufferedSink
