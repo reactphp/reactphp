@@ -15,8 +15,8 @@ class CompositeStream extends EventEmitter implements ReadableStreamInterface, W
         $this->readable = $readable;
         $this->writable = $writable;
 
-        $this->forwardEvents($this->readable, array('data', 'end', 'error', 'close'));
-        $this->forwardEvents($this->writable, array('drain', 'error', 'close', 'pipe'));
+        Util::forwardEvents($this->readable, $this, array('data', 'end', 'error', 'close'));
+        Util::forwardEvents($this->writable, $this, array('drain', 'error', 'close', 'pipe'));
 
         $this->readable->on('close', array($this, 'close'));
         $this->writable->on('close', array($this, 'close'));
@@ -80,16 +80,5 @@ class CompositeStream extends EventEmitter implements ReadableStreamInterface, W
 
         $this->readable->close();
         $this->writable->close();
-    }
-
-    protected function forwardEvents($stream, array $events)
-    {
-        $that = $this;
-
-        foreach ($events as $event) {
-            $stream->on($event, function () use ($event, $that) {
-                $that->emit($event, func_get_args());
-            });
-        }
     }
 }
