@@ -215,22 +215,22 @@
         },
         {
             "name": "react/promise",
-            "version": "v1.0.2",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise",
-                "reference": "v1.0.2"
+                "reference": "v1.0.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/reactphp/promise/archive/v1.0.2.zip",
-                "reference": "v1.0.2",
+                "url": "https://github.com/reactphp/promise/archive/v1.0.3.zip",
+                "reference": "v1.0.3",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "2012-11-14 20:01:47",
+            "time": "2012-11-17 21:29:48",
             "type": "library",
             "extra": {
                 "branch-alias": {
