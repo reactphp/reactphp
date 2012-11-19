@@ -108,6 +108,33 @@ class BufferedSinkTest extends TestCase
     }
 
     /** @test */
+    public function writeShouldTriggerProgressOnPromise()
+    {
+        $callback = $this->createCallableMock();
+        $callback
+            ->expects($this->at(0))
+            ->method('__invoke')
+            ->with('foo');
+        $callback
+            ->expects($this->at(1))
+            ->method('__invoke')
+            ->with('bar');
+        $callback
+            ->expects($this->at(2))
+            ->method('__invoke')
+            ->with('baz');
+
+        $sink = new BufferedSink();
+        $sink
+            ->promise()
+            ->then(null, null, $callback);
+
+        $sink->write('foo');
+        $sink->write('bar');
+        $sink->end('baz');
+    }
+
+    /** @test */
     public function forwardedErrorsFromPipeShouldRejectPromise()
     {
         $errback = $this->expectCallableOnceWith($this->callback(function ($e) {
