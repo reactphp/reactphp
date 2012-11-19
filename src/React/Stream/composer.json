@@ -8,7 +8,8 @@
         "evenement/evenement": "1.0.*"
     },
     "suggest": {
-        "react/event-loop": "0.2.*"
+        "react/event-loop": "0.2.*",
+        "react/promise": "1.0.*"
     },
     "autoload": {
         "psr-0": { "React\\Stream": "" }
