@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-* 0.2.5 (2012-xx-xx)
+* 0.2.5 (2012-11-26)
 
   * Feature: [Stream] Make BufferedSink trigger progress events on the promise (@jsor)
   * Feature: [HttpClient] Use a promise-based API internally
