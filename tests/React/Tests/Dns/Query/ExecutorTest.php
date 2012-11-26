@@ -42,7 +42,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnNewConnectionMock());
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $this->executor->query('8.8.8.8:53', $query, function () {});
+        $this->executor->query('8.8.8.8:53', $query, function () {}, function () {});
     }
 
     /** @test */
@@ -58,7 +58,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnNewConnectionMock());
 
         $query = new Query(str_repeat('a', 512).'.igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $this->executor->query('8.8.8.8:53', $query, function () {});
+        $this->executor->query('8.8.8.8:53', $query, function () {}, function () {});
     }
 
     /** @test */
@@ -90,17 +90,13 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnNewConnectionMock());
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $this->executor->query('8.8.8.8:53', $query, function () {});
+        $this->executor->query('8.8.8.8:53', $query, function () {}, function () {});
     }
 
-    /**
-     * @test
-     * @expectedException React\Dns\BadServerException
-     * @expectedExceptionMessage The server set the truncated bit although we issued a TCP request
-     **/
+    /** @test */
     public function resolveShouldFailIfResponseIsTruncatedAfterTcpRequest()
     {
-        $conn = $this->createConnectionMock();
+        $self = $this;
 
         $this->parser
             ->expects($this->once())
@@ -114,9 +110,92 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->method('createConnection')
             ->with('8.8.8.8:53', 'tcp')
             ->will($this->returnNewConnectionMock());
+        
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->callback(function($e) {
+                return $e instanceof \React\Dns\BadServerException &&
+                       'The server set the truncated bit although we issued a TCP request' === $e->getMessage();
+            }));
 
         $query = new Query(str_repeat('a', 512).'.igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $this->executor->query('8.8.8.8:53', $query, function () {});
+        $this->executor->query('8.8.8.8:53', $query)
+            ->then($this->expectCallableNever(), $mock);
+    }
+
+    /** @test */
+    public function resolveShouldCancelTimerWhenFullResponseIsReceived()
+    {
+        $conn = $this->createConnectionMock();
+
+        $this->parser
+            ->expects($this->once())
+            ->method('parseChunk')
+            ->with($this->anything(), $this->isInstanceOf('React\Dns\Model\Message'))
+            ->will($this->returnStandardResponse());
+
+        $this->executor = $this->createExecutorMock();
+        $this->executor
+            ->expects($this->at(0))
+            ->method('createConnection')
+            ->with('8.8.8.8:53', 'udp')
+            ->will($this->returnNewConnectionMock());
+
+        $this->loop
+            ->expects($this->once())
+            ->method('addTimer')
+            ->with(5, $this->isInstanceOf('Closure'))
+            ->will($this->returnValue('timer0'));
+
+        $this->loop
+            ->expects($this->once())
+            ->method('cancelTimer')
+            ->with('timer0');
+
+        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
+        $this->executor->query('8.8.8.8:53', $query, function () {}, function () {});
+    }
+
+    /** @test */
+    public function resolveShouldCloseConnectionOnTimeout()
+    {
+        $this->executor = $this->createExecutorMock();
+        $this->executor
+            ->expects($this->at(0))
+            ->method('createConnection')
+            ->with('8.8.8.8:53', 'udp')
+            ->will($this->returnNewConnectionMock());
+
+        $this->loop
+            ->expects($this->once())
+            ->method('addTimer')
+            ->with(5, $this->isInstanceOf('Closure'))
+            ->will($this->returnCallback(function ($time, $callback) use (&$timerCallback) {
+                $timerCallback = $callback;
+            }));
+
+        $this->loop
+            ->expects($this->never())
+            ->method('cancelTimer');
+
+        $callback = $this->expectCallableNever();
+
+        $errorback = $this->createCallableMock();
+        $errorback
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->logicalAnd(
+                $this->isInstanceOf('React\Dns\Query\TimeoutException'),
+                $this->attribute($this->equalTo('DNS query for igor.io timed out'), 'message')
+            ));
+
+        $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
+        $this->executor->query('8.8.8.8:53', $query)->then($callback, $errorback);
+
+        $this->assertNotNull($timerCallback);
+        $timerCallback();
     }
 
     private function returnStandardResponse()
@@ -193,5 +272,20 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->setConstructorArgs(array($this->loop, $this->parser, $this->dumper))
             ->setMethods(array('createConnection'))
             ->getMock();
+    }
+
+    protected function expectCallableNever()
+    {
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->never())
+            ->method('__invoke');
+
+        return $mock;
+    }
+
+    protected function createCallableMock()
+    {
+        return $this->getMock('React\Tests\Socket\Stub\CallableStub');
     }
 }

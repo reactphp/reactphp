@@ -6,6 +6,7 @@ use React\Dns\Resolver\Resolver;
 use React\Dns\Query\Query;
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;
+use React\Promise\When;
 
 class ResolverTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,39 +17,46 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
         $executor
             ->expects($this->once())
             ->method('query')
-            ->with($this->anything(), $this->isInstanceOf('React\Dns\Query\Query'), $this->isInstanceOf('Closure'))
-            ->will($this->returnCallback(function ($nameserver, $query, $callback) {
+            ->with($this->anything(), $this->isInstanceOf('React\Dns\Query\Query'))
+            ->will($this->returnCallback(function ($nameserver, $query) {
                 $response = new Message();
                 $response->header->set('qr', 1);
                 $response->questions[] = new Record($query->name, $query->type, $query->class);
                 $response->answers[] = new Record($query->name, $query->type, $query->class, 3600, '178.79.169.131');
-                $callback($response);
+
+                return When::resolve($response);
             }));
 
         $resolver = new Resolver('8.8.8.8:53', $executor);
-        $resolver->resolve('igor.io', $this->expectCallableOnceWith('178.79.169.131'));
+        $resolver->resolve('igor.io')->then($this->expectCallableOnceWith('178.79.169.131'));
     }
 
-    /**
-     * @test
-     * @expectedException React\Dns\RecordNotFoundException
-     */
+    /** @test */
     public function resolveWithNoAnswersShouldThrowException()
     {
         $executor = $this->createExecutorMock();
         $executor
             ->expects($this->once())
             ->method('query')
-            ->with($this->anything(), $this->isInstanceOf('React\Dns\Query\Query'), $this->isInstanceOf('Closure'))
-            ->will($this->returnCallback(function ($nameserver, $query, $callback) {
+            ->with($this->anything(), $this->isInstanceOf('React\Dns\Query\Query'))
+            ->will($this->returnCallback(function ($nameserver, $query) {
                 $response = new Message();
                 $response->header->set('qr', 1);
                 $response->questions[] = new Record($query->name, $query->type, $query->class);
-                $callback($response);
+
+                return When::resolve($response);
+            }));
+            
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->callback(function($e) {
+                return $e instanceof \React\Dns\RecordNotFoundException;
             }));
 
         $resolver = new Resolver('8.8.8.8:53', $executor);
-        $resolver->resolve('igor.io', $this->expectCallableNever());
+        $resolver->resolve('igor.io')->then($this->expectCallableNever(), $mock);
     }
 
     /**
@@ -60,18 +68,35 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
         $executor
             ->expects($this->once())
             ->method('query')
-            ->with($this->anything(), $this->isInstanceOf('React\Dns\Query\Query'), $this->isInstanceOf('Closure'))
-            ->will($this->returnCallback(function ($nameserver, $query, $callback) {
+            ->with($this->anything(), $this->isInstanceOf('React\Dns\Query\Query'))
+            ->will($this->returnCallback(function ($nameserver, $query) {
                 $response = new Message();
                 $response->header->set('qr', 1);
                 $response->questions[] = new Record($query->name, $query->type, $query->class);
-                $callback($response);
+
+                return When::resolve($response);
             }));
 
         $errback = $this->expectCallableOnceWith($this->isInstanceOf('React\Dns\RecordNotFoundException'));
 
         $resolver = new Resolver('8.8.8.8:53', $executor);
-        $resolver->resolve('igor.io', $this->expectCallableNever(), $errback);
+        $resolver->resolve('igor.io')->then($this->expectCallableNever(), $errback);
+    }
+
+    /** @test */
+    public function resolveSouldProvideDefaultErrorbackToExecutor()
+    {
+        $executor = $this->createExecutorMock();
+        $executor
+            ->expects($this->once())
+            ->method('query')
+            ->with($this->anything(), $this->isInstanceOf('React\Dns\Query\Query'))
+            ->will($this->returnCallback(function ($nameserver, $query) {
+                return When::resolve();
+            }));;
+
+        $resolver = new Resolver('8.8.8.8:53', $executor);
+        $resolver->resolve('igor.io')->then($this->expectCallableNever());
     }
 
     protected function expectCallableOnceWith($with)

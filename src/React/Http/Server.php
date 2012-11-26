@@ -39,6 +39,9 @@ class Server extends EventEmitter implements ServerInterface
             $server->handleRequest($conn, $parser, $request, $bodyBuffer);
 
             $conn->removeListener('data', array($parser, 'feed'));
+            $conn->on('end', function () use ($request) {
+                $request->emit('end');
+            });
             $conn->on('data', function ($data) use ($request) {
                 $request->emit('data', array($data));
             });
@@ -68,7 +71,7 @@ class Server extends EventEmitter implements ServerInterface
         if (isset($headers['Connection']) && 'close' === $headers['Connection']) {
             $parser->removeAllListeners();
         } else {
-            $response->on('end', function () use ($conn, $parser) {
+            $response->on('close', function () use ($conn, $parser) {
                 $parser->reset();
                 $conn->on('data', array($parser, 'feed'));
             });
