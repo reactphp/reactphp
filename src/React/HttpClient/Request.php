@@ -54,32 +54,28 @@ class Request extends EventEmitter implements WritableStreamInterface
         $streamRef = &$this->stream;
         $stateRef = &$this->state;
 
-        $this->connect(function ($stream, \Exception $error = null) use ($that, $request, &$streamRef, &$stateRef) {
-            if (!$stream) {
-                $that->closeError(new \RuntimeException(
-                    "Connection failed",
-                    0,
-                    $error
-                ));
-                return;
-            }
+        $this
+            ->connect()
+            ->then(
+                function ($stream) use ($that, $request, &$streamRef, &$stateRef) {
+                    $streamRef = $stream;
 
-            $streamRef = $stream;
+                    $stream->on('drain', array($that, 'handleDrain'));
+                    $stream->on('data', array($that, 'handleData'));
+                    $stream->on('end', array($that, 'handleEnd'));
+                    $stream->on('error', array($that, 'handleError'));
 
-            $stream->on('drain', array($that, 'handleDrain'));
-            $stream->on('data', array($that, 'handleData'));
-            $stream->on('end', array($that, 'handleEnd'));
-            $stream->on('error', array($that, 'handleError'));
+                    $request->setProtocolVersion('1.0');
+                    $headers = (string) $request;
 
-            $request->setProtocolVersion('1.0');
-            $headers = (string) $request;
+                    $stream->write($headers);
 
-            $stream->write($headers);
+                    $stateRef = Request::STATE_HEAD_WRITTEN;
 
-            $stateRef = Request::STATE_HEAD_WRITTEN;
-
-            $that->emit('headers-written', array($that));
-        });
+                    $that->emit('headers-written', array($that));
+                },
+                array($this, 'handleError')
+            );
     }
 
     public function write($data)
@@ -213,16 +209,13 @@ class Request extends EventEmitter implements WritableStreamInterface
         return array($response, $parsed['body']);
     }
 
-    protected function connect($callback)
+    protected function connect()
     {
         $host = $this->request->getHost();
         $port = $this->request->getPort();
-        $connectionManager = $this->connectionManager;
-        $that = $this;
 
-        $connectionManager->getConnection(function ($stream, $error = null) use ($that, $callback) {
-            call_user_func($callback, $stream, $error);
-        }, $host, $port);
+        return $this->connectionManager
+            ->getConnection($host, $port);
     }
 
     public function setResponseFactory($factory)
