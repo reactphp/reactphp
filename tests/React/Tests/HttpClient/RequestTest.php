@@ -5,6 +5,8 @@ namespace React\Tests\HttpClient;
 use Guzzle\Http\Message\Request as GuzzleRequest;
 use React\HttpClient\Request;
 use React\Stream\Stream;
+use React\Promise\FulfilledPromise;
+use React\Promise\RejectedPromise;
 use React\Tests\Socket\TestCase;
 
 class RequestTest extends TestCase
@@ -16,11 +18,12 @@ class RequestTest extends TestCase
     public function setUp()
     {
         $this->loop = $this->getMock('React\EventLoop\LoopInterface');
-        $this->connectionManager = $this->getMock('React\HttpClient\ConnectionManagerInterface');
 
         $this->stream = $this->getMockBuilder('React\Stream\Stream')
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->connectionManager = $this->getMock('React\HttpClient\ConnectionManagerInterface');
 
         $this->response = $this->getMockBuilder('React\HttpClient\Response')
             ->disableOriginalConstructor()
@@ -32,15 +35,8 @@ class RequestTest extends TestCase
     {
         $guzzleRequest = new GuzzleRequest('GET', 'http://www.example.com');
         $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
-        $stream = $this->stream;
 
-        $this->connectionManager
-            ->expects($this->once())
-            ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function ($cb) use ($stream) {
-                $cb($stream);
-            }));
+        $this->successfulConnectionMock();
 
         $this->stream
             ->expects($this->at(0))
@@ -130,13 +126,7 @@ class RequestTest extends TestCase
         $guzzleRequest = new GuzzleRequest('GET', 'http://www.example.com');
         $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
 
-        $this->connectionManager
-            ->expects($this->once())
-            ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function ($cb) {
-                $cb(null);
-            }));
+        $this->rejectedConnectionMock();
 
         $handler = $this->createCallableMock();
         $handler->expects($this->once())
@@ -168,15 +158,8 @@ class RequestTest extends TestCase
     {
         $guzzleRequest = new GuzzleRequest('GET', 'http://www.example.com');
         $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
-        $stream = $this->stream;
 
-        $this->connectionManager
-            ->expects($this->once())
-            ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function ($cb) use ($stream) {
-                $cb($stream);
-            }));
+        $this->successfulConnectionMock();
 
         $handler = $this->createCallableMock();
         $handler->expects($this->once())
@@ -209,15 +192,8 @@ class RequestTest extends TestCase
     {
         $guzzleRequest = new GuzzleRequest('GET', 'http://www.example.com');
         $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
-        $stream = $this->stream;
 
-        $this->connectionManager
-            ->expects($this->once())
-            ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function ($cb) use ($stream) {
-                $cb($stream);
-            }));
+        $this->successfulConnectionMock();
 
         $handler = $this->createCallableMock();
         $handler->expects($this->once())
@@ -250,15 +226,8 @@ class RequestTest extends TestCase
     {
         $guzzleRequest = new GuzzleRequest('POST', 'http://www.example.com');
         $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
-        $stream = $this->stream;
 
-        $this->connectionManager
-            ->expects($this->once())
-            ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function ($cb) use ($stream) {
-                $cb($stream);
-            }));
+        $this->successfulConnectionMock();
 
         $this->stream
             ->expects($this->at(4))
@@ -287,15 +256,8 @@ class RequestTest extends TestCase
     {
         $guzzleRequest = new GuzzleRequest('POST', 'http://www.example.com');
         $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
-        $stream = $this->stream;
 
-        $this->connectionManager
-            ->expects($this->once())
-            ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function ($cb) use ($stream) {
-                $cb($stream);
-            }));
+        $this->successfulConnectionMock();
 
         $this->stream
             ->expects($this->at(4))
@@ -335,15 +297,8 @@ class RequestTest extends TestCase
     {
         $guzzleRequest = new GuzzleRequest('POST', 'http://www.example.com');
         $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
-        $stream = $this->stream;
 
-        $this->connectionManager
-            ->expects($this->once())
-            ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function ($cb) use ($stream) {
-                $cb($stream);
-            }));
+        $this->successfulConnectionMock();
 
         $this->stream
             ->expects($this->at(4))
@@ -400,15 +355,8 @@ class RequestTest extends TestCase
     {
         $guzzleRequest = new GuzzleRequest('GET', 'http://www.example.com');
         $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
-        $stream = $this->stream;
 
-        $this->connectionManager
-            ->expects($this->once())
-            ->method('getConnection')
-            ->with($this->anything(), 'www.example.com', 80)
-            ->will($this->returnCallback(function ($cb) use ($stream) {
-                $cb($stream);
-            }));
+        $this->successfulConnectionMock();
 
         $response = $this->response;
 
@@ -437,6 +385,24 @@ class RequestTest extends TestCase
 
         $this->assertNotNull($errorCallback);
         call_user_func($errorCallback, new \Exception('test'));
+    }
+
+    private function successfulConnectionMock()
+    {
+        $this->connectionManager
+            ->expects($this->once())
+            ->method('getConnection')
+            ->with('www.example.com', 80)
+            ->will($this->returnValue(new FulfilledPromise($this->stream)));
+    }
+
+    private function rejectedConnectionMock()
+    {
+        $this->connectionManager
+            ->expects($this->once())
+            ->method('getConnection')
+            ->with('www.example.com', 80)
+            ->will($this->returnValue(new RejectedPromise(new \RuntimeException())));
     }
 }
 
