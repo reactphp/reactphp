@@ -4,6 +4,8 @@ CHANGELOG
 * 0.2.5 (2012-xx-xx)
 
   * Feature: [Stream] Make BufferedSink trigger progress events on the promise (@jsor)
+  * Feature: [HttpClient] Use a promise-based API internally
+  * Bug fix: [HttpClient] Use DNS resolver correctly
 
 * 0.2.4 (2012-11-18)
 
