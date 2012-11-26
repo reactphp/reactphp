@@ -33,4 +33,13 @@ class Util
             });
         }
     }
+
+    public static function forwardEvents($source, $target, array $events)
+    {
+        foreach ($events as $event) {
+            $source->on($event, function () use ($event, $target) {
+                $target->emit($event, func_get_args());
+            });
+        }
+    }
 }

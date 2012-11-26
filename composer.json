@@ -1,21 +1,22 @@
 {
-    "minimum-stability": "dev",
     "name": "react/react",
     "description": "Nuclear Reactor written in PHP.",
     "keywords": ["event-loop", "reactor"],
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/react-php/react/issues",
+        "issues": "https://github.com/reactphp/react/issues",
         "irc": "irc://irc.freenode.org/reactphp"
     },
     "require": {
         "php": ">=5.3.3",
         "evenement/evenement": "1.0.*",
-        "guzzle/http": "2.8.*",
-        "guzzle/parser": "2.8.*",
-        "silex/silex": "1.0.*"
+        "guzzle/http": "3.0.*",
+        "guzzle/parser": "3.0.*",
+        "react/promise": "1.0.*"
     },
     "require-dev": {
+        "ext-libevent": "*",
+        "ext-libev": "*",
         "ext-eio": ">=1.2.0"
     },
     "replace": {
@@ -23,14 +24,15 @@
         "react/stream": "self.version",
         "react/socket": "self.version",
         "react/http": "self.version",
-        "react/espresso": "self.version"
+        "react/http-client": "self.version",
+        "react/dns": "self.version"
     },
     "autoload": {
         "psr-0": { "React": "src" }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.1"
+            "dev-master": "0.2-dev"
         }
     }
 }

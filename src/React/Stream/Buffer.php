@@ -15,10 +15,10 @@ class Buffer extends EventEmitter implements WritableStreamInterface
     private $loop;
     private $data = '';
     private $lastError = array(
-        'number'  => '',
+        'number'  => 0,
         'message' => '',
         'file'    => '',
-        'line'    => '',
+        'line'    => 0,
     );
 
     public function __construct($stream, LoopInterface $loop)
@@ -77,6 +77,12 @@ class Buffer extends EventEmitter implements WritableStreamInterface
 
     public function handleWrite()
     {
+        if (!is_resource($this->stream) || feof($this->stream)) {
+            $this->emit('error', array(new \RuntimeException('Tried to write to closed or invalid stream.')));
+
+            return;
+        }
+
         set_error_handler(array($this, 'errorHandler'));
 
         $sent = fwrite($this->stream, $this->data);

@@ -3,9 +3,14 @@
 namespace React\Tests\Stream;
 
 use React\Stream\Buffer;
+use React\Stream\ReadableStream;
 use React\Stream\Util;
+use React\Tests\Socket\TestCase;
 
-class UtilTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers React\Stream\Util
+ */
+class UtilTest extends TestCase
 {
     public function testPipeShouldEmitEvents()
     {
@@ -112,6 +117,20 @@ class UtilTest extends \PHPUnit_Framework_TestCase
 
         rewind($stream);
         $this->assertSame('hello, I am some random data', stream_get_contents($stream));
+    }
+
+    /** @test */
+    public function forwardEventsShouldSetupForwards()
+    {
+        $source = new ReadableStream();
+        $target = new ReadableStream();
+
+        Util::forwardEvents($source, $target, array('data'));
+        $target->on('data', $this->expectCallableOnce());
+        $target->on('foo', $this->expectCallableNever());
+
+        $source->emit('data', array('hello'));
+        $source->emit('foo', array('bar'));
     }
 
     private function createWriteableLoopMock()

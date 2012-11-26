@@ -9,6 +9,7 @@ use React\Stream\WritableStreamInterface;
 
 class Response extends EventEmitter implements WritableStreamInterface
 {
+    private $closed = false;
     private $writable = true;
     private $conn;
     private $headWritten = false;
@@ -17,11 +18,35 @@ class Response extends EventEmitter implements WritableStreamInterface
     public function __construct(ConnectionInterface $conn)
     {
         $this->conn = $conn;
+
+        $that = $this;
+
+        $this->conn->on('end', function () use ($that) {
+            $that->close();
+        });
+
+        $this->conn->on('error', function ($error) use ($that) {
+            $that->emit('error', array($error, $that));
+            $that->close();
+        });
+
+        $this->conn->on('drain', function () use ($that) {
+            $that->emit('drain');
+        });
     }
 
     public function isWritable()
     {
         return $this->writable;
+    }
+
+    public function writeContinue()
+    {
+        if ($this->headWritten) {
+            throw new \Exception('Response head has already been written.');
+        }
+
+        $this->conn->write("HTTP/1.1 100 Continue\r\n");
     }
 
     public function writeHead($status = 200, array $headers = array())
@@ -73,15 +98,21 @@ class Response extends EventEmitter implements WritableStreamInterface
             $this->conn->write("0\r\n\r\n");
         }
 
-        $this->emit('end');
+        $this->emit('close');
         $this->removeAllListeners();
         $this->conn->end();
     }
 
     public function close()
     {
+        if ($this->closed) {
+            return;
+        }
+
+        $this->closed = true;
+
         $this->writable = false;
-        $this->emit('end');
+        $this->emit('close');
         $this->removeAllListeners();
         $this->conn->close();
     }

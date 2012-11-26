@@ -7,7 +7,8 @@
         "php": ">=5.3.3"
     },
     "suggest": {
-        "ext-libevent": ">=0.0.5"
+        "ext-libevent": ">=0.0.5",
+        "ext-libev": "*"
     },
     "autoload": {
         "psr-0": { "React\\EventLoop": "" }
@@ -15,7 +16,7 @@
     "target-dir": "React/EventLoop",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.1"
+            "dev-master": "0.2-dev"
         }
     }
 }

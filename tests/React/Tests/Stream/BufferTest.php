@@ -59,6 +59,25 @@ class BufferTest extends TestCase
      * @covers React\Stream\Buffer::write
      * @covers React\Stream\Buffer::handleWrite
      */
+    public function testWriteDetectsWhenOtherSideIsClosed()
+    {
+        list($a, $b) = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
+
+        $loop = $this->createWriteableLoopMock();
+
+        $buffer = new Buffer($a, $loop);
+        $buffer->softLimit = 4;
+        $buffer->on('error', $this->expectCallableOnce());
+
+        fclose($b);
+
+        $buffer->write("foo");
+    }
+
+    /**
+     * @covers React\Stream\Buffer::write
+     * @covers React\Stream\Buffer::handleWrite
+     */
     public function testDrain()
     {
         $stream = fopen('php://temp', 'r+');
@@ -165,7 +184,7 @@ class BufferTest extends TestCase
 
         $buffer->write('Attempting to write to bad stream');
         $this->assertInstanceOf('Exception', $error);
-        $this->assertSame('fwrite() expects parameter 1 to be resource, null given', $error->getMessage());
+        $this->assertSame('Tried to write to closed or invalid stream.', $error->getMessage());
     }
 
     private function createWriteableLoopMock()
