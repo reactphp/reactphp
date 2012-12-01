@@ -20,6 +20,7 @@
     },
     "replace": {
         "react/event-loop": "self.version",
+        "react/cache": "self.version",
         "react/stream": "self.version",
         "react/socket": "self.version",
         "react/http": "self.version",
