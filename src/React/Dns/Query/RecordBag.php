@@ -24,14 +24,4 @@ class RecordBag
             $this->records
         ));
     }
-
-    public function expire($currentTime)
-    {
-        foreach ($this->records as $key => $value) {
-            list($expiresAt, $record) = $value;
-            if ($expiresAt <= $currentTime) {
-                unset($this->records[$key]);
-            }
-        }
-    }
 }

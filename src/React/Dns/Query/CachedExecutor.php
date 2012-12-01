@@ -19,25 +19,28 @@ class CachedExecutor implements ExecutorInterface
 
     public function query($nameserver, Query $query)
     {
-        $cachedRecords = $this->cache->lookup($query);
-
-        if (count($cachedRecords)) {
-            $cachedResponse = $this->buildResponse($query, $cachedRecords);
-
-            return When::resolve($cachedResponse);
-        }
-
+        $that = $this;
+        $executor = $this->executor;
         $cache = $this->cache;
 
-        return $this->executor
-            ->query($nameserver, $query)
-            ->then(function ($response) use ($cache, $query) {
-                $cache->storeResponseMessage($query->currentTime, $response);
-                return $response;
-            });
+        return $this->cache
+            ->lookup($query)
+            ->then(
+                function ($cachedRecords) use ($that, $query) {
+                    return $that->buildResponse($query, $cachedRecords);
+                },
+                function () use ($executor, $cache, $nameserver, $query) {
+                    return $executor
+                        ->query($nameserver, $query)
+                        ->then(function ($response) use ($cache, $query) {
+                            $cache->storeResponseMessage($query->currentTime, $response);
+                            return $response;
+                        });
+                }
+            );
     }
 
-    private function buildResponse(Query $query, array $cachedRecords)
+    public function buildResponse(Query $query, array $cachedRecords)
     {
         $response = new Message();
 
