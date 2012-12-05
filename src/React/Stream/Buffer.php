@@ -6,6 +6,7 @@ use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
 use React\Stream\WritableStreamInterface;
 
+// Events: full-drain
 class Buffer extends EventEmitter implements WritableStreamInterface
 {
     public $stream;

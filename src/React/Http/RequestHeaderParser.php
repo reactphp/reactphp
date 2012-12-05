@@ -5,6 +5,7 @@ namespace React\Http;
 use Evenement\EventEmitter;
 use Guzzle\Parser\Message\MessageParser;
 
+// Events: headers, error
 class RequestHeaderParser extends EventEmitter
 {
     private $buffer = '';
