@@ -2,10 +2,10 @@
 
 namespace React\Tests\Filesystem;
 
-use React\Filesystem\Filesystem;
+use React\Filesystem\LibeioFilesystem;
 use React\Tests\Socket\TestCase;
 
-class FilesystemTest extends TestCase
+class LibeioFilesystemTest extends TestCase
 {
     public function setUp()
     {
@@ -32,12 +32,13 @@ class FilesystemTest extends TestCase
         $callback
             ->expects($this->once())
             ->method('__invoke')
-            ->with(null, 0);
+            ->with(0);
 
         $loop = $this->getMock('React\EventLoop\LoopInterface');
 
-        $fs = new Filesystem($loop);
-        $fs->mkdir($dirname, 0755, $callback);
+        $fs = new LibeioFilesystem($loop);
+        $fs->mkdir($dirname, 0755)
+           ->then($callback);
 
         $this->handleReadEvents($fs, 1);
 
@@ -57,13 +58,15 @@ class FilesystemTest extends TestCase
             ->expects($this->atLeastOnce())
             ->method('addReadStream');
 
-        $fs = new Filesystem($loop);
-        $fs->open($filename, 'w+', 0644, function ($err, $fd) use ($fs, &$fileContents) {
-            $fs->read($fd, 6, 0, function ($err, $data) use ($fs, &$fileContents, $fd) {
-                $fileContents = $data;
-                $fs->close($fd);
-            });
-        });
+        $fs = new LibeioFilesystem($loop);
+        $fs->open($filename, 'w+', 0644)
+           ->then(function ($fd) use ($fs, &$fileContents) {
+                $fs->read($fd, 6, 0)
+                    ->then(function($data) use ($fs, $fd, &$fileContents) {
+                        $fileContents = $data;
+                        $fs->close($fd);
+                    });
+           });
 
         $this->handleReadEvents($fs, 3);
 
@@ -82,10 +85,11 @@ class FilesystemTest extends TestCase
             ->expects($this->atLeastOnce())
             ->method('addReadStream');
 
-        $fs = new Filesystem($loop);
-        $fs->stat($filename, function ($err, $stat) use (&$capturedStatData) {
-            $capturedStatData = $stat;
-        });
+        $fs = new LibeioFilesystem($loop);
+        $fs->stat($filename)
+           ->then(function ($stat) use (&$capturedStatData) {
+                $capturedStatData = $stat;
+           });
 
         $this->handleReadEvents($fs, 1);
 
@@ -109,17 +113,18 @@ class FilesystemTest extends TestCase
             ->expects($this->atLeastOnce())
             ->method('addReadStream');
 
-        $fs = new Filesystem($loop);
-        $fs->readFile($filename, function ($err, $data) use ($fs, &$fileContents) {
-            $fileContents = $data;
-        });
+        $fs = new LibeioFilesystem($loop);
+        $fs->readFile($filename)
+            ->then(function($data) use (&$fileContents) {
+                $fileContents = $data;
+            }, function($error){exit($error);});
 
         $this->handleReadEvents($fs, 4);
 
         $this->assertSame("hello\n", $fileContents);
     }
 
-    public function handleReadEvents(Filesystem $fs, $count)
+    public function handleReadEvents(LibeioFilesystem $fs, $count)
     {
         foreach (range(1, $count) as $i) {
             usleep(5000);

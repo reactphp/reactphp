@@ -3,8 +3,9 @@
 namespace React\Filesystem;
 
 use React\EventLoop\LoopInterface;
+use React\Promise\Deferred;
 
-class Filesystem
+class LibeioFilesystem implements FilesystemInterface
 {
     private $loop;
     private $fd;
@@ -16,24 +17,25 @@ class Filesystem
         $this->fd = eio_get_event_stream();
     }
 
-    public function mkdir($dirname, $permissions = 0755, $callback = null)
+    public function mkdir($dirname, $permissions = 0755)
     {
         $this->register();
 
-        $callback = $callback ?: function ($err, $result) {};
+        $deferred = new Deferred();
 
-        eio_mkdir($dirname, $permissions, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($callback) {
+        eio_mkdir($dirname, $permissions, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($deferred) {
             if (0 !== $result) {
-                $err = eio_get_last_error($req);
-                call_user_func($callback, $err, $result);
+                $deferred->reject(eio_get_last_error($req));
                 return;
             }
 
-            call_user_func($callback, null, $result);
+            $deferred->resolve($result);
         });
+
+        return $deferred->promise();
     }
 
-    public function open($path, $flags, $mode = 0644, $callback)
+    public function open($path, $flags, $mode = 0644)
     {
         $this->register();
 
@@ -49,67 +51,92 @@ class Filesystem
             $flags |= EIO_O_RDONLY;
         }
 
-        eio_open($path, $flags, $mode, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($callback) {
+        $deferred = new Deferred();
+
+        eio_open($path, $flags, $mode, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($deferred) {
             if (0 === $result) {
-                $err = eio_get_last_error($req);
-                call_user_func($callback, $err, $result);
+                $deferred->reject(eio_get_last_error($req));
                 return;
             }
 
-            call_user_func($callback, null, $result);
+            $deferred->resolve($result);
         });
+
+        return $deferred->promise();
     }
 
-    public function read($fd, $length, $offset, $callback)
+    public function read($fd, $length, $offset)
     {
         $this->register();
 
-        eio_read($fd, $length, $offset, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($callback) {
-            $callback(null, $result);
+        $deferred = new Deferred();
+
+        eio_read($fd, $length, $offset, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($deferred) {
+            $deferred->resolve($result);
         });
+
+        return $deferred->promise();
     }
 
-    public function close($fd, $callback = null)
+    public function close($fd)
     {
         $this->register();
 
-        $callback = $callback ?: function ($err, $result) {};
+        $deferred = new Deferred();
 
-        eio_close($fd, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($callback) {
+        eio_close($fd, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($deferred) {
             if (0 !== $result) {
-                $err = eio_get_last_error($req);
-                call_user_func($callback, $err, $result);
+                $deferred->reject(eio_get_last_error($req));
                 return;
             }
 
-            call_user_func($callback, null, $result);
+            $deferred->resolve($result);
         });
     }
 
-    public function stat($filename, $callback)
+    public function stat($filename)
     {
         $this->register();
 
-        eio_stat($filename, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($callback) {
-            call_user_func($callback, null, $result);
+        $deferred = new Deferred();
+
+        eio_stat($filename, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($deferred) {
+            if (-1 === $result) {
+                $deferred->reject(eio_get_last_error($req));
+                return;
+            }
+
+            $deferred->resolve($result);
         });
+
+        return $deferred->promise();
     }
 
-    public function readFile($filename, $callback)
+    public function readFile($filename)
     {
         $fs = $this;
 
-        $fs->stat($filename, function ($err, $stat) use ($fs, $filename, $callback) {
-            $size = $stat['size'];
+        $deferred = new Deferred();
 
-            $fs->open($filename, 'w+', 0644, function ($err, $fd) use ($fs, $size, $callback) {
-                $fs->read($fd, $size, 0, function ($err, $data) use ($fs, $fd, $callback) {
-                    call_user_func($callback, null, $data);
+        $errorHandler = function ($error) use ($deferred) {
+            $deferred->reject($error);
+        };
 
-                    $fs->close($fd);
-                });
-            });
-        });
+        $fs->stat($filename)
+            ->then(function($stat) use ($fs, $filename, $deferred, $errorHandler) {
+                $size = $stat['size'];
+
+                $fs->open($filename, 'w+', 0644)
+                    ->then(function ($fd) use ($fs, $size, $deferred, $errorHandler) {
+                        $fs->read($fd, $size, 0)
+                            ->then(function($data) use ($fs, $fd, $deferred) {
+                                $deferred->resolve($data);
+                                $fs->close($fd);
+                            }, $errorHandler);
+                    }, $errorHandler);
+            }, $errorHandler);
+
+        return $deferred->promise();
     }
 
     public function register()
