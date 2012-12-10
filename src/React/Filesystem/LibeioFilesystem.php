@@ -25,7 +25,7 @@ class LibeioFilesystem implements FilesystemInterface
 
         eio_mkdir($dirname, $permissions, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($deferred) {
             if (0 !== $result) {
-                $deferred->reject(eio_get_last_error($req));
+                $deferred->reject(new IoException(eio_get_last_error($req)));
                 return;
             }
 
@@ -55,7 +55,7 @@ class LibeioFilesystem implements FilesystemInterface
 
         eio_open($path, $flags, $mode, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($deferred) {
             if (0 === $result) {
-                $deferred->reject(eio_get_last_error($req));
+                $deferred->reject(new IoException(eio_get_last_error($req)));
                 return;
             }
 
@@ -86,7 +86,7 @@ class LibeioFilesystem implements FilesystemInterface
 
         eio_close($fd, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($deferred) {
             if (0 !== $result) {
-                $deferred->reject(eio_get_last_error($req));
+                $deferred->reject(new IoException(eio_get_last_error($req)));
                 return;
             }
 
@@ -102,7 +102,7 @@ class LibeioFilesystem implements FilesystemInterface
 
         eio_stat($filename, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($deferred) {
             if (-1 === $result) {
-                $deferred->reject(eio_get_last_error($req));
+                $deferred->reject(new IoException(eio_get_last_error($req)));
                 return;
             }
 
