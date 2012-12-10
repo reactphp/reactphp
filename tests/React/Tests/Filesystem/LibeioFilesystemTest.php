@@ -117,7 +117,7 @@ class LibeioFilesystemTest extends TestCase
         $fs->readFile($filename)
             ->then(function($data) use (&$fileContents) {
                 $fileContents = $data;
-            }, function($error){exit($error);});
+            });
 
         $this->handleReadEvents($fs, 4);
 
