@@ -38,7 +38,7 @@ class LibeioFilesystemTest extends TestCase
 
         $fs = new LibeioFilesystem($loop);
         $fs->mkdir($dirname, 0755)
-            ->then($callback);
+            ->then($callback, $this->getNoErrorCallbackTester());
 
         $this->handleReadEvents($fs, 1);
 
@@ -70,7 +70,7 @@ class LibeioFilesystemTest extends TestCase
 
         $this->assertFalse(is_dir($dirname));
     }
-
+    
     /** @test */
     public function openReadAndCloseShouldGetFileContents()
     {
@@ -86,12 +86,13 @@ class LibeioFilesystemTest extends TestCase
         $fs = new LibeioFilesystem($loop);
         $fs->open($filename, 'w+', 0644)
             ->then(function ($fd) use ($fs, &$fileContents, &$thatFd) {
+                $thatFd = $fd;
                 return $fs->read($fd, 6, 0);
-            })
+            }, $this->getNoErrorCallbackTester())
             ->then(function($data) use ($fs, &$thatFd, &$fileContents) {
                 $fileContents = $data;
                 $fs->close($thatFd);
-            });
+            }, $this->getNoErrorCallbackTester());
 
         $this->handleReadEvents($fs, 3);
 
@@ -114,7 +115,7 @@ class LibeioFilesystemTest extends TestCase
         $fs->stat($filename)
             ->then(function ($stat) use (&$capturedStatData) {
                 $capturedStatData = $stat;
-            });
+            }, $this->getNoErrorCallbackTester());
 
         $this->handleReadEvents($fs, 1);
 
@@ -164,7 +165,7 @@ class LibeioFilesystemTest extends TestCase
         $fs->readFile($filename)
             ->then(function($data) use (&$fileContents) {
                 $fileContents = $data;
-            });
+            }, $this->getNoErrorCallbackTester());
 
         $this->handleReadEvents($fs, 4);
 
@@ -175,8 +176,6 @@ class LibeioFilesystemTest extends TestCase
     public function readFileOnNonExistentShouldFail()
     {
         $filename = __DIR__.'/Fixtures/nobody.here';
-
-        $fileContents = null;
 
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $loop
@@ -210,6 +209,16 @@ class LibeioFilesystemTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('React\\Filesystem\\IoException'));
+
+        return $errorCallback;
+    }
+
+    private function getNoErrorCallbackTester()
+    {
+        $errorCallback = $this->createCallableMock();
+        $errorCallback
+            ->expects($this->never())
+            ->method('__invoke');
 
         return $errorCallback;
     }
