@@ -122,7 +122,7 @@ abstract class AbstractLoopTest extends TestCase
     /** @test */
     public function emptyRunShouldSimplyReturn()
     {
-        $this->assertRunFasterThan(0.001);
+        $this->assertRunFasterThan(0.005);
     }
 
     /** @test */
@@ -138,7 +138,7 @@ abstract class AbstractLoopTest extends TestCase
         fwrite($input, "foo\n");
         rewind($input);
 
-        $this->assertRunFasterThan(0.001);
+        $this->assertRunFasterThan(0.005);
     }
 
     /** @test */
@@ -158,7 +158,7 @@ abstract class AbstractLoopTest extends TestCase
         fwrite($input, "foo\n");
         rewind($input);
 
-        $this->assertRunFasterThan(0.001);
+        $this->assertRunFasterThan(0.005);
     }
 
     private function assertRunFasterThan($maxInterval)
