@@ -138,21 +138,17 @@ class LibEvLoop implements LoopInterface
 
     public function run()
     {
-        // @codeCoverageIgnoreStart
         if ($this->suspended) {
             $this->suspended = false;
             $this->loop->resume();
         } else {
             $this->loop->run();
         }
-        // @codeCoverageIgnoreEnd
     }
 
     public function stop()
     {
-        // @codeCoverageIgnoreStart
         $this->loop->suspend();
         $this->suspended = true;
-        // @codeCoverageIgnoreEnd
     }
 }

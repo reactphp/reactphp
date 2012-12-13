@@ -118,4 +118,58 @@ abstract class AbstractLoopTest extends TestCase
         rewind($input);
         $this->loop->tick();
     }
+
+    /** @test */
+    public function emptyRunShouldSimplyReturn()
+    {
+        $this->assertRunFasterThan(0.001);
+    }
+
+    /** @test */
+    public function runShouldReturnWhenNoMoreFds()
+    {
+        $input = fopen('php://temp', 'r+');
+
+        $loop = $this->loop;
+        $this->loop->addReadStream($input, function ($stream) use ($loop) {
+            $loop->removeStream($stream);
+        });
+
+        fwrite($input, "foo\n");
+        rewind($input);
+
+        $this->assertRunFasterThan(0.001);
+    }
+
+    /** @test */
+    public function stopShouldStopRunningLoop()
+    {
+        if ($this instanceof LibEvLoopTest) {
+            $this->markTestSkipped('libev loop->stop() is broken.');
+        }
+
+        $input = fopen('php://temp', 'r+');
+
+        $loop = $this->loop;
+        $this->loop->addReadStream($input, function ($stream) use ($loop) {
+            $loop->stop();
+        });
+
+        fwrite($input, "foo\n");
+        rewind($input);
+
+        $this->assertRunFasterThan(0.001);
+    }
+
+    private function assertRunFasterThan($maxInterval)
+    {
+        $start = microtime(true);
+
+        $this->loop->run();
+
+        $end = microtime(true);
+        $interval = $end - $start;
+
+        $this->assertLessThan($maxInterval, $interval);
+    }
 }
