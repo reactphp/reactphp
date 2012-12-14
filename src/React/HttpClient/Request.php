@@ -13,7 +13,10 @@ use React\HttpClient\ResponseHeaderParser;
 use React\Stream\Stream;
 use React\Stream\WritableStreamInterface;
 
-// Events: headers-written, response
+/**
+ * @event headers-written
+ * @event response
+ */
 class Request extends EventEmitter implements WritableStreamInterface
 {
     const STATE_INIT = 0;

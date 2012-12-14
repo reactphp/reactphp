@@ -6,7 +6,7 @@ use Evenement\EventEmitter;
 use React\Socket\ServerInterface as SocketServerInterface;
 use React\Socket\ConnectionInterface;
 
-// Events: request
+/** @event request */
 class Server extends EventEmitter implements ServerInterface
 {
     private $io;
