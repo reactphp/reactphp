@@ -156,19 +156,15 @@ class StreamSelectLoop implements LoopInterface
 
     public function run()
     {
-        // @codeCoverageIgnoreStart
         $this->running = true;
 
         while ($this->tick()) {
             // NOOP
         }
-        // @codeCoverageIgnoreEnd
     }
 
     public function stop()
     {
-        // @codeCoverageIgnoreStart
         $this->running = false;
-        // @codeCoverageIgnoreEnd
     }
 }
