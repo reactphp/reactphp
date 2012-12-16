@@ -12,7 +12,6 @@ class LibEvLoop implements LoopInterface
     private $readEvents = array();
     private $writeEvents = array();
     private $timers = array();
-    private $suspended = false;
 
     public function __construct()
     {
@@ -138,17 +137,11 @@ class LibEvLoop implements LoopInterface
 
     public function run()
     {
-        if ($this->suspended) {
-            $this->suspended = false;
-            $this->loop->resume();
-        } else {
-            $this->loop->run();
-        }
+        $this->loop->run();
     }
 
     public function stop()
     {
-        $this->loop->suspend();
-        $this->suspended = true;
+        $this->loop->breakLoop();
     }
 }

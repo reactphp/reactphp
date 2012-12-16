@@ -144,10 +144,6 @@ abstract class AbstractLoopTest extends TestCase
     /** @test */
     public function stopShouldStopRunningLoop()
     {
-        if ($this instanceof LibEvLoopTest) {
-            $this->markTestSkipped('libev loop->stop() is broken.');
-        }
-
         $input = fopen('php://temp', 'r+');
 
         $loop = $this->loop;
