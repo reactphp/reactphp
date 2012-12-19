@@ -71,6 +71,19 @@ class ResponseTest extends TestCase
         $response->write("World\n");
         $response->end();
     }
+    
+    public function testResponseShouldEmitEndOnStreamEnd(){
+      $conn = $this->getMock('React\Socket\ConnectionInterface');
+      $response = new Response( $conn );
+      $ended = false;
+      $response->on( 'end', function() use (&$ended){
+        $ended = true;
+      });
+      $response->end();
+      
+      $this->assertTrue( $ended, "Response did not emit 'end'" );
+      
+    }
 
     /** @test */
     public function writeContinueShouldSendContinueLineBeforeRealHeaders()
