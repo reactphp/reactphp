@@ -64,7 +64,7 @@ $app = function ($request, $response) use (&$i) {
 
 $loop = React\EventLoop\Factory::create();
 $socket = new React\Socket\Server($loop);
-$http = new React\Http\Server($socket, $loop);
+$http = new React\Http\Server($socket);
 
 $http->on('request', $app);
 
