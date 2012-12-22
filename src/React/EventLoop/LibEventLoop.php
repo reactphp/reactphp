@@ -161,10 +161,6 @@ class LibEventLoop implements LoopInterface
             throw new \InvalidArgumentException('The callback must be a callable object.');
         }
 
-        foreach ($this->timersGc as $resource) {
-            event_free($resource);
-        }
-
         $timer = (object) array(
             'loop' => $this,
             'resource' => $resource = event_new(),
@@ -177,6 +173,9 @@ class LibEventLoop implements LoopInterface
         $timer->signature = spl_object_hash($timer);
 
         $callback = function () use ($timer) {
+            foreach ($this->timersGc as $resource) {
+                event_free($resource);
+            }
             if ($timer->cancelled === false) {
                 call_user_func($timer->callback, $timer->signature, $timer->loop);
 
