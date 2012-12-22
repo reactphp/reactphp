@@ -23,6 +23,15 @@ class LibEventLoop implements LoopInterface
         $this->callback = $this->createLibeventCallback();
     }
 
+    public function gc(){
+        if($this->timersGc){
+            foreach($this->timersGc as $signature=>$resource){
+                event_free($resource);
+                unset($this->timersGc[$signature]);
+            }
+        }
+    }
+
     protected function createLibeventCallback()
     {
         $timersGc = &$this->timersGc;
@@ -184,6 +193,9 @@ class LibEventLoop implements LoopInterface
 
                 if ($timer->periodic === true) {
                     event_add($timer->resource, $timer->interval);
+                }
+                else {
+                    $this->cancelTimer($timer->signature);
                 }
             }
         };
