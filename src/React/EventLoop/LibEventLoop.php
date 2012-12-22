@@ -161,7 +161,7 @@ class LibEventLoop implements LoopInterface
             throw new \InvalidArgumentException('The callback must be a callable object.');
         }
 
-        while($resource = $this->timersGc->dequeue()){
+        foreach ($this->timersGc as $resource) {
             event_free($resource);
         }
 
@@ -182,8 +182,7 @@ class LibEventLoop implements LoopInterface
 
                 if ($timer->periodic === true) {
                     event_add($timer->resource, $timer->interval);
-                }
-                else {
+                } else {
                     $this->cancelTimer($timer->signature);
                 }
             }
