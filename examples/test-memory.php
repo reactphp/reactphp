@@ -5,7 +5,7 @@ require __DIR__.'/../vendor/autoload.php';
 $loop = new React\EventLoop\StreamSelectLoop();
 
 $i = 0;
-    
+
 $loop->addPeriodicTimer(0.001, function () use (&$i, $loop) {
     $i++;
 

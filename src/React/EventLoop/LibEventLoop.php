@@ -176,6 +176,7 @@ class LibEventLoop implements LoopInterface
             foreach ($timersGc as $resource) {
                 event_free($resource);
             }
+
             if ($timer->cancelled === false) {
                 call_user_func($timer->callback, $timer->signature, $timer->loop);
 
