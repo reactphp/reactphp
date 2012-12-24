@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+* 0.2.6 (2012-12-xx)
+
+  * Bug fix: [Http] Emit end event when Response closes (@beaucollins)
+  * Bug fix: [EventLoop] Plug memory issue in libevent timers (@cameronjacobson)
+
 * 0.2.5 (2012-11-26)
 
   * Feature: [Stream] Make BufferedSink trigger progress events on the promise (@jsor)

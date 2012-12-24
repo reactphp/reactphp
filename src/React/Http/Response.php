@@ -98,7 +98,7 @@ class Response extends EventEmitter implements WritableStreamInterface
             $this->conn->write("0\r\n\r\n");
         }
 
-        $this->emit('close');
+        $this->emit('end');
         $this->removeAllListeners();
         $this->conn->end();
     }
