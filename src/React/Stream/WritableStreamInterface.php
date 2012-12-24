@@ -4,7 +4,12 @@ namespace React\Stream;
 
 use Evenement\EventEmitterInterface;
 
-// Events: drain, error, close, pipe
+/**
+ * @event drain
+ * @event error
+ * @event close
+ * @event pipe
+ */
 interface WritableStreamInterface extends StreamInterface
 {
     public function isWritable();
