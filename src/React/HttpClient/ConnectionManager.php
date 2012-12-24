@@ -39,7 +39,7 @@ class ConnectionManager implements ConnectionManagerInterface
 
         if (!$socket) {
             return new RejectedPromise(new \RuntimeException(
-                sprintf("connection to %s:%d failed: %s", $addresss, $port, $errstr),
+                sprintf("connection to %s:%d failed: %s", $address, $port, $errstr),
                 $errno
             ));
         }
