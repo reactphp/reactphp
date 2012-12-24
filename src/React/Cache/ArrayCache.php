@@ -24,6 +24,6 @@ class ArrayCache implements CacheInterface
 
     public function remove($key)
     {
-        unset($this->$data[$key]);
+        unset($this->data[$key]);
     }
 }
