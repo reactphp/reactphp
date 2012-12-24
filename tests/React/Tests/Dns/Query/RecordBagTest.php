@@ -60,38 +60,4 @@ class RecordBagTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(Message::CLASS_IN, $records[1]->class);
         $this->assertSame('178.79.169.132', $records[1]->data);
     }
-
-    /**
-    * @covers React\Dns\Query\RecordBag
-    * @test
-    */
-    public function expireShouldNotExpireEarly()
-    {
-        $currentTime = 1345656451;
-
-        $recordBag = new RecordBag();
-        $recordBag->set($currentTime, new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 3600, '178.79.169.131'));
-
-        $recordBag->expire($currentTime + 60);
-
-        $records = $recordBag->all();
-        $this->assertCount(1, $records);
-    }
-
-    /**
-    * @covers React\Dns\Query\RecordBag
-    * @test
-    */
-    public function expireShouldExpireWhenTheTimeIsRight()
-    {
-        $currentTime = 1345656451;
-
-        $recordBag = new RecordBag();
-        $recordBag->set($currentTime, new Record('igor.io', Message::TYPE_A, Message::CLASS_IN, 3600, '178.79.169.131'));
-
-        $recordBag->expire($currentTime + 3605);
-
-        $records = $recordBag->all();
-        $this->assertCount(0, $records);
-    }
 }
