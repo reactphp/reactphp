@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-* 0.2.6 (2012-12-xx)
+* 0.2.6 (2012-12-26)
 
   * Feature: [Cache] New cache component, used by DNS
   * Bug fix: [Http] Emit end event when Response closes (@beaucollins)
