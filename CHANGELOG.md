@@ -6,6 +6,7 @@ CHANGELOG
   * Feature: [Cache] New cache component, used by DNS
   * Bug fix: [Http] Emit end event when Response closes (@beaucollins)
   * Bug fix: [EventLoop] Plug memory issue in libevent timers (@cameronjacobson)
+  * Bug fix: [EventLoop] Correctly pause LibEvLoop on stop()
 
 * 0.2.5 (2012-11-26)
 

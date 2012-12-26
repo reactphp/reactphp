@@ -226,15 +226,11 @@ class LibEventLoop implements LoopInterface
 
     public function run()
     {
-        // @codeCoverageIgnoreStart
         event_base_loop($this->base);
-        // @codeCoverageIgnoreEnd
     }
 
     public function stop()
     {
-        // @codeCoverageIgnoreStart
         event_base_loopexit($this->base);
-        // @codeCoverageIgnoreEnd
     }
 }
