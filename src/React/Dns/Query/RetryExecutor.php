@@ -7,7 +7,6 @@ use React\Promise\Deferred;
 class RetryExecutor implements ExecutorInterface
 {
     private $executor;
-    private $cache;
     private $retries;
 
     public function __construct(ExecutorInterface $executor, $retries = 2)
