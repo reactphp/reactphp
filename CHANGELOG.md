@@ -3,8 +3,7 @@ CHANGELOG
 
 * 0.2.6 (2012-12-26)
 
-[Release notes](https://gist.github.com/4382382)
-
+  * [Release notes](https://gist.github.com/4382382)
   * Feature: [Cache] New cache component, used by DNS
   * Bug fix: [Http] Emit end event when Response closes (@beaucollins)
   * Bug fix: [EventLoop] Plug memory issue in libevent timers (@cameronjacobson)
@@ -18,8 +17,7 @@ CHANGELOG
 
 * 0.2.4 (2012-11-18)
 
-[Release notes](https://gist.github.com/4108347)
-
+  * [Release notes](https://gist.github.com/4108347)
   * Feature: [Stream] Added ThroughStream, CompositeStream, ReadableStream and WritableStream
   * Feature: [Stream] Added BufferedSink
   * Feature: [Dns] Change to promise-based API (@jsor)
