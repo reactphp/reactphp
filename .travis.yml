@@ -11,6 +11,8 @@ before_script:
   - echo "extension=libevent.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - (git clone --recursive https://github.com/m4rw3r/php-libev && cd php-libev && phpize && ./configure && make && make install)
   - echo "extension=libev.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  - yes "" | pecl install eio
+  - echo "extension=eio.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - composer self-update
   - composer install --dev
 
