@@ -18,6 +18,7 @@ $socket->on('connection', function ($conn) use ($conns) {
                 continue;
             }
 
+            $current->write($conn->getRemoteAddress().': ');
             $current->write($data);
         }
     });
