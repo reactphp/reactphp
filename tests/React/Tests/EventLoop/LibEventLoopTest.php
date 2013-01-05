@@ -2,7 +2,6 @@
 
 namespace React\Tests\EventLoop;
 
-use React\EventLoop\LoopInterface;
 use React\EventLoop\LibEventLoop;
 
 class LibEventLoopTest extends AbstractLoopTest
