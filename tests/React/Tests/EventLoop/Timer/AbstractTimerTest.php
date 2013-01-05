@@ -1,17 +1,13 @@
 <?php
 
-namespace React\Tests\EventLoop;
+namespace React\Tests\EventLoop\Timer;
 
 use React\Tests\Socket\TestCase;
-use React\EventLoop\StreamSelectLoop;
 use React\EventLoop\Timer\Timers;
 
-class TimerTest extends TestCase
+abstract class AbstractTimerTest extends TestCase
 {
-    private function createLoop()
-    {
-        return new StreamSelectLoop();
-    }
+    abstract public function createLoop();
 
     /**
      * @covers React\EventLoop\StreamSelectLoop::tick
