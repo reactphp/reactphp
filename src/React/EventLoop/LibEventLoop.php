@@ -10,7 +10,6 @@ class LibEventLoop implements LoopInterface
     private $callback;
 
     private $timers = array();
-    private $timersGc;
 
     private $events = array();
     private $flags = array();
@@ -21,8 +20,6 @@ class LibEventLoop implements LoopInterface
     {
         $this->base = event_base_new();
         $this->callback = $this->createLibeventCallback();
-        $this->timersGc = new \SplQueue();
-        $this->timersGc->setIteratorMode(\SplQueue::IT_MODE_DELETE);
     }
 
     protected function createLibeventCallback()
@@ -171,18 +168,13 @@ class LibEventLoop implements LoopInterface
         );
 
         $timer->signature = spl_object_hash($timer);
-        $timersGc = $this->timersGc;
-
         $that = $this;
-        $callback = function () use ($timer, $timersGc, $that) {
-            foreach ($timersGc as $resource) {
-                event_free($resource);
-            }
 
+        $callback = function () use ($timer, $that, &$callback) {
             if ($timer->cancelled === false) {
                 call_user_func($timer->callback, $timer->signature, $timer->loop);
 
-                if ($timer->periodic === true) {
+                if ($timer->periodic === true && $timer->cancelled === false) {
                     event_add($timer->resource, $timer->interval);
                 } else {
                     $that->cancelTimer($timer->signature);
@@ -216,7 +208,7 @@ class LibEventLoop implements LoopInterface
 
             $timer->cancelled = true;
             event_del($timer->resource);
-            $this->timersGc->enqueue($timer->resource);
+            event_free($timer->resource);
             unset($this->timers[$signature]);
         }
     }
