@@ -14,9 +14,4 @@ class LibEventTimerTest extends AbstractTimerTest
 
         return new LibEventLoop();
     }
-
-    public function testAddPeriodicTimerCancelsItself()
-    {
-        $this->markTestSkipped('libevent timers are currently broken.');
-    }
 }
