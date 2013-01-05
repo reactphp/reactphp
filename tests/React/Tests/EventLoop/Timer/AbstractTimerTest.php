@@ -9,11 +9,6 @@ abstract class AbstractTimerTest extends TestCase
 {
     abstract public function createLoop();
 
-    /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\EventLoop\StreamSelectLoop::addTimer
-     * @covers React\EventLoop\Timer\Timers
-     */
     public function testAddTimer()
     {
         // usleep is intentionally high
@@ -25,11 +20,6 @@ abstract class AbstractTimerTest extends TestCase
         $loop->tick();
     }
 
-    /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\EventLoop\StreamSelectLoop::addTimer
-     * @covers React\EventLoop\Timer\Timers
-     */
     public function testAddPeriodicTimer()
     {
         $loop = $this->createLoop();
@@ -43,11 +33,6 @@ abstract class AbstractTimerTest extends TestCase
         $loop->tick();
     }
 
-    /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\EventLoop\StreamSelectLoop::addTimer
-     * @covers React\EventLoop\Timer\Timers
-     */
     public function testAddPeriodicTimerWithCancel()
     {
         $loop = $this->createLoop();
@@ -65,11 +50,6 @@ abstract class AbstractTimerTest extends TestCase
         $loop->tick();
     }
 
-    /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\EventLoop\StreamSelectLoop::addTimer
-     * @covers React\EventLoop\Timer\Timers
-     */
     public function testAddPeriodicTimerCancelsItself()
     {
         $i = 0;
