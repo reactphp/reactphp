@@ -172,7 +172,9 @@ class LibEventLoop implements LoopInterface
 
         $timer->signature = spl_object_hash($timer);
         $timersGc = $this->timersGc;
-        $callback = function () use ($timer, $timersGc) {
+
+        $that = $this;
+        $callback = function () use ($timer, $timersGc, $that) {
             foreach ($timersGc as $resource) {
                 event_free($resource);
             }
@@ -183,7 +185,7 @@ class LibEventLoop implements LoopInterface
                 if ($timer->periodic === true) {
                     event_add($timer->resource, $timer->interval);
                 } else {
-                    $this->cancelTimer($timer->signature);
+                    $that->cancelTimer($timer->signature);
                 }
             }
         };
