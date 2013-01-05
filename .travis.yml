@@ -12,6 +12,6 @@ before_script:
   - (git clone --recursive https://github.com/m4rw3r/php-libev && cd php-libev && phpize && ./configure && make && make install)
   - echo "extension=libev.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - composer self-update
-  - composer install --dev
+  - composer install --dev --prefer-source
 
 script: phpunit --coverage-text
