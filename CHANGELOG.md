@@ -4,6 +4,7 @@ CHANGELOG
 * 0.2.7 (2013-01-xx)
 
   * Bug fix: [EventLoop] Fix libevent timers with PHP 5.3
+  * Bug fix: [EventLoop] Fix libevent timer cancellation (@nrk)
 
 * 0.2.6 (2012-12-26)
 
