@@ -1,10 +1,10 @@
 <?php
 
-namespace React\Tests\EventLoop;
+namespace React\Tests\EventLoop\Timer;
 
 use React\EventLoop\LibEvLoop;
 
-class LibEvLoopTest extends AbstractLoopTest
+class LibEvTimerTest extends AbstractTimerTest
 {
     public function createLoop()
     {
@@ -13,10 +13,5 @@ class LibEvLoopTest extends AbstractLoopTest
         }
 
         return new LibEvLoop();
-    }
-
-    public function testLibEvConstructor()
-    {
-        $loop = new LibEvLoop();
     }
 }
