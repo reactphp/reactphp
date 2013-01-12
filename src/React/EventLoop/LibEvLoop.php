@@ -105,7 +105,7 @@ class LibEvLoop implements LoopInterface
         return $timer;
     }
 
-    public function cancelTimer($timer)
+    public function cancelTimer(TimerInterface $timer)
     {
         if (isset($this->timers[$timer])) {
             $this->loop->remove($this->timers[$timer]);

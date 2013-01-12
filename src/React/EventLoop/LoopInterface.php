@@ -2,6 +2,8 @@
 
 namespace React\EventLoop;
 
+use React\EventLoop\Timer\TimerInterface;
+
 interface LoopInterface
 {
     public function addReadStream($stream, $listener);
@@ -13,7 +15,7 @@ interface LoopInterface
 
     public function addTimer($interval, $callback);
     public function addPeriodicTimer($interval, $callback);
-    public function cancelTimer($timer);
+    public function cancelTimer(TimerInterface $timer);
 
     public function tick();
     public function run();

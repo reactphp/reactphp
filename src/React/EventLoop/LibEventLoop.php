@@ -192,7 +192,7 @@ class LibEventLoop implements LoopInterface
         return $this->addTimerInternal($interval, $callback, true);
     }
 
-    public function cancelTimer($timer)
+    public function cancelTimer(TimerInterface $timer)
     {
         if (isset($this->timers[$timer])) {
             $resource = $this->timers[$timer];

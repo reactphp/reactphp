@@ -84,7 +84,7 @@ class StreamSelectLoop implements LoopInterface
         return $timer;
     }
 
-    public function cancelTimer($timer)
+    public function cancelTimer(TimerInterface $timer)
     {
         $this->timers->cancel($timer);
     }
