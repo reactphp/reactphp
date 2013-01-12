@@ -2,14 +2,17 @@
 
 namespace React\EventLoop;
 
+use SplObjectStorage;
+use React\EventLoop\Timer\Timer;
+use React\EventLoop\Timer\TimerInterface;
+
 class LibEventLoop implements LoopInterface
 {
     const MIN_TIMER_RESOLUTION = 0.001;
 
     private $base;
     private $callback;
-
-    private $timers = array();
+    private $timers;
 
     private $events = array();
     private $flags = array();
@@ -20,6 +23,7 @@ class LibEventLoop implements LoopInterface
     {
         $this->base = event_base_new();
         $this->callback = $this->createLibeventCallback();
+        $this->timers = new SplObjectStorage();
     }
 
     protected function createLibeventCallback()
@@ -154,30 +158,19 @@ class LibEventLoop implements LoopInterface
             throw new \InvalidArgumentException('Timer events do not support sub-millisecond timeouts.');
         }
 
-        if (!is_callable($callback)) {
-            throw new \InvalidArgumentException('The callback must be a callable object.');
-        }
+        $timer = new Timer($this, $interval, $callback, $periodic);
 
-        $timer = (object) array(
-            'loop' => $this,
-            'resource' => $resource = event_new(),
-            'callback' => $callback,
-            'interval' => $interval * 1000000,
-            'periodic' => $periodic,
-            'cancelled' => false,
-        );
+        $timers = $this->timers;
+        $timers->attach($timer, $resource = event_new());
 
-        $timer->signature = spl_object_hash($timer);
-        $that = $this;
+        $callback = function () use ($timers, $timer, &$callback) {
+            if (isset($timers[$timer]) === true) {
+                call_user_func($timer->getCallback(), $timer);
 
-        $callback = function () use ($timer, $that, &$callback) {
-            if ($timer->cancelled === false) {
-                call_user_func($timer->callback, $timer->signature, $timer->loop);
-
-                if ($timer->periodic === true && $timer->cancelled === false) {
-                    event_add($timer->resource, $timer->interval);
+                if ($timer->isPeriodic() === true && isset($timers[$timer]) === true) {
+                    event_add($timers[$timer], $timer->getInterval() * 1000000);
                 } else {
-                    $that->cancelTimer($timer->signature);
+                    $timer->cancel();
                 }
             }
         };
@@ -186,9 +179,7 @@ class LibEventLoop implements LoopInterface
         event_base_set($resource, $this->base);
         event_add($resource, $interval * 1000000);
 
-        $this->timers[$timer->signature] = $timer;
-
-        return $timer->signature;
+        return $timer;
     }
 
     public function addTimer($interval, $callback)
@@ -201,15 +192,14 @@ class LibEventLoop implements LoopInterface
         return $this->addTimerInternal($interval, $callback, true);
     }
 
-    public function cancelTimer($signature)
+    public function cancelTimer($timer)
     {
-        if (isset($this->timers[$signature])) {
-            $timer = $this->timers[$signature];
+        if (isset($this->timers[$timer])) {
+            $resource = $this->timers[$timer];
+            event_del($resource);
+            event_free($resource);
 
-            $timer->cancelled = true;
-            event_del($timer->resource);
-            event_free($timer->resource);
-            unset($this->timers[$signature]);
+            $this->timers->detach($timer);
         }
     }
 
