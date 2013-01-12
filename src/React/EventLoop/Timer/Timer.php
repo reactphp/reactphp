@@ -56,6 +56,11 @@ class Timer implements TimerInterface
         return $this->periodic;
     }
 
+    public function isActive()
+    {
+        return $this->loop->isTimerActive($this);
+    }
+
     public function cancel()
     {
         $this->loop->cancelTimer($this);

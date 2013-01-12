@@ -16,6 +16,7 @@ interface LoopInterface
     public function addTimer($interval, $callback);
     public function addPeriodicTimer($interval, $callback);
     public function cancelTimer(TimerInterface $timer);
+    public function isTimerActive(TimerInterface $timer);
 
     public function tick();
     public function run();

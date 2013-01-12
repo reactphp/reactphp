@@ -45,6 +45,11 @@ class Timers
         $this->scheduler->insert($timer, -$scheduledAt);
     }
 
+    public function contains(TimerInterface $timer)
+    {
+        return $this->timers->contains($timer);
+    }
+
     public function cancel(TimerInterface $timer)
     {
         $this->timers->detach($timer);

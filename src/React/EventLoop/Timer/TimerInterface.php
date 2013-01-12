@@ -10,5 +10,6 @@ interface TimerInterface
     public function setData($data);
     public function getData();
     public function isPeriodic();
+    public function isActive();
     public function cancel();
 }

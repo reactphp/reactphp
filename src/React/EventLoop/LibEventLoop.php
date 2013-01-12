@@ -203,6 +203,11 @@ class LibEventLoop implements LoopInterface
         }
     }
 
+    public function isTimerActive(TimerInterface $timer)
+    {
+        return $this->timers->contains($timer);
+    }
+
     public function tick()
     {
         event_base_loop($this->base, EVLOOP_ONCE | EVLOOP_NONBLOCK);

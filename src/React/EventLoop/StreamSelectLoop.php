@@ -89,6 +89,11 @@ class StreamSelectLoop implements LoopInterface
         $this->timers->cancel($timer);
     }
 
+    public function isTimerActive(TimerInterface $timer)
+    {
+        return $this->timers->contains($timer);
+    }
+
     protected function getNextEventTimeInMicroSeconds()
     {
         $nextEvent = $this->timers->getFirst();

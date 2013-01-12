@@ -138,6 +138,11 @@ class LibEvLoop implements LoopInterface
         return $timer;
     }
 
+    public function isTimerActive(TimerInterface $timer)
+    {
+        return $this->timers->contains($timer);
+    }
+
     public function tick()
     {
         $this->loop->run(\libev\EventLoop::RUN_ONCE);
