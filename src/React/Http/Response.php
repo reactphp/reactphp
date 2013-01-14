@@ -59,16 +59,31 @@ class Response extends EventEmitter implements WritableStreamInterface
             $this->chunkedEncoding = false;
         }
 
-        $response = new GuzzleResponse($status);
-        $response->setHeader('X-Powered-By', 'React/alpha');
-        $response->addHeaders($headers);
+        $headers = array_merge(
+            array('X-Powered-By' => 'React/alpha'),
+            $headers
+        );
         if ($this->chunkedEncoding) {
-            $response->setHeader('Transfer-Encoding', 'chunked');
+            $headers['Transfer-Encoding'] = 'chunked';
         }
-        $data = (string) $response;
+
+        $data = $this->formatHead($status, $headers);
         $this->conn->write($data);
 
         $this->headWritten = true;
+    }
+
+    private function formatHead($status, array $headers)
+    {
+        $text = ResponseCodes::$statusTexts[$status];
+        $data = "HTTP/1.1 $status $text\r\n";
+
+        foreach ($headers as $name => $value) {
+            $data .= "$name: $value\r\n";
+        }
+        $data .= "\r\n";
+
+        return $data;
     }
 
     public function write($data)
