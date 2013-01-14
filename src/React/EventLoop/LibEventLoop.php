@@ -32,15 +32,11 @@ class LibEventLoop implements LoopInterface
 
             try {
                 if (($flags & EV_READ) === EV_READ && isset($readCallbacks[$id])) {
-                    if (call_user_func($readCallbacks[$id], $stream, $loop) === false) {
-                        $loop->removeReadStream($stream);
-                    }
+                    call_user_func($readCallbacks[$id], $stream, $loop);
                 }
 
                 if (($flags & EV_WRITE) === EV_WRITE && isset($writeCallbacks[$id])) {
-                    if (call_user_func($writeCallbacks[$id], $stream, $loop) === false) {
-                        $loop->removeWriteStream($stream);
-                    }
+                    call_user_func($writeCallbacks[$id], $stream, $loop);
                 }
             } catch (\Exception $ex) {
                 // If one of the callbacks throws an exception we must stop the loop
