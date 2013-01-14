@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+* 0.3.0 (2013-01-xx)
+
+  * BC break: [EventLoop] Remove check on return value from stream callbacks (@nrk)
+
 * 0.2.7 (2013-01-05)
 
   * Bug fix: [EventLoop] Fix libevent timers with PHP 5.3
