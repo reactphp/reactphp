@@ -31,9 +31,9 @@ foreach ($files as $file => $url) {
     $read->pipe($write);
 }
 
-$loop->addPeriodicTimer(5, function ($timer, $loop) use (&$files) {
+$loop->addPeriodicTimer(5, function ($timer) use (&$files) {
     if (0 === count($files)) {
-        $loop->cancelTimer($timer);
+        $timer->cancel();
     }
 
     foreach ($files as $file => $url) {
