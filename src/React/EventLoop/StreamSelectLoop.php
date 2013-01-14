@@ -2,6 +2,8 @@
 
 namespace React\EventLoop;
 
+use React\EventLoop\Timer\Timer;
+use React\EventLoop\Timer\TimerInterface;
 use React\EventLoop\Timer\Timers;
 
 class StreamSelectLoop implements LoopInterface
@@ -17,7 +19,7 @@ class StreamSelectLoop implements LoopInterface
 
     public function __construct()
     {
-        $this->timers = new Timers($this);
+        $this->timers = new Timers();
     }
 
     public function addReadStream($stream, $listener)
@@ -68,17 +70,28 @@ class StreamSelectLoop implements LoopInterface
 
     public function addTimer($interval, $callback)
     {
-        return $this->timers->add($interval, $callback);
+        $timer = new Timer($this, $interval, $callback, false);
+        $this->timers->add($timer);
+
+        return $timer;
     }
 
     public function addPeriodicTimer($interval, $callback)
     {
-        return $this->timers->add($interval, $callback, true);
+        $timer = new Timer($this, $interval, $callback, true);
+        $this->timers->add($timer);
+
+        return $timer;
     }
 
-    public function cancelTimer($signature)
+    public function cancelTimer(TimerInterface $timer)
     {
-        $this->timers->cancel($signature);
+        $this->timers->cancel($timer);
+    }
+
+    public function isTimerActive(TimerInterface $timer)
+    {
+        return $this->timers->contains($timer);
     }
 
     protected function getNextEventTimeInMicroSeconds()
