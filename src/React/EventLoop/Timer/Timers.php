@@ -5,7 +5,6 @@ namespace React\EventLoop\Timer;
 use SplObjectStorage;
 use SplPriorityQueue;
 use InvalidArgumentException;
-use React\EventLoop\LoopInterface;
 
 class Timers
 {
@@ -77,10 +76,10 @@ class Timers
         $timers = $this->timers;
         $scheduler = $this->scheduler;
 
-        while ($scheduler->isEmpty() === false) {
+        while (!$scheduler->isEmpty()) {
             $timer = $scheduler->top();
 
-            if (isset($timers[$timer]) === false) {
+            if (!isset($timers[$timer])) {
                 $scheduler->extract();
                 $timers->detach($timer);
 

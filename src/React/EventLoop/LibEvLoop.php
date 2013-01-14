@@ -3,7 +3,6 @@
 namespace React\EventLoop;
 
 use SplObjectStorage;
-use libev\TimerEvent as LibEvTimer;
 use React\EventLoop\Timer\Timer;
 use React\EventLoop\Timer\TimerInterface;
 
@@ -127,7 +126,7 @@ class LibEvLoop implements LoopInterface
         $libevTimer->setCallback(function () use ($timer) {
             call_user_func($timer->getCallback(), $timer);
 
-            if ($timer->isPeriodic() === false) {
+            if (!$timer->isPeriodic()) {
                 $timer->cancel();
             }
         });

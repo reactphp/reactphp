@@ -159,15 +159,16 @@ class LibEventLoop implements LoopInterface
         }
 
         $timer = new Timer($this, $interval, $callback, $periodic);
+        $resource = event_new();
 
         $timers = $this->timers;
-        $timers->attach($timer, $resource = event_new());
+        $timers->attach($timer, $resource);
 
         $callback = function () use ($timers, $timer, &$callback) {
-            if (isset($timers[$timer]) === true) {
+            if (isset($timers[$timer])) {
                 call_user_func($timer->getCallback(), $timer);
 
-                if ($timer->isPeriodic() === true && isset($timers[$timer]) === true) {
+                if ($timer->isPeriodic() && isset($timers[$timer])) {
                     event_add($timers[$timer], $timer->getInterval() * 1000000);
                 } else {
                     $timer->cancel();
