@@ -18,6 +18,7 @@ class ConnectionManager implements ConnectionManagerInterface
     {
         $this->loop = $loop;
         $this->resolver = $resolver;
+        /* todo: $this->timeout = ini_get("default_socket_timeout") */
     }
 
     public function getConnection($host, $port)
@@ -35,7 +36,7 @@ class ConnectionManager implements ConnectionManagerInterface
     {
         $url = $this->getSocketUrl($address, $port);
 
-        $socket = stream_socket_client($url, $errno, $errstr, ini_get("default_socket_timeout"), STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
+        $socket = stream_socket_client($url, $errno, $errstr, 0, STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
 
         if (!$socket) {
             return new RejectedPromise(new \RuntimeException(
