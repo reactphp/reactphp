@@ -19,7 +19,7 @@ class RequestData
 
     private function mergeDefaultheaders(array $headers)
     {
-        $port = (80 === $this->getPort()) ? '' : ":{$this->getPort()}";
+        $port = ($this->getDefaultPort() === $this->getPort()) ? '' : ":{$this->getPort()}";
         $connectionHeaders = ('1.1' === $this->protocolVersion) ? array('Connection' => 'close') : array();
 
         return array_merge(
@@ -44,7 +44,12 @@ class RequestData
 
     public function getPort()
     {
-        return (int) parse_url($this->url, PHP_URL_PORT) ?: 80;
+        return (int) parse_url($this->url, PHP_URL_PORT) ?: $this->getDefaultPort();
+    }
+
+    public function getDefaultPort()
+    {
+        return ('https' === $this->getScheme()) ? 443 : 80;
     }
 
     public function getPath()
