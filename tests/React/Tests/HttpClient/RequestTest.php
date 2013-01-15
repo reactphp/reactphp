@@ -23,7 +23,7 @@ class RequestTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->connectionManager = $this->getMock('React\HttpClient\ConnectionManagerInterface');
+        $this->connectionManager = $this->getMock('React\SocketClient\ConnectionManagerInterface');
 
         $this->response = $this->getMockBuilder('React\HttpClient\Response')
             ->disableOriginalConstructor()

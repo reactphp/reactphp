@@ -1,6 +1,6 @@
 <?php
 
-namespace React\HttpClient;
+namespace React\SocketClient;
 
 use React\EventLoop\LoopInterface;
 use React\Dns\Resolver\Resolver;
@@ -86,4 +86,3 @@ class ConnectionManager implements ConnectionManagerInterface
         return $this->resolver->resolve($host);
     }
 }
-
