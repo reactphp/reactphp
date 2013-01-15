@@ -61,7 +61,14 @@ class ConnectionManager implements ConnectionManagerInterface
 
         $this->loop->addWriteStream($stream, function ($stream) use ($loop, $deferred) {
             $loop->removeWriteStream($stream);
-            $deferred->resolve($stream);
+
+            // The following one is a terrible hack but it looks like this is the only way to
+            // detect connection refused errors with PHP's stream sockets. Blame PHP as usual.
+            if (false === stream_socket_get_name($stream, true)) {
+                $deferred->reject(new ConnectionException('Connection refused'));
+            } else {
+                $deferred->resolve($stream);
+            }
         });
 
         return $deferred->promise();
@@ -69,11 +76,6 @@ class ConnectionManager implements ConnectionManagerInterface
 
     public function handleConnectedSocket($socket)
     {
-        if (false === stream_socket_get_name($socket, true)) {
-            $e = new ConnectionException('Connection refused');
-            return new RejectedPromise($e);
-        }
-
         return new Stream($socket, $this->loop);
     }
 
