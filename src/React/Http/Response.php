@@ -3,7 +3,6 @@
 namespace React\Http;
 
 use Evenement\EventEmitter;
-use Guzzle\Http\Message\Response as GuzzleResponse;
 use React\Socket\ConnectionInterface;
 use React\Stream\WritableStreamInterface;
 
