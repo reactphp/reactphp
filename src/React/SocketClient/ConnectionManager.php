@@ -69,6 +69,11 @@ class ConnectionManager implements ConnectionManagerInterface
 
     public function handleConnectedSocket($socket)
     {
+        if (false === stream_socket_get_name($socket, true)) {
+            $e = new ConnectionException('Connection refused');
+            return new RejectedPromise($e);
+        }
+
         return new Stream($socket, $this->loop);
     }
 
