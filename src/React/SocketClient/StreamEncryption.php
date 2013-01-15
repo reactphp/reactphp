@@ -20,14 +20,6 @@ class StreamEncryption
         $this->loop = $loop;
     }
 
-    public function setMethod($method)
-    {
-//         if (!in_array($method, array(), true)) {
-//             throw new InvalidArgumentException('Invalid encryption method given');
-//         }
-        $this->method = $method;
-    }
-
     public function enable(Stream $stream)
     {
         return $this->toggle($stream, true);
