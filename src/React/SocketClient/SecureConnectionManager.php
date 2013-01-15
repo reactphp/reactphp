@@ -2,45 +2,32 @@
 
 namespace React\SocketClient;
 
+use React\EventLoop\LoopInterface;
 use React\Stream\Stream;
-use React\Promise\Deferred;
-use React\Promise\ResolverInterface;
 
-class SecureConnectionManager extends ConnectionManager
+class SecureConnectionManager implements ConnectionManagerInterface
 {
-    public function handleConnectedSocket($socket)
+    protected $connectionManager;
+    protected $loop;
+    protected $streamEncryption;
+
+    public function __construct(ConnectionManagerInterface $connectionManager, LoopInterface $loop)
     {
-        $that = $this;
-
-        $deferred = new Deferred();
-
-        $enableCrypto = function () use ($that, $socket, $deferred) {
-            $that->enableCrypto($socket, $deferred);
-        };
-
-        $this->loop->addWriteStream($socket, $enableCrypto);
-        $this->loop->addReadStream($socket, $enableCrypto);
-        $enableCrypto();
-
-        return $deferred->promise();
+        $this->connectionManager = $connectionManager;
+        $this->loop = $loop;
+        $this->streamEncryption = new StreamEncryption($loop);
     }
 
-    public function enableCrypto($socket, ResolverInterface $resolver)
+    public function getConnection($host, $port)
     {
-        $result = stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
-
-        if (true === $result) {
-            $this->loop->removeWriteStream($socket);
-            $this->loop->removeReadStream($socket);
-
-            $resolver->resolve(new Stream($socket, $this->loop));
-        } else if (false === $result) {
-            $this->loop->removeWriteStream($socket);
-            $this->loop->removeReadStream($socket);
-
-            $resolver->reject();
-        } else {
-            // need more data, will retry
-        }
+        $streamEncryption = $this->streamEncryption;
+        return $this->connectionManager->getConnection($host, $port)->then(function (Stream $stream) use ($streamEncryption) {
+            // (unencrypted) connection succeeded => try to enable encryption
+            return $streamEncryption->enable($stream)->then(null, function ($error) use ($stream) {
+                // establishing encryption failed => close invalid connection and return error
+                $stream->close();
+                throw $error;
+            });
+        });
     }
 }
