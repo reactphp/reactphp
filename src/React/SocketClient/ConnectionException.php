@@ -1,6 +1,6 @@
 <?php
 
-namespace React\HttpClient;
+namespace React\SocketClient;
 
 class ConnectionException extends \RuntimeException
 {
