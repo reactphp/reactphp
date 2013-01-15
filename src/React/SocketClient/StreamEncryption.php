@@ -60,13 +60,11 @@ class StreamEncryption
         });
     }
 
-
-
     public function toggleCrypto($socket, ResolverInterface $resolver, $toggle)
     {
         $error = 'unknown error';
         set_error_handler(function ($errno, $errstr) use (&$error) {
-            $error = str_replace(array("\r","\n"),' ',$errstr);
+            $error = str_replace(array("\r", "\n"), ' ', $errstr);
         });
 
         $result = stream_socket_enable_crypto($socket, $toggle, $this->method);
