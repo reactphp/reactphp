@@ -18,7 +18,6 @@ class ConnectionManager implements ConnectionManagerInterface
     {
         $this->loop = $loop;
         $this->resolver = $resolver;
-        /* todo: $this->timeout = ini_get("default_socket_timeout") */
     }
 
     public function getConnection($host, $port)
