@@ -27,17 +27,13 @@ class Server extends EventEmitter implements ServerInterface
         $this->handleServerConnection($socket);
     }
 
-    public function listenUnix($descriptor, $type = 'unix')
+    public function listenUnix($descriptor)
     {
         if ('WINNT' === PHP_OS) {
             throw new \RuntimeException("Unix sockets are unavailable on Windows");
         }
 
-        if ($type !== 'unix' && $type !== 'udg') {
-            throw new \InvalidArgumentException("{$type} must be 'unix' or udg'");
-        }
-
-        $socket = @stream_socket_server("{$type}://$descriptor", $errno, $errstr);
+        $socket = @stream_socket_server("unix://$descriptor", $errno, $errstr);
         if (false === $socket) {
             throw new ConnectionException("Could not open file descriptor for unix socket {$descriptor}: $errstr", $errno);
         }
