@@ -7,13 +7,15 @@ use React\Promise\Deferred;
 use React\Stream\Stream;
 use React\EventLoop\LoopInterface;
 use \UnexpectedValueException;
-use \InvalidArgumentException;
 
 // this class is considered internal and its API should not be relied upon outside of React\SocketClient
 class StreamEncryption
 {
     protected $loop;
     protected $method = STREAM_CRYPTO_METHOD_TLS_CLIENT;
+
+    protected $errstr;
+    protected $errno;
 
     public function __construct(LoopInterface $loop)
     {
@@ -62,13 +64,8 @@ class StreamEncryption
 
     public function toggleCrypto($socket, ResolverInterface $resolver, $toggle)
     {
-        $error = 'unknown error';
-        set_error_handler(function ($errno, $errstr) use (&$error) {
-            $error = str_replace(array("\r", "\n"), ' ', $errstr);
-        });
-
+        set_error_handler(array($this, 'handleError'));
         $result = stream_socket_enable_crypto($socket, $toggle, $this->method);
-
         restore_error_handler();
 
         if (true === $result) {
@@ -80,9 +77,18 @@ class StreamEncryption
             $this->loop->removeWriteStream($socket);
             $this->loop->removeReadStream($socket);
 
-            $resolver->reject(new UnexpectedValueException('Unable to initiate SSL/TLS handshake: "'.$error.'"'));
+            $resolver->reject(new UnexpectedValueException(
+                sprintf("Unable to complete SSL/TLS handshake: %s", $this->errstr),
+                $this->errno
+            ));
         } else {
             // need more data, will retry
         }
+    }
+
+    public function handleError($errno, $errstr)
+    {
+        $this->errstr = str_replace(array("\r", "\n"), ' ', $errstr);
+        $this->errno  = $errno;
     }
 }
