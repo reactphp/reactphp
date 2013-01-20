@@ -9,11 +9,11 @@ $i = 0;
 $loop->addPeriodicTimer(0.001, function () use (&$i, $loop) {
     $i++;
 
-    // $loop->addTimer(1, function ($signature) {
+    // $loop->addTimer(1, function ($timer) {
     // });
 
-    $loop->addPeriodicTimer(1, function ($signature) use ($loop) {
-        $loop->cancelTimer($signature);
+    $loop->addPeriodicTimer(1, function ($timer) {
+        $timer->cancel();
     });
 });
 

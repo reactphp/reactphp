@@ -2,21 +2,22 @@
 
 namespace React\EventLoop\Timer;
 
-use React\EventLoop\LoopInterface;
+use SplObjectStorage;
+use SplPriorityQueue;
+use InvalidArgumentException;
 
 class Timers
 {
     const MIN_RESOLUTION = 0.001;
 
-    private $loop;
     private $time;
-    private $active = array();
     private $timers;
+    private $scheduler;
 
-    public function __construct(LoopInterface $loop)
+    public function __construct()
     {
-        $this->loop = $loop;
-        $this->timers = new \SplPriorityQueue();
+        $this->timers = new SplObjectStorage();
+        $this->scheduler = new SplPriorityQueue();
     }
 
     public function updateTime()
@@ -29,68 +30,74 @@ class Timers
         return $this->time ?: $this->updateTime();
     }
 
-    public function add($interval, $callback, $periodic = false)
+    public function add(TimerInterface $timer)
     {
+        $interval = $timer->getInterval();
+
         if ($interval < self::MIN_RESOLUTION) {
-            throw new \InvalidArgumentException('Timer events do not support sub-millisecond timeouts.');
+            throw new InvalidArgumentException('Timer events do not support sub-millisecond timeouts.');
         }
 
-        if (!is_callable($callback)) {
-            throw new \InvalidArgumentException('The callback must be a callable object.');
-        }
+        $scheduledAt = $interval + $this->getTime();
 
-        $interval = (float) $interval;
-
-        $timer = (object) array(
-            'interval' => $interval,
-            'callback' => $callback,
-            'periodic' => $periodic,
-            'scheduled' => $interval + $this->getTime(),
-        );
-
-        $timer->signature = spl_object_hash($timer);
-        $this->timers->insert($timer, -$timer->scheduled);
-        $this->active[$timer->signature] = $timer;
-
-        return $timer->signature;
+        $this->timers->attach($timer, $scheduledAt);
+        $this->scheduler->insert($timer, -$scheduledAt);
     }
 
-    public function cancel($signature)
+    public function contains(TimerInterface $timer)
     {
-        unset($this->active[$signature]);
+        return $this->timers->contains($timer);
+    }
+
+    public function cancel(TimerInterface $timer)
+    {
+        $this->timers->detach($timer);
     }
 
     public function getFirst()
     {
-        if ($this->timers->isEmpty()) {
+        if ($this->scheduler->isEmpty()) {
             return null;
         }
 
-        return $this->timers->top()->scheduled;
+        $scheduledAt = $this->timers[$this->scheduler->top()];
+
+        return $scheduledAt;
     }
 
     public function isEmpty()
     {
-        return !$this->active;
+        return count($this->timers) === 0;
     }
 
     public function tick()
     {
         $time = $this->updateTime();
         $timers = $this->timers;
+        $scheduler = $this->scheduler;
 
-        while (!$timers->isEmpty() && $timers->top()->scheduled < $time) {
-            $timer = $timers->extract();
+        while (!$scheduler->isEmpty()) {
+            $timer = $scheduler->top();
 
-            if (isset($this->active[$timer->signature])) {
-                call_user_func($timer->callback, $timer->signature, $this->loop);
+            if (!isset($timers[$timer])) {
+                $scheduler->extract();
+                $timers->detach($timer);
 
-                if ($timer->periodic === true) {
-                    $timer->scheduled = $timer->interval + $time;
-                    $timers->insert($timer, -$timer->scheduled);
-                } else {
-                    unset($this->active[$timer->signature]);
-                }
+                continue;
+            }
+
+            if ($timers[$timer] >= $time) {
+                break;
+            }
+
+            $scheduler->extract();
+            call_user_func($timer->getCallback(), $timer);
+
+            if ($timer->isPeriodic() && isset($timers[$timer])) {
+                $timers[$timer] = $scheduledAt = $timer->getInterval() + $time;
+                $scheduler->insert($timer, -$scheduledAt);
+            } else {
+                $timers->detach($timer);
             }
         }
     }

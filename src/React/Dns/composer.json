@@ -5,8 +5,8 @@
     "license": "MIT",
     "require": {
         "php": ">=5.3.2",
-        "react/cache": "0.2.*",
-        "react/socket": "0.2.*",
+        "react/cache": "0.3.*",
+        "react/socket": "0.3.*",
         "react/promise": "1.0.*"
     },
     "autoload": {
@@ -15,7 +15,7 @@
     "target-dir": "React/Dns",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }
