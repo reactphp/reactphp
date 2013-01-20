@@ -14,11 +14,11 @@ use \UnexpectedValueException;
  */
 class StreamEncryption
 {
-    protected $loop;
-    protected $method = STREAM_CRYPTO_METHOD_TLS_CLIENT;
+    private $loop;
+    private $method = STREAM_CRYPTO_METHOD_TLS_CLIENT;
 
-    protected $errstr;
-    protected $errno;
+    private $errstr;
+    private $errno;
 
     public function __construct(LoopInterface $loop)
     {

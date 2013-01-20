@@ -12,8 +12,8 @@ use React\Promise\RejectedPromise;
 
 class ConnectionManager implements ConnectionManagerInterface
 {
-    protected $loop;
-    protected $resolver;
+    private $loop;
+    private $resolver;
 
     public function __construct(LoopInterface $loop, Resolver $resolver)
     {

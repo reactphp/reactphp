@@ -7,9 +7,9 @@ use React\Stream\Stream;
 
 class SecureConnectionManager implements ConnectionManagerInterface
 {
-    protected $connectionManager;
-    protected $loop;
-    protected $streamEncryption;
+    private $connectionManager;
+    private $loop;
+    private $streamEncryption;
 
     public function __construct(ConnectionManagerInterface $connectionManager, LoopInterface $loop)
     {
