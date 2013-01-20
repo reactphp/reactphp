@@ -69,14 +69,3 @@ $secureConnectionManager->getConnection('www.google.com', 443)->then(function (R
     ...
 });
 ```
-
-### Async UDP connections
-
-[UDP](http://en.wikipedia.org/wiki/User_Datagram_Protocol) is a simple
-connectionless and message-based protocol and thus has no concept such as a
-"connection" - you can simply send / receive datagrams and as such nothing can
-block.
-
-## License
-
-MIT
