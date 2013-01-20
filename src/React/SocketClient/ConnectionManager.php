@@ -5,6 +5,7 @@ namespace React\SocketClient;
 use React\EventLoop\LoopInterface;
 use React\Dns\Resolver\Resolver;
 use React\Stream\Stream;
+use React\Promise\When;
 use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
