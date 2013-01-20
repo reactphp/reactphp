@@ -12,7 +12,7 @@
         "evenement/evenement": "1.0.*",
         "guzzle/http": "3.0.*",
         "guzzle/parser": "3.0.*",
-        "react/promise": "1.0.*"
+        "react/promise": "~1.0"
     },
     "require-dev": {
         "ext-libevent": "*",
