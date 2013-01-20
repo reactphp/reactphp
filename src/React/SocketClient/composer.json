@@ -1,6 +1,7 @@
 {
     "name": "react/socket-client",
-    "type": "library",
+    "description": "Async ConnectionManager to open TCP/IP and SSL/TLS based connections.",
+    "keywords": ["socket"],
     "license": "MIT",
     "require": {
         "php": ">=5.3.3",
