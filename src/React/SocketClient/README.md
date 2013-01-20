@@ -1,12 +1,10 @@
-connection-manager
-==================
+# SocketClient Component
 
-Async ConnectionManager to open TCP/IP and SSL/TLS based connections in a non-
-blocking fashion
+Async ConnectionManager to open TCP/IP and SSL/TLS based connections.
 
 ## Introduction
 
-Think of this library as an async (non-blocking) version of
+Think of this library as an async version of
 [`fsockopen()`](http://php.net/manual/en/function.fsockopen.php) or
 [`stream_socket_client()`](http://php.net/manual/en/function.stream-socket-
 client.php).
@@ -20,8 +18,6 @@ order to complete:
 2. Complete TCP handshake (2 roundtrips) with remote target IP:port
 3. Optionally enable SSL/TLS on the new resulting connection
 
-This project is built on top of [reactphp](https://github.com/reactphp/react).
-
 ## Usage
 
 In order to use this project, you'll need the following react boilerplate code
@@ -29,7 +25,6 @@ to initialize the main loop and select your DNS server if you have not already
 set it up anyway.
 
 ```php
-
 $loop = React\EventLoop\Factory::create();
 
 $dnsResolverFactory = new React\Dns\Resolver\Factory();
@@ -43,7 +38,6 @@ The `React\SocketClient\ConnectionManager` provides a single promise-based
 succeeds or fails.
 
 ```php
-
 $connectionManager = new React\SocketClient\ConnectionManager($loop, $dns);
 
 $connectionManager->getConnection('www.google.com', 80)->then(function (React\Stream\Stream $stream) {
@@ -54,14 +48,13 @@ $connectionManager->getConnection('www.google.com', 80)->then(function (React\St
 
 ### Async SSL/TLS connections
 
-The `React\SocketClient\SecureConnectionManager` class decorates a given
-`React\SocketClient\ConnectionManager` instance by enabling SSL/TLS encryption
-as soon as the raw TCP/IP connection succeeds. It provides the same promise-
-based `getConnection($host, $ip)` method which resolves with a `Stream`
-instance that can be used just like any non-encrypted stream.
+The `SecureConnectionManager` class decorates a given `ConnectionManager`
+instance by enabling SSL/TLS encryption as soon as the raw TCP/IP connection
+succeeds. It provides the same promise- based `getConnection($host, $ip)`
+method which resolves with a `Stream` instance that can be used just like any
+non-encrypted stream.
 
 ```php
-
 $secureConnectionManager = new React\SocketClient\SecureConnectionManager($connectionManager, $loop);
 
 $secureConnectionManager->getConnection('www.google.com', 443)->then(function (React\Stream\Stream $stream) {
