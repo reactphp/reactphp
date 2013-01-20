@@ -76,6 +76,7 @@ class ConnectionManager implements ConnectionManagerInterface
         if (false === stream_socket_get_name($socket, true)) {
             return When::reject(new ConnectionException('Connection refused'));
         }
+
         return When::resolve($socket);
     }
 
