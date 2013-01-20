@@ -8,7 +8,10 @@ use React\Stream\Stream;
 use React\EventLoop\LoopInterface;
 use \UnexpectedValueException;
 
-// this class is considered internal and its API should not be relied upon outside of React\SocketClient
+/**
+ * This class is considered internal and its API should not be relied upon
+ * outside of SocketClient
+ */
 class StreamEncryption
 {
     protected $loop;
