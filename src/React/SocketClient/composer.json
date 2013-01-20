@@ -4,8 +4,8 @@
     "license": "MIT",
     "require": {
         "php": ">=5.3.3",
-        "react/dns": "0.2.*",
-        "react/event-loop": "0.2.*",
+        "react/dns": "0.3.*",
+        "react/event-loop": "0.3.*",
         "react/promise": "1.*",
     },
     "autoload": {
@@ -14,7 +14,7 @@
     "target-dir": "React/SocketClient",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }
