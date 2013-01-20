@@ -9,7 +9,7 @@
     },
     "suggest": {
         "react/event-loop": "0.2.*",
-        "react/promise": "1.0.*"
+        "react/promise": "~1.0"
     },
     "autoload": {
         "psr-0": { "React\\Stream": "" }
