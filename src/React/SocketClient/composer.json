@@ -7,7 +7,7 @@
         "php": ">=5.3.3",
         "react/dns": "0.3.*",
         "react/event-loop": "0.3.*",
-        "react/promise": "1.*",
+        "react/promise": "~1.0",
     },
     "autoload": {
         "psr-0": { "React\\SocketClient": "" }
