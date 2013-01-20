@@ -1,0 +1,20 @@
+{
+    "name": "react/socket-client",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.3",
+        "react/dns": "0.2.*",
+        "react/event-loop": "0.2.*",
+        "react/promise": "1.*",
+    },
+    "autoload": {
+        "psr-0": { "React\\SocketClient": "" }
+    },
+    "target-dir": "React/SocketClient",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2-dev"
+        }
+    }
+}

@@ -35,7 +35,7 @@ class ConnectionManager implements ConnectionManagerInterface
     {
         $url = $this->getSocketUrl($address, $port);
 
-        $socket = stream_socket_client($url, $errno, $errstr, ini_get("default_socket_timeout"), STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
+        $socket = stream_socket_client($url, $errno, $errstr, 0, STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
 
         if (!$socket) {
             return new RejectedPromise(new \RuntimeException(
@@ -50,6 +50,7 @@ class ConnectionManager implements ConnectionManagerInterface
 
         return $this
             ->waitForStreamOnce($socket)
+            ->then(array($this, 'checkConnectedSocket'))
             ->then(array($this, 'handleConnectedSocket'));
     }
 
@@ -61,19 +62,25 @@ class ConnectionManager implements ConnectionManagerInterface
 
         $this->loop->addWriteStream($stream, function ($stream) use ($loop, $deferred) {
             $loop->removeWriteStream($stream);
+
             $deferred->resolve($stream);
         });
 
         return $deferred->promise();
     }
 
+    public function checkConnectedSocket($socket)
+    {
+        // The following hack looks like the only way to
+        // detect connection refused errors with PHP's stream sockets.
+        if (false === stream_socket_get_name($socket, true)) {
+            return When::reject(new ConnectionException('Connection refused'));
+        }
+        return When::resolve($socket);
+    }
+
     public function handleConnectedSocket($socket)
     {
-        if (false === stream_socket_get_name($socket, true)) {
-            $e = new ConnectionException('Connection refused');
-            return new RejectedPromise($e);
-        }
-
         return new Stream($socket, $this->loop);
     }
 
