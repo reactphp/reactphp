@@ -7,8 +7,6 @@ use React\Dns\Resolver\Resolver;
 use React\Stream\Stream;
 use React\Promise\When;
 use React\Promise\Deferred;
-use React\Promise\FulfilledPromise;
-use React\Promise\RejectedPromise;
 
 class ConnectionManager implements ConnectionManagerInterface
 {
@@ -39,7 +37,7 @@ class ConnectionManager implements ConnectionManagerInterface
         $socket = stream_socket_client($url, $errno, $errstr, 0, STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
 
         if (!$socket) {
-            return new RejectedPromise(new \RuntimeException(
+            return When::reject(new \RuntimeException(
                 sprintf("connection to %s:%d failed: %s", $address, $port, $errstr),
                 $errno
             ));
@@ -94,7 +92,7 @@ class ConnectionManager implements ConnectionManagerInterface
     protected function resolveHostname($host)
     {
         if (false !== filter_var($host, FILTER_VALIDATE_IP)) {
-            return new FulfilledPromise($host);
+            return When::resolve($host);
         }
 
         return $this->resolver->resolve($host);
