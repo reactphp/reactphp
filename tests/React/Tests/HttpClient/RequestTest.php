@@ -391,7 +391,7 @@ class RequestTest extends TestCase
     {
         $this->connector
             ->expects($this->once())
-            ->method('getConnection')
+            ->method('createTcp')
             ->with('www.example.com', 80)
             ->will($this->returnValue(new FulfilledPromise($this->stream)));
     }
@@ -400,7 +400,7 @@ class RequestTest extends TestCase
     {
         $this->connector
             ->expects($this->once())
-            ->method('getConnection')
+            ->method('createTcp')
             ->with('www.example.com', 80)
             ->will($this->returnValue(new RejectedPromise(new \RuntimeException())));
     }

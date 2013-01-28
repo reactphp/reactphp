@@ -4,5 +4,5 @@ namespace React\SocketClient;
 
 interface ConnectorInterface
 {
-    public function getConnection($host, $port);
+    public function createTcp($host, $port);
 }

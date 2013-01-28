@@ -19,18 +19,18 @@ class Connector implements ConnectorInterface
         $this->resolver = $resolver;
     }
 
-    public function getConnection($host, $port)
+    public function createTcp($host, $port)
     {
         $that = $this;
 
         return $this
             ->resolveHostname($host)
             ->then(function ($address) use ($port, $that) {
-                return $that->getConnectionForAddress($address, $port);
+                return $that->createTcpForAddress($address, $port);
             });
     }
 
-    public function getConnectionForAddress($address, $port)
+    public function createTcpForAddress($address, $port)
     {
         $url = $this->getSocketUrl($address, $port);
 

@@ -219,7 +219,7 @@ class Request extends EventEmitter implements WritableStreamInterface
         $port = $this->request->getPort();
 
         return $this->connector
-            ->getConnection($host, $port);
+            ->createTcp($host, $port);
     }
 
     public function setResponseFactory($factory)
