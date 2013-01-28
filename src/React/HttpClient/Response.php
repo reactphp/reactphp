@@ -35,32 +35,32 @@ class Response extends EventEmitter implements ReadableStreamInterface
         $stream->on('error', array($this, 'handleError'));
         $stream->on('end', array($this, 'handleEnd'));
     }
-    
+
     public function getProtocol()
     {
         return $this->protocol;
     }
-    
+
     public function getVersion()
     {
         return $this->version;
     }
-    
+
     public function getCode()
     {
         return $this->code;
     }
-    
+
     public function getReasonPhrase()
     {
         return $this->reasonPhrase;
     }
-    
+
     public function getHeaders()
     {
         return $this->headers;
     }
-    
+
     public function getBody()
     {
         return $this->body;

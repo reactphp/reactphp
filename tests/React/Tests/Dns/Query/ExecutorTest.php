@@ -110,7 +110,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->method('createConnection')
             ->with('8.8.8.8:53', 'tcp')
             ->will($this->returnNewConnectionMock());
-        
+
         $mock = $this->createCallableMock();
         $mock
             ->expects($this->once())
