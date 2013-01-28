@@ -8,7 +8,7 @@ use React\Stream\Stream;
 use React\Promise\When;
 use React\Promise\Deferred;
 
-class ConnectionManager implements ConnectionManagerInterface
+class Connector implements ConnectorInterface
 {
     private $loop;
     private $resolver;

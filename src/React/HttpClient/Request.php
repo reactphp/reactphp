@@ -9,7 +9,7 @@ use Guzzle\Parser\Message\MessageParser;
 use React\EventLoop\LoopInterface;
 use React\HttpClient\Response;
 use React\HttpClient\ResponseHeaderParser;
-use React\SocketClient\ConnectionManagerInterface;
+use React\SocketClient\ConnectorInterface;
 use React\Stream\Stream;
 use React\Stream\WritableStreamInterface;
 
@@ -26,17 +26,17 @@ class Request extends EventEmitter implements WritableStreamInterface
 
     private $request;
     private $loop;
-    private $connectionManager;
+    private $connector;
     private $stream;
     private $buffer;
     private $responseFactory;
     private $response;
     private $state = self::STATE_INIT;
 
-    public function __construct(LoopInterface $loop, ConnectionManagerInterface $connectionManager, GuzzleRequest $request)
+    public function __construct(LoopInterface $loop, ConnectorInterface $connector, GuzzleRequest $request)
     {
         $this->loop = $loop;
-        $this->connectionManager = $connectionManager;
+        $this->connector = $connector;
         $this->request = $request;
     }
 
@@ -218,7 +218,7 @@ class Request extends EventEmitter implements WritableStreamInterface
         $host = $this->request->getHost();
         $port = $this->request->getPort();
 
-        return $this->connectionManager
+        return $this->connector
             ->getConnection($host, $port);
     }
 

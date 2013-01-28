@@ -5,56 +5,56 @@ namespace React\HttpClient;
 use Guzzle\Http\Message\Request as GuzzleRequest;
 use React\EventLoop\LoopInterface;
 use React\HttpClient\Request as ClientRequest;
-use React\SocketClient\ConnectionManagerInterface;
+use React\SocketClient\ConnectorInterface;
 
 class Client
 {
     private $loop;
 
-    private $connectionManager;
+    private $connector;
 
-    private $secureConnectionManager;
+    private $secureConnector;
 
-    public function __construct(LoopInterface $loop, ConnectionManagerInterface $connectionManager, ConnectionManagerInterface $secureConnectionManager)
+    public function __construct(LoopInterface $loop, ConnectorInterface $connector, ConnectorInterface $secureConnector)
     {
         $this->loop = $loop;
-        $this->connectionManager = $connectionManager;
-        $this->secureConnectionManager = $secureConnectionManager;
+        $this->connector = $connector;
+        $this->secureConnector = $secureConnector;
     }
 
     public function request($method, $url, array $headers = array())
     {
         $guzzleRequest = new GuzzleRequest($method, $url, $headers);
-        $connectionManager = $this->getConnectionManagerForScheme($guzzleRequest->getScheme());
-        return new ClientRequest($this->loop, $connectionManager, $guzzleRequest);
+        $connector = $this->getConnectorForScheme($guzzleRequest->getScheme());
+        return new ClientRequest($this->loop, $connector, $guzzleRequest);
     }
 
-    public function setConnectionManager(ConnectionManagerInterface $connectionManager)
+    public function setConnector(ConnectorInterface $connector)
     {
-        $this->connectionManager = $connectionManager;
+        $this->connector = $connector;
     }
 
-    public function getConnectionManager()
+    public function getConnector()
     {
-        return $this->connectionManager;
+        return $this->connector;
     }
 
-    public function setSecureConnectionManager(ConnectionManagerInterface $connectionManager)
+    public function setSecureConnector(ConnectorInterface $connector)
     {
-        $this->secureConnectionManager = $connectionManager;
+        $this->secureConnector = $connector;
     }
 
-    public function getSecureConnectionManager()
+    public function getSecureConnector()
     {
-        return $this->secureConnectionManager;
+        return $this->secureConnector;
     }
 
-    private function getConnectionManagerForScheme($scheme)
+    private function getConnectorForScheme($scheme)
     {
         if ('https' === $scheme) {
-            return $this->getSecureConnectionManager();
+            return $this->getSecureConnector();
         } else {
-            return $this->getConnectionManager();
+            return $this->getConnector();
         }
     }
 }

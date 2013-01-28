@@ -2,7 +2,7 @@
 
 namespace React\SocketClient;
 
-interface ConnectionManagerInterface
+interface ConnectorInterface
 {
     public function getConnection($host, $port);
 }
