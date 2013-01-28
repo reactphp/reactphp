@@ -1,6 +1,6 @@
 {
     "name": "react/socket-client",
-    "description": "Async ConnectionManager to open TCP/IP and SSL/TLS based connections.",
+    "description": "Async connector to open TCP/IP and SSL/TLS based connections.",
     "keywords": ["socket"],
     "license": "MIT",
     "require": {

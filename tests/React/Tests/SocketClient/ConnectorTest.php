@@ -4,10 +4,10 @@ namespace React\Tests\SocketClient;
 
 use React\EventLoop\StreamSelectLoop;
 use React\Socket\Server;
-use React\SocketClient\ConnectionManager;
+use React\SocketClient\Connector;
 use React\Tests\Socket\TestCase;
 
-class ConnectionManagerTest extends TestCase
+class ConnectorTest extends TestCase
 {
     /** @test */
     public function connectionToEmptyPortShouldFail()
@@ -16,8 +16,8 @@ class ConnectionManagerTest extends TestCase
 
         $dns = $this->createResolverMock();
 
-        $manager = new ConnectionManager($loop, $dns);
-        $manager->getConnection('127.0.0.1', 9999)
+        $connector = new Connector($loop, $dns);
+        $connector->createTcp('127.0.0.1', 9999)
                 ->then($this->expectCallableNever(), $this->expectCallableOnce());
 
         $loop->run();
@@ -39,8 +39,8 @@ class ConnectionManagerTest extends TestCase
 
         $dns = $this->createResolverMock();
 
-        $manager = new ConnectionManager($loop, $dns);
-        $manager->getConnection('127.0.0.1', 9999)
+        $connector = new Connector($loop, $dns);
+        $connector->createTcp('127.0.0.1', 9999)
                 ->then(function ($stream) use (&$capturedStream) {
                     $capturedStream = $stream;
                     $stream->end();
