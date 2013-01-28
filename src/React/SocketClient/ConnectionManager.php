@@ -19,20 +19,20 @@ class ConnectionManager implements ConnectionManagerInterface
         $this->resolver = $resolver;
     }
 
-    public function getConnection($host, $port)
+    public function getConnection($host, $port, $transport = 'tcp')
     {
         $that = $this;
 
         return $this
             ->resolveHostname($host)
-            ->then(function ($address) use ($port, $that) {
-                return $that->getConnectionForAddress($address, $port);
+            ->then(function ($address) use ($port, $transport, $that) {
+                return $that->getConnectionForAddress($address, $port, $transport);
             });
     }
 
-    public function getConnectionForAddress($address, $port)
+    public function getConnectionForAddress($address, $port, $transport = 'tcp')
     {
-        $url = $this->getSocketUrl($address, $port);
+        $url = $this->getSocketUrl($address, $port, $transport);
 
         $socket = stream_socket_client($url, $errno, $errstr, 0, STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
 
@@ -84,9 +84,9 @@ class ConnectionManager implements ConnectionManagerInterface
         return new Stream($socket, $this->loop);
     }
 
-    protected function getSocketUrl($host, $port)
+    protected function getSocketUrl($host, $port, $transport = 'tcp')
     {
-        return sprintf('tcp://%s:%s', $host, $port);
+        return sprintf('%s://%s:%s', $transport, $host, $port);
     }
 
     protected function resolveHostname($host)
