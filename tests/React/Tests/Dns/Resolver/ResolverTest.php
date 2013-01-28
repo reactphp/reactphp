@@ -46,7 +46,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
 
                 return When::resolve($response);
             }));
-            
+
         $mock = $this->createCallableMock();
         $mock
             ->expects($this->once())
