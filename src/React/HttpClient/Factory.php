@@ -4,16 +4,16 @@ namespace React\HttpClient;
 
 use React\EventLoop\LoopInterface;
 use React\Dns\Resolver\Resolver;
-use React\SocketClient\ConnectionManager;
-use React\SocketClient\SecureConnectionManager;
+use React\SocketClient\Connector;
+use React\SocketClient\SecureConnector;
 
 class Factory
 {
     public function create(LoopInterface $loop, Resolver $resolver)
     {
-        $connectionManager = new ConnectionManager($loop, $resolver);
-        $secureConnectionManager = new SecureConnectionManager($connectionManager, $loop);
-        return new Client($loop, $connectionManager, $secureConnectionManager);
+        $connector = new Connector($loop, $resolver);
+        $secureConnector = new SecureConnector($connector, $loop);
+        return new Client($loop, $connector, $secureConnector);
     }
 }
 
