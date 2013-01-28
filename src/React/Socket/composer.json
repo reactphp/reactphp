@@ -6,8 +6,8 @@
     "require": {
         "php": ">=5.3.3",
         "evenement/evenement": "1.0.*",
-        "react/event-loop": "0.2.*",
-        "react/stream": "0.2.*"
+        "react/event-loop": "0.3.*",
+        "react/stream": "0.3.*"
     },
     "autoload": {
         "psr-0": { "React\\Socket": "" }
@@ -15,7 +15,7 @@
     "target-dir": "React/Socket",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }

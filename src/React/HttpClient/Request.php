@@ -7,9 +7,9 @@ use Guzzle\Http\Message\Request as GuzzleRequest;
 use Guzzle\Http\Url;
 use Guzzle\Parser\Message\MessageParser;
 use React\EventLoop\LoopInterface;
-use React\HttpClient\ConnectionManagerInterface;
 use React\HttpClient\Response;
 use React\HttpClient\ResponseHeaderParser;
+use React\SocketClient\ConnectionManagerInterface;
 use React\Stream\Stream;
 use React\Stream\WritableStreamInterface;
 

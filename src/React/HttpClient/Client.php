@@ -4,9 +4,8 @@ namespace React\HttpClient;
 
 use Guzzle\Http\Message\Request as GuzzleRequest;
 use React\EventLoop\LoopInterface;
-use React\HttpClient\ConnectionManager;
 use React\HttpClient\Request as ClientRequest;
-use React\HttpClient\SecureConnectionManager;
+use React\SocketClient\ConnectionManagerInterface;
 
 class Client
 {
