@@ -8,7 +8,7 @@ use React\Stream\Stream;
 use React\Promise\When;
 use React\Promise\Deferred;
 
-class ConnectionManager implements ConnectionManagerInterface
+class Connector implements ConnectorInterface
 {
     private $loop;
     private $resolver;
@@ -19,18 +19,29 @@ class ConnectionManager implements ConnectionManagerInterface
         $this->resolver = $resolver;
     }
 
-    public function getConnection($host, $port, $transport = 'tcp')
+    public function createTcp($host, $port)
     {
         $that = $this;
 
         return $this
             ->resolveHostname($host)
-            ->then(function ($address) use ($port, $transport, $that) {
-                return $that->getConnectionForAddress($address, $port, $transport);
+            ->then(function ($address) use ($port, $that) {
+                return $that->createSocketForAddress($address, $port);
             });
     }
 
-    public function getConnectionForAddress($address, $port, $transport = 'tcp')
+    public function createUdp($host, $port)
+    {
+        $that = $this;
+
+        return $this
+            ->resolveHostname($host)
+            ->then(function ($address) use ($port, $that) {
+                return $that->createSocketForAddress($address, $port, 'udp');
+            });
+    }
+
+    public function createSocketForAddress($address, $port, $transport = 'tcp')
     {
         $url = $this->getSocketUrl($address, $port, $transport);
 
@@ -84,7 +95,7 @@ class ConnectionManager implements ConnectionManagerInterface
         return new Stream($socket, $this->loop);
     }
 
-    protected function getSocketUrl($host, $port, $transport = 'tcp')
+    protected function getSocketUrl($host, $port, $transport)
     {
         return sprintf('%s://%s:%s', $transport, $host, $port);
     }
