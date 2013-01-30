@@ -124,4 +124,24 @@ class ResponseTest extends TestCase
 
         $response = new Response($conn);
     }
+
+    /** @test */
+    public function shouldRemoveNewlinesFromHeaders()
+    {
+        $expected = '';
+        $expected .= "HTTP/1.1 200 OK\r\n";
+        $expected .= "X-Powered-By: React/alpha\r\n";
+        $expected .= "FooBar: BazQux\r\n";
+        $expected .= "Transfer-Encoding: chunked\r\n";
+        $expected .= "\r\n";
+
+        $conn = $this->getMock('React\Socket\ConnectionInterface');
+        $conn
+            ->expects($this->once())
+            ->method('write')
+            ->with($expected);
+
+        $response = new Response($conn);
+        $response->writeHead(200, array("Foo\nBar" => "Baz\rQux"));
+    }
 }

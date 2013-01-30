@@ -78,6 +78,9 @@ class Response extends EventEmitter implements WritableStreamInterface
         $data = "HTTP/1.1 $status $text\r\n";
 
         foreach ($headers as $name => $value) {
+            $name = str_replace(array("\r", "\n"), '', $name);
+            $value = str_replace(array("\r", "\n"), '', $value);
+
             $data .= "$name: $value\r\n";
         }
         $data .= "\r\n";
