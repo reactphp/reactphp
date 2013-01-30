@@ -74,7 +74,7 @@ class Response extends EventEmitter implements WritableStreamInterface
 
     private function formatHead($status, array $headers)
     {
-        $text = ResponseCodes::$statusTexts[$status];
+        $text = isset(ResponseCodes::$statusTexts[$status]) ? ResponseCodes::$statusTexts[$status] : '';
         $data = "HTTP/1.1 $status $text\r\n";
 
         foreach ($headers as $name => $value) {
