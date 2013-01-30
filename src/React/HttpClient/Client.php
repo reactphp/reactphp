@@ -29,33 +29,9 @@ class Client
         return new ClientRequest($this->loop, $connector, $guzzleRequest);
     }
 
-    public function setConnector(ConnectorInterface $connector)
-    {
-        $this->connector = $connector;
-    }
-
-    public function getConnector()
-    {
-        return $this->connector;
-    }
-
-    public function setSecureConnector(ConnectorInterface $connector)
-    {
-        $this->secureConnector = $connector;
-    }
-
-    public function getSecureConnector()
-    {
-        return $this->secureConnector;
-    }
-
     private function getConnectorForScheme($scheme)
     {
-        if ('https' === $scheme) {
-            return $this->getSecureConnector();
-        } else {
-            return $this->getConnector();
-        }
+        return ('https' === $scheme) ? $this->secureConnector : $this->connector;
     }
 }
 
