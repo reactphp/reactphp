@@ -10,9 +10,7 @@ use React\SocketClient\ConnectorInterface;
 class Client
 {
     private $loop;
-
     private $connector;
-
     private $secureConnector;
 
     public function __construct(LoopInterface $loop, ConnectorInterface $connector, ConnectorInterface $secureConnector)
