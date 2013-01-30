@@ -14,6 +14,7 @@ use React\Stream\Stream;
 use React\Stream\WritableStreamInterface;
 
 /**
+ * @event writing-headers
  * @event headers-written
  * @event response
  */
@@ -62,6 +63,8 @@ class Request extends EventEmitter implements WritableStreamInterface
             ->connect()
             ->then(
                 function ($stream) use ($that, $request, &$streamRef, &$stateRef) {
+                    $that->emit('writing-headers', array($request));
+
                     $streamRef = $stream;
 
                     $stream->on('drain', array($that, 'handleDrain'));
