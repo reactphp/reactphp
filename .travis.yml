@@ -12,6 +12,8 @@ before_script:
             fi"
   - (git clone --recursive https://github.com/m4rw3r/php-libev && cd php-libev && phpize && ./configure && make && make install)
   - echo "extension=libev.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  - (git clone --recursive https://github.com/chobie/php-uv.git && cd php-uv && cd libuv && make && cd .. && phpize && ./configure && make && make install)
+  - echo "extension=uv.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - composer self-update
   - composer install --dev --prefer-source
 

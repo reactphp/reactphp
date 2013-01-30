@@ -13,6 +13,9 @@ class Factory
         if (function_exists('event_base_new')) {
             return new LibEventLoop();
         }
+        if (function_exists(('uv_run'))) {
+            return new LibUvLoop();
+        }
 
         return new StreamSelectLoop();
         // @codeCoverageIgnoreEnd
