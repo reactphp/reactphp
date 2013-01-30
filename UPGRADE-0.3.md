@@ -1,6 +1,9 @@
 UPGRADE for 0.3.x
 =================
 
+EventLoop
+---------
+
 * The timer callback now receives a `Timer` instance, with the following
   useful methods:
 
@@ -14,3 +17,17 @@ UPGRADE for 0.3.x
 
 * You can no longer return a boolean from a periodic timer callback to abort
   it.
+
+HttpClient
+----------
+
+* `HttpClient\*ConnectionManager` has been moved to `SocketClient\*Connector`,
+  and the `getConnection` method has been renamed to `createTcp`.
+
+  Before:
+
+    $connectionManager->getConnection($host, $port);
+
+  After:
+
+    $connector->createTcp($host, $port);

@@ -5,6 +5,8 @@ CHANGELOG
 
   * BC break: [EventLoop] New timers API (@nrk)
   * BC break: [EventLoop] Remove check on return value from stream callbacks (@nrk)
+  * BC break: [HttpClient] Socket connection handling moved to new SocketClient component
+  * Feature: [SocketClient] New SocketClient component extracted from HttpClient (@clue)
 
 * 0.2.7 (2013-01-05)
 
