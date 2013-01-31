@@ -2,8 +2,8 @@
 
 namespace React\Tests\HttpClient;
 
-use Guzzle\Http\Message\Request as GuzzleRequest;
 use React\HttpClient\Request;
+use React\HttpClient\RequestData;
 use React\Stream\Stream;
 use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
@@ -33,8 +33,8 @@ class RequestTest extends TestCase
     /** @test */
     public function requestShouldBindToStreamEventsAndUseConnectionManager()
     {
-        $guzzleRequest = new GuzzleRequest('GET', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+        $requestData = new RequestData('GET', 'http://www.example.com');
+        $request = new Request($this->loop, $this->connectionManager, $requestData);
 
         $this->successfulConnectionMock();
 
@@ -123,8 +123,8 @@ class RequestTest extends TestCase
     /** @test */
     public function requestShouldEmitErrorIfConnectionFails()
     {
-        $guzzleRequest = new GuzzleRequest('GET', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+        $requestData = new RequestData('GET', 'http://www.example.com');
+        $request = new Request($this->loop, $this->connectionManager, $requestData);
 
         $this->rejectedConnectionMock();
 
@@ -156,8 +156,8 @@ class RequestTest extends TestCase
     /** @test */
     public function requestShouldEmitErrorIfConnectionEndsBeforeResponseIsParsed()
     {
-        $guzzleRequest = new GuzzleRequest('GET', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+        $requestData = new RequestData('GET', 'http://www.example.com');
+        $request = new Request($this->loop, $this->connectionManager, $requestData);
 
         $this->successfulConnectionMock();
 
@@ -190,8 +190,8 @@ class RequestTest extends TestCase
     /** @test */
     public function requestShouldEmitErrorIfConnectionEmitsError()
     {
-        $guzzleRequest = new GuzzleRequest('GET', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+        $requestData = new RequestData('GET', 'http://www.example.com');
+        $request = new Request($this->loop, $this->connectionManager, $requestData);
 
         $this->successfulConnectionMock();
 
@@ -224,8 +224,8 @@ class RequestTest extends TestCase
     /** @test */
     public function postRequestShouldSendAPostRequest()
     {
-        $guzzleRequest = new GuzzleRequest('POST', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+        $requestData = new RequestData('POST', 'http://www.example.com');
+        $request = new Request($this->loop, $this->connectionManager, $requestData);
 
         $this->successfulConnectionMock();
 
@@ -254,8 +254,8 @@ class RequestTest extends TestCase
     /** @test */
     public function writeWithAPostRequestShouldSendToTheStream()
     {
-        $guzzleRequest = new GuzzleRequest('POST', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+        $requestData = new RequestData('POST', 'http://www.example.com');
+        $request = new Request($this->loop, $this->connectionManager, $requestData);
 
         $this->successfulConnectionMock();
 
@@ -295,8 +295,8 @@ class RequestTest extends TestCase
     /** @test */
     public function pipeShouldPipeDataIntoTheRequestBody()
     {
-        $guzzleRequest = new GuzzleRequest('POST', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+        $requestData = new RequestData('POST', 'http://www.example.com');
+        $request = new Request($this->loop, $this->connectionManager, $requestData);
 
         $this->successfulConnectionMock();
 
@@ -344,8 +344,8 @@ class RequestTest extends TestCase
      */
     public function endShouldOnlyAcceptScalars()
     {
-        $guzzleRequest = new GuzzleRequest('POST', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+        $requestData = new RequestData('POST', 'http://www.example.com');
+        $request = new Request($this->loop, $this->connectionManager, $requestData);
 
         $request->end(array());
     }
@@ -353,8 +353,8 @@ class RequestTest extends TestCase
     /** @test */
     public function requestShouldRelayErrorEventsFromResponse()
     {
-        $guzzleRequest = new GuzzleRequest('GET', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $guzzleRequest);
+        $requestData = new RequestData('GET', 'http://www.example.com');
+        $request = new Request($this->loop, $this->connectionManager, $requestData);
 
         $this->successfulConnectionMock();
 

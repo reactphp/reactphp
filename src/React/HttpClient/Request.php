@@ -3,8 +3,6 @@
 namespace React\HttpClient;
 
 use Evenement\EventEmitter;
-use Guzzle\Http\Message\Request as GuzzleRequest;
-use Guzzle\Http\Url;
 use Guzzle\Parser\Message\MessageParser;
 use React\EventLoop\LoopInterface;
 use React\HttpClient\ConnectionManagerInterface;
@@ -24,20 +22,21 @@ class Request extends EventEmitter implements WritableStreamInterface
     const STATE_HEAD_WRITTEN = 2;
     const STATE_END = 3;
 
-    private $request;
     private $loop;
     private $connectionManager;
+    private $requestData;
+
     private $stream;
     private $buffer;
     private $responseFactory;
     private $response;
     private $state = self::STATE_INIT;
 
-    public function __construct(LoopInterface $loop, ConnectionManagerInterface $connectionManager, GuzzleRequest $request)
+    public function __construct(LoopInterface $loop, ConnectionManagerInterface $connectionManager, RequestData $requestData)
     {
         $this->loop = $loop;
         $this->connectionManager = $connectionManager;
-        $this->request = $request;
+        $this->requestData = $requestData;
     }
 
     public function isWritable()
@@ -54,14 +53,14 @@ class Request extends EventEmitter implements WritableStreamInterface
         $this->state = self::STATE_WRITING_HEAD;
 
         $that = $this;
-        $request = $this->request;
+        $requestData = $this->requestData;
         $streamRef = &$this->stream;
         $stateRef = &$this->state;
 
         $this
             ->connect()
             ->then(
-                function ($stream) use ($that, $request, &$streamRef, &$stateRef) {
+                function ($stream) use ($that, $requestData, &$streamRef, &$stateRef) {
                     $streamRef = $stream;
 
                     $stream->on('drain', array($that, 'handleDrain'));
@@ -69,8 +68,8 @@ class Request extends EventEmitter implements WritableStreamInterface
                     $stream->on('end', array($that, 'handleEnd'));
                     $stream->on('error', array($that, 'handleError'));
 
-                    $request->setProtocolVersion('1.0');
-                    $headers = (string) $request;
+                    $requestData->setProtocolVersion('1.0');
+                    $headers = (string) $requestData;
 
                     $stream->write($headers);
 
@@ -215,8 +214,8 @@ class Request extends EventEmitter implements WritableStreamInterface
 
     protected function connect()
     {
-        $host = $this->request->getHost();
-        $port = $this->request->getPort();
+        $host = $this->requestData->getHost();
+        $port = $this->requestData->getPort();
 
         return $this->connectionManager
             ->getConnection($host, $port);
