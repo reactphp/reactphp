@@ -6,7 +6,7 @@ use React\Promise\ResolverInterface;
 use React\Promise\Deferred;
 use React\Stream\Stream;
 use React\EventLoop\LoopInterface;
-use \UnexpectedValueException;
+use UnexpectedValueException;
 
 /**
  * This class is considered internal and its API should not be relied upon
