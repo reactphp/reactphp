@@ -4,6 +4,7 @@ namespace React\SocketClient;
 
 use React\EventLoop\LoopInterface;
 use React\Stream\Stream;
+use React\Promise\When;
 
 class SecureConnector implements ConnectorInterface
 {
@@ -29,5 +30,10 @@ class SecureConnector implements ConnectorInterface
                 throw $error;
             });
         });
+    }
+
+    public function createUdp($host, $port)
+    {
+        return When::reject(new \RuntimeException('Secured UDP connection is not supported.'));
     }
 }
