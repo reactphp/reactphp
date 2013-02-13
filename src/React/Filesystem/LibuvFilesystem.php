@@ -97,7 +97,6 @@ class LibuvFilesystem implements FilesystemInterface
      * 
      * @return Deferred
      */
-    
     public function close($fd)
     {
         $deferred = new Deferred();
@@ -166,8 +165,7 @@ class LibuvFilesystem implements FilesystemInterface
      * @param String $filename
      * 
      * @return Deferred
-     */
-    
+     */ 
     public function readfile($filename)
     {
         $fs = $this;
