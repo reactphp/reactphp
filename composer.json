@@ -16,7 +16,8 @@
     },
     "require-dev": {
         "ext-libevent": "*",
-        "ext-libev": "*"
+        "ext-libev": "*",
+        "ext-uv": "*"
     },
     "replace": {
         "react/event-loop": "self.version",
