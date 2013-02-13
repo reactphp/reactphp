@@ -31,6 +31,9 @@ class LibuvFilesystemTest extends TestCase
         $tests->assertEquals($directory, $catchCreatedDir);
         $tests->assertTrue(file_exists($catchCreatedDir));
         $tests->assertTrue(is_dir($catchCreatedDir));
+        if (file_exists($directory)) {
+            rmdir($directory);
+        }
     }
     
     public function testThatMkdirOnAnExistingDirectoryShouldThrowAnException()
@@ -49,6 +52,9 @@ class LibuvFilesystemTest extends TestCase
             ->mkdir($directory)
             ->then($tests->expectCallableNever(), $this->expectCallableOnce());
         $loop->run();
+        if (file_exists($directory)) {
+            rmdir($directory);
+        }
     }
     
     /**
@@ -79,6 +85,9 @@ class LibuvFilesystemTest extends TestCase
 
         $this->assertNotNull($catchCreatedDir);
         $this->assertEquals(decoct($mode), $this->getFileMode($catchCreatedDir));
+        if (file_exists($directory)) {
+            rmdir($directory);
+        }
     }
     
      /**
@@ -110,6 +119,9 @@ class LibuvFilesystemTest extends TestCase
         $loop->run();
         $this->assertNotNull($catchCreatedFile);
         $this->assertEquals(decoct($mode), $this->getFileMode($catchCreatedFile));
+        if (file_exists($path)) {
+            unlink($path);
+        }
     }
     
     public function provideModes()
@@ -145,6 +157,9 @@ class LibuvFilesystemTest extends TestCase
             ->open($path, \UV::O_WRONLY | \UV::O_CREAT, 0664)
             ->then($tests->expectCallableOnce(), $this->expectCallableNever());
         $loop->run();
+        if (file_exists($path)) {
+            unlink($path);
+        }
     }
    
     public function testThatOpenDoesNotOpenAnUnexistingFile()
@@ -166,6 +181,9 @@ class LibuvFilesystemTest extends TestCase
             ->open($path, \UV::O_WRONLY, 0664)
             ->then($tests->expectCallableNever(), $this->expectCallableOnce());
         $loop->run();
+        if (file_exists($path)) {
+            unlink($path);
+        }
     }
     
     public function testThatOpenThrowsAnExceptionWhenPermissionsAreSetToNull()
@@ -190,6 +208,9 @@ class LibuvFilesystemTest extends TestCase
             ->then($tests->expectCallableNever(),
             $this->expectCallableOnce());
         $loop->run();
+        if (file_exists($path)) {
+            unlink($path);
+        }
     }
     
     public function testThatWriteCanWriteInAFile()
@@ -198,7 +219,6 @@ class LibuvFilesystemTest extends TestCase
         $fs = new LibuvFilesystem($loop);
         $path = __DIR__ . '/test-write';
         $testbuffer = "testwrite";
-        $tests = $this;
         
         if (file_exists($path) && !is_dir($path)) {
             unlink($path);
@@ -213,6 +233,9 @@ class LibuvFilesystemTest extends TestCase
             });
         $loop->run();
         $this->assertEquals(file_get_contents($path), $testbuffer);
+        if (file_exists($path)) {
+            unlink($path);
+        }
     }
     
     public function testThatWriteCannotWriteInAFileOpenForReadingOnly()
@@ -235,6 +258,9 @@ class LibuvFilesystemTest extends TestCase
             });
         $loop->run();
         $this->assertEquals(file_get_contents($path), '');
+        if (file_exists($path)) {
+            unlink($path);
+        }
     }
       
     public function testThatStatDoesNotWorkOnUnexistingFile()
@@ -253,7 +279,9 @@ class LibuvFilesystemTest extends TestCase
         $fs->stat($path)
             ->then($this->expectCallableNever(), $this->expectCallableOnce());
         $loop->run();
-        
+        if (file_exists($path)) {
+            unlink($path);
+        }
     }
     
    public function testThatReadfileCanReadFromAFile()
@@ -277,6 +305,9 @@ class LibuvFilesystemTest extends TestCase
                 $tests->assertEquals($testbuffer, $result);
             }, $this->expectCallableNever());
         $loop->run();
+        if (file_exists($path)) {
+            unlink($path);
+        }
     }
     
     public function testThatStatReturnsStatsOfAFile()
@@ -305,6 +336,9 @@ class LibuvFilesystemTest extends TestCase
         $fs->close(0);
         $loop->run();
         $tests->assertEquals(4, $catchResult['size']);
+        if (file_exists($path)) {
+            unlink($path);
+        }
     }
     
 }
