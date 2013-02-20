@@ -103,25 +103,23 @@ class LibUvLoop implements LoopInterface
     }
 
     private function createTimer($interval, $callback, $periodic)
-    {
+    {  
         $timer = \uv_timer_init($this->loop);
         $signature = (int)$timer;
-        $callback = $this->wrapTimerCallback($signature, $callback, $periodic);
-        \uv_timer_start($timer, $interval*10000, $periodic*10000, $callback);
-
+        $callback = $this->wrapTimerCallback($timer, $callback, $periodic);
+        uv_timer_start($timer, 0, $interval * 1000, $callback);
         $this->timers[$signature] = $timer;
         return $signature;
     }
 
-    private function wrapTimerCallback($signature, $callback, $periodic)
+    private function wrapTimerCallback($timer, $callback, $periodic)
     {
         $loop = $this;
 
-        return function ($timer, $status) use ($signature, $callback, $periodic, $loop) {
-            call_user_func($callback, $signature, $loop);
-
+        return function ($timer, $status) use ($timer, $callback, $periodic, $loop) {
+            call_user_func($callback, (int)$timer, $loop);
             if (!$periodic) {
-                \uv_timer_stop($signature);
+                \uv_timer_stop($timer);
             }
         };
     }
@@ -134,20 +132,24 @@ class LibUvLoop implements LoopInterface
     public function run()
     {
         // @codeCoverageIgnoreStart
-        if ($this->suspended) {
-            $this->suspended = false;
-            //$this->loop->resume();
-        } else {
-            \uv_run($this->loop);
-//            \uv_run();
-        }
+       if ($this->suspended == true)
+           return;
+       while (\uv_run_once($this->loop)) {
+           if ($this->suspended == true)
+           return;
+       }
         // @codeCoverageIgnoreEnd
     }
 
+    public function resume()
+    {
+        $this->suspended = false;
+        $this->uv_run();
+    }
+    
     public function stop()
     {
         // @codeCoverageIgnoreStart
-        //$this->loop->suspend();
         $this->suspended = true;
         // @codeCoverageIgnoreEnd
     }

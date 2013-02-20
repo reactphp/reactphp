@@ -20,8 +20,4 @@ class LibUvEventLoopTest extends AbstractLoopTest
         $loop = new LibUvLoop();
     }
     
-    public function stopShouldStopRunningLoop()
-    {
-        $this->fail('libuv does not currently provide a stop method');
-    }
 }

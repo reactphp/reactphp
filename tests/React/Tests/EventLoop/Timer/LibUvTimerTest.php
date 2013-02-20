@@ -8,7 +8,7 @@ class LibUvTimerTest extends AbstractTimerTest
 {
     public function setUp()
     {
-        $this->fail('Lib uv timers are currently not working');
+        
     }
     
     public function createLoop()
