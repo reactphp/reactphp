@@ -1,5 +1,5 @@
 {
-    "hash": "5f0a2a64aac5dfdaf753a41c5481735b",
+    "hash": "755de5b9f5e604fe55b47540c7f0eb0e",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -42,28 +42,34 @@
         },
         {
             "name": "guzzle/parser",
-            "version": "v3.0.4",
+            "version": "v3.0.7",
             "target-dir": "Guzzle/Parser",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/parser.git",
-                "reference": "v3.0.4"
+                "reference": "v3.0.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/parser/archive/v3.0.4.zip",
-                "reference": "v3.0.4",
+                "url": "https://github.com/guzzle/parser/archive/v3.0.7.zip",
+                "reference": "v3.0.7",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
             "autoload": {
                 "psr-0": {
                     "Guzzle\\Parser": ""
                 }
             },
+            "notification-url": "http://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -76,7 +82,7 @@
                 "message",
                 "url"
             ],
-            "time": "2012-11-01 18:03:45"
+            "time": "2012-12-07 16:45:11"
         },
         {
             "name": "react/promise",
