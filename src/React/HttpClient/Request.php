@@ -5,9 +5,9 @@ namespace React\HttpClient;
 use Evenement\EventEmitter;
 use Guzzle\Parser\Message\MessageParser;
 use React\EventLoop\LoopInterface;
-use React\HttpClient\ConnectionManagerInterface;
 use React\HttpClient\Response;
 use React\HttpClient\ResponseHeaderParser;
+use React\SocketClient\ConnectorInterface;
 use React\Stream\Stream;
 use React\Stream\WritableStreamInterface;
 
@@ -23,7 +23,7 @@ class Request extends EventEmitter implements WritableStreamInterface
     const STATE_END = 3;
 
     private $loop;
-    private $connectionManager;
+    private $connector;
     private $requestData;
 
     private $stream;
@@ -32,10 +32,10 @@ class Request extends EventEmitter implements WritableStreamInterface
     private $response;
     private $state = self::STATE_INIT;
 
-    public function __construct(LoopInterface $loop, ConnectionManagerInterface $connectionManager, RequestData $requestData)
+    public function __construct(LoopInterface $loop, ConnectorInterface $connector, RequestData $requestData)
     {
         $this->loop = $loop;
-        $this->connectionManager = $connectionManager;
+        $this->connector = $connector;
         $this->requestData = $requestData;
     }
 
@@ -217,8 +217,8 @@ class Request extends EventEmitter implements WritableStreamInterface
         $host = $this->requestData->getHost();
         $port = $this->requestData->getPort();
 
-        return $this->connectionManager
-            ->getConnection($host, $port);
+        return $this->connector
+            ->createTcp($host, $port);
     }
 
     public function setResponseFactory($factory)

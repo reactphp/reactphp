@@ -12,7 +12,7 @@ use React\Tests\Socket\TestCase;
 class RequestTest extends TestCase
 {
     private $loop;
-    private $connectionManager;
+    private $connector;
     private $stream;
 
     public function setUp()
@@ -23,7 +23,7 @@ class RequestTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->connectionManager = $this->getMock('React\HttpClient\ConnectionManagerInterface');
+        $this->connector = $this->getMock('React\SocketClient\ConnectorInterface');
 
         $this->response = $this->getMockBuilder('React\HttpClient\Response')
             ->disableOriginalConstructor()
@@ -31,10 +31,10 @@ class RequestTest extends TestCase
     }
 
     /** @test */
-    public function requestShouldBindToStreamEventsAndUseConnectionManager()
+    public function requestShouldBindToStreamEventsAndUseconnector()
     {
         $requestData = new RequestData('GET', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $requestData);
+        $request = new Request($this->loop, $this->connector, $requestData);
 
         $this->successfulConnectionMock();
 
@@ -124,7 +124,7 @@ class RequestTest extends TestCase
     public function requestShouldEmitErrorIfConnectionFails()
     {
         $requestData = new RequestData('GET', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $requestData);
+        $request = new Request($this->loop, $this->connector, $requestData);
 
         $this->rejectedConnectionMock();
 
@@ -157,7 +157,7 @@ class RequestTest extends TestCase
     public function requestShouldEmitErrorIfConnectionEndsBeforeResponseIsParsed()
     {
         $requestData = new RequestData('GET', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $requestData);
+        $request = new Request($this->loop, $this->connector, $requestData);
 
         $this->successfulConnectionMock();
 
@@ -191,7 +191,7 @@ class RequestTest extends TestCase
     public function requestShouldEmitErrorIfConnectionEmitsError()
     {
         $requestData = new RequestData('GET', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $requestData);
+        $request = new Request($this->loop, $this->connector, $requestData);
 
         $this->successfulConnectionMock();
 
@@ -225,7 +225,7 @@ class RequestTest extends TestCase
     public function postRequestShouldSendAPostRequest()
     {
         $requestData = new RequestData('POST', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $requestData);
+        $request = new Request($this->loop, $this->connector, $requestData);
 
         $this->successfulConnectionMock();
 
@@ -255,7 +255,7 @@ class RequestTest extends TestCase
     public function writeWithAPostRequestShouldSendToTheStream()
     {
         $requestData = new RequestData('POST', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $requestData);
+        $request = new Request($this->loop, $this->connector, $requestData);
 
         $this->successfulConnectionMock();
 
@@ -296,7 +296,7 @@ class RequestTest extends TestCase
     public function pipeShouldPipeDataIntoTheRequestBody()
     {
         $requestData = new RequestData('POST', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $requestData);
+        $request = new Request($this->loop, $this->connector, $requestData);
 
         $this->successfulConnectionMock();
 
@@ -345,7 +345,7 @@ class RequestTest extends TestCase
     public function endShouldOnlyAcceptScalars()
     {
         $requestData = new RequestData('POST', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $requestData);
+        $request = new Request($this->loop, $this->connector, $requestData);
 
         $request->end(array());
     }
@@ -354,7 +354,7 @@ class RequestTest extends TestCase
     public function requestShouldRelayErrorEventsFromResponse()
     {
         $requestData = new RequestData('GET', 'http://www.example.com');
-        $request = new Request($this->loop, $this->connectionManager, $requestData);
+        $request = new Request($this->loop, $this->connector, $requestData);
 
         $this->successfulConnectionMock();
 
@@ -389,18 +389,18 @@ class RequestTest extends TestCase
 
     private function successfulConnectionMock()
     {
-        $this->connectionManager
+        $this->connector
             ->expects($this->once())
-            ->method('getConnection')
+            ->method('createTcp')
             ->with('www.example.com', 80)
             ->will($this->returnValue(new FulfilledPromise($this->stream)));
     }
 
     private function rejectedConnectionMock()
     {
-        $this->connectionManager
+        $this->connector
             ->expects($this->once())
-            ->method('getConnection')
+            ->method('createTcp')
             ->with('www.example.com', 80)
             ->will($this->returnValue(new RejectedPromise(new \RuntimeException())));
     }

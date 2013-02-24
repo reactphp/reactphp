@@ -3,9 +3,8 @@
 namespace React\HttpClient;
 
 use React\EventLoop\LoopInterface;
-use React\HttpClient\ConnectionManager;
 use React\HttpClient\Request;
-use React\HttpClient\SecureConnectionManager;
+use React\SocketClient\ConnectorInterface;
 
 class Client
 {
@@ -13,47 +12,24 @@ class Client
     private $connectionManager;
     private $secureConnectionManager;
 
-    public function __construct(LoopInterface $loop, ConnectionManagerInterface $connectionManager, ConnectionManagerInterface $secureConnectionManager)
+    public function __construct(LoopInterface $loop, ConnectorInterface $connector, ConnectorInterface $secureConnector)
     {
         $this->loop = $loop;
-        $this->connectionManager = $connectionManager;
-        $this->secureConnectionManager = $secureConnectionManager;
+        $this->connector = $connector;
+        $this->secureConnector = $secureConnector;
     }
 
     public function request($method, $url, array $headers = array())
     {
         $requestData = new RequestData($method, $url, $headers);
-        $connectionManager = $this->getConnectionManagerForScheme($requestData->getScheme());
+        $connectionManager = $this->getConnectorForScheme($requestData->getScheme());
         return new Request($this->loop, $connectionManager, $requestData);
+
     }
 
-    public function setConnectionManager(ConnectionManagerInterface $connectionManager)
+    private function getConnectorForScheme($scheme)
     {
-        $this->connectionManager = $connectionManager;
-    }
-
-    public function getConnectionManager()
-    {
-        return $this->connectionManager;
-    }
-
-    public function setSecureConnectionManager(ConnectionManagerInterface $connectionManager)
-    {
-        $this->secureConnectionManager = $connectionManager;
-    }
-
-    public function getSecureConnectionManager()
-    {
-        return $this->secureConnectionManager;
-    }
-
-    private function getConnectionManagerForScheme($scheme)
-    {
-        if ('https' === $scheme) {
-            return $this->getSecureConnectionManager();
-        } else {
-            return $this->getConnectionManager();
-        }
+        return ('https' === $scheme) ? $this->secureConnector : $this->connector;
     }
 }
 
