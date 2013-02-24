@@ -5,7 +5,6 @@
     "license": "MIT",
     "require": {
         "php": ">=5.3.3",
-        "guzzle/http": "3.0.*",
         "guzzle/parser": "3.0.*",
         "react/socket": "0.3.*"
     },
