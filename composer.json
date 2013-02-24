@@ -10,7 +10,7 @@
     "require": {
         "php": ">=5.3.3",
         "evenement/evenement": "1.0.*",
-        "guzzle/parser": "3.0.*",
+        "guzzle/parser": "~3.0",
         "react/promise": "~1.0"
     },
     "require-dev": {
