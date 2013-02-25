@@ -5,8 +5,7 @@ namespace React\EventLoop;
 class LibUvLoop implements LoopInterface
 {
     public $loop;
-    private $readEvents = array();
-    private $writeEvents = array();
+    private $events = array();
     private $timers = array();
     private $suspended = false;
 
@@ -27,24 +26,20 @@ class LibUvLoop implements LoopInterface
 
     public function removeReadStream($stream)
     {
-        \uv_poll_stop($this->readEvents[(int)$stream]);
-        unset($this->readEvents[(int)$stream]);
+        \uv_poll_stop($this->events[(int)$stream]);
+        unset($this->events[(int)$stream]);
     }
 
     public function removeWriteStream($stream)
     {
-        \uv_poll_stop($this->writeEvents[(int)$stream]);
-        unset($this->writeEvents[(int)$stream]);
+        \uv_poll_stop($this->events[(int)$stream]);
+        unset($this->events[(int)$stream]);
     }
 
     public function removeStream($stream)
     {
-        if (isset($this->readEvents[(int)$stream])) {
-            $this->removeReadStream($stream);
-        }
-
-        if (isset($this->writeEvents[(int)$stream])) {
-            $this->removeWriteStream($stream);
+        if (isset($this->events[(int)$stream])) {
+            \uv_poll_stop($this->events[(int)$stream]);
         }
     }
 
@@ -56,15 +51,14 @@ class LibUvLoop implements LoopInterface
             return false;
         }
         $listener = $this->wrapStreamListener($stream, $listener, $flags);
-
-        $event = \uv_poll_init($this->loop, $stream);
-
-        if (($flags & \UV::READABLE) === $flags) {
-            $this->readEvents[(int)$stream] = $event;
-        } elseif (($flags & \UV::WRITABLE) === $flags) {
-            $this->writeEvents[(int)$stream] = $event;
+        
+        if (!isset($this->events[(int)$stream])){
+            $event = \uv_poll_init($this->loop, $stream);
+            $this->events[(int)$stream] = $event;
         }
-
+        else {
+            $event = $this->events[(int)$stream];
+        }
         \uv_poll_start($event, $flags, $listener);
     }
 
@@ -132,11 +126,13 @@ class LibUvLoop implements LoopInterface
     public function run()
     {
         // @codeCoverageIgnoreStart
-       if ($this->suspended == true)
+       if ($this->suspended == true) {
            return;
+       }
        while (\uv_run_once($this->loop)) {
-           if ($this->suspended == true)
-           return;
+           if ($this->suspended == true) {
+               return;
+           }
        }
         // @codeCoverageIgnoreEnd
     }
