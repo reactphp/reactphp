@@ -284,13 +284,12 @@ class LibuvFilesystemTest extends TestCase
         }
     }
     
-   public function testThatReadfileCanReadFromAFile()
+    public function testThatReadCanReadFromAFile()
     {
         $loop = new EventLoop\LibUvLoop();
         $fs = new LibuvFilesystem($loop);
         $path = __DIR__ . '/test-read';
-        $testbuffer = "test";
-        $tests = $this;
+        $testbuffer = "testread";
         
         if (file_exists($path) && !is_dir($path)) {
             unlink($path);
@@ -299,11 +298,68 @@ class LibuvFilesystemTest extends TestCase
             rmdir($path);
         }
         
+        $buffer = null;
+        
+        file_put_contents($path, $testbuffer);
+        $fs
+            ->open($path)->then(function($result) use($fs, $testbuffer, &$buffer){
+                $fs->read($result, strlen($testbuffer))->then(function($result) use (&$buffer){
+                    $buffer = $result;
+                });
+            });
+        $loop->run();
+        $this->assertEquals($buffer, $testbuffer);
+        if (file_exists($path)) {
+            unlink($path);
+        }
+    }
+    
+   public function testThatReadfileCanReadFromAFile()
+    {
+        $loop = new EventLoop\LibUvLoop();
+        $fs = new LibuvFilesystem($loop);
+        $path = __DIR__ . '/test';
+        $testbuffer = "test2";
+        
+        if (file_exists($path) && !is_dir($path)) {
+            unlink($path);
+        }
+        elseif (file_exists($path)) {
+            rmdir($path);
+        }
+        
+        $buffer = null;
+        
         file_put_contents($path, $testbuffer);
         $fs->readfile($path)
-            ->then(function($result) use ($testbuffer, $tests){
-                $tests->assertEquals($testbuffer, $result);
+            ->then(function($result) use ($testbuffer, &$buffer){
+                $buffer= $result;
             }, $this->expectCallableNever());
+        $loop->run();
+        $this->assertEquals($testbuffer, $buffer);
+        if (file_exists($path)) {
+            unlink($path);
+        }
+    }
+    
+       public function testThatReadfileCannotReadAnUnexistingFile()
+    {
+        $loop = new EventLoop\LibUvLoop();
+        $fs = new LibuvFilesystem($loop);
+        $path = __DIR__ . '/test';
+        $testbuffer = "test2";
+        
+        if (file_exists($path) && !is_dir($path)) {
+            unlink($path);
+        }
+        elseif (file_exists($path)) {
+            rmdir($path);
+        }
+        
+        $buffer = null;
+        
+        $fs->readfile($path)
+            ->then($this->expectCallableNever(), $this->expectCallableOnce());
         $loop->run();
         if (file_exists($path)) {
             unlink($path);

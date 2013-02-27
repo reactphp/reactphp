@@ -170,18 +170,25 @@ class LibuvFilesystem implements FilesystemInterface
     {
         $fs = $this;
         $thatFd = null;
+        $deferred = new Deferred();
+        $buffer = null;
         
         $all = array(
             'stat' => $fs->stat($filename),
             'fd'   => $fs->open($filename)
         );
         return When::all($all)
-            ->then(function ($result) use ($fs, &$thatFd) {
+            ->then(function ($result) use ($fs, &$thatFd, &$buffer) {
                 $thatFd = $result['fd'];
-                return $fs->read($thatFd, $result['stat']['size']);
+                return $fs->read($thatFd, $result['stat']['size'])->then(function ($res) use (&$buffer){
+                    $buffer = $res;
+                });
             })
-            ->then(function ($data) use ($fs, &$thatFd) {
-                return $fs->close($thatFd);
+            ->then(function ($data) use ($fs, &$thatFd, &$buffer, $deferred) {
+                $deferred->resolve($buffer);
+                $fs->close($thatFd);
+                return $deferred->promise();
             });
+       return $deferred->reject(new IOException(uv_strerror(uv_last_error($loop))));
     }
 }

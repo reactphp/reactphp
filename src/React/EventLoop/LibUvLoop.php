@@ -140,7 +140,7 @@ class LibUvLoop implements LoopInterface
     public function resume()
     {
         $this->suspended = false;
-        $this->uv_run();
+        $this->run();
     }
     
     public function stop()
