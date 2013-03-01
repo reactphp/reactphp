@@ -12,6 +12,7 @@ class Timers
     private $time;
     private $active = array();
     private $timers;
+    private $nextTickCallbacks = array();
 
     public function __construct(LoopInterface $loop)
     {
@@ -55,6 +56,14 @@ class Timers
         return $timer->signature;
     }
 
+    public function addNextTickCallback($callback)
+    {
+        if (!is_callable($callback)) {
+            throw new \InvalidArgumentException('The callback must be a callable object.');
+        }
+        $this->nextTickCallbacks[] = $callback;
+    }
+
     public function cancel($signature)
     {
         unset($this->active[$signature]);
@@ -75,6 +84,20 @@ class Timers
     }
 
     public function tick()
+    {
+        $this->processNextTickCallbacks();
+        $this->processTimers();
+    }
+
+    protected function processNextTickCallbacks()
+    {
+        foreach ($this->nextTickCallbacks as $key => $callback) {
+            call_user_func($callback, $this->loop);
+            unset($this->nextTickCallbacks[$key]);
+        }
+    }
+
+    protected function processTimers()
     {
         $time = $this->updateTime();
         $timers = $this->timers;

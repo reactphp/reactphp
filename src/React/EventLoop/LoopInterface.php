@@ -15,6 +15,8 @@ interface LoopInterface
     public function addPeriodicTimer($interval, $callback);
     public function cancelTimer($signature);
 
+    public function nextTick($callback);
+
     public function tick();
     public function run();
     public function stop();
