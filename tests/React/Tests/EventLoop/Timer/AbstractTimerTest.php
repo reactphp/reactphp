@@ -73,4 +73,16 @@ abstract class AbstractTimerTest extends TestCase
 
         $this->assertSame(2, $i);
     }
+
+    public function testAddNextTickCallback()
+    {
+        $loop = $this->createLoop();
+        $loop->nextTick($this->expectCallableOnce());
+        usleep(1000);
+        $loop->tick();
+        usleep(1000);
+        $loop->tick();
+        usleep(1000);
+        $loop->tick();
+    }
 }

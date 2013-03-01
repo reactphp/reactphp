@@ -76,6 +76,11 @@ class StreamSelectLoop implements LoopInterface
         return $this->timers->add($interval, $callback, true);
     }
 
+    public function nextTick($callback)
+    {
+        return $this->timers->addNextTickCallback($callback);
+    }
+
     public function cancelTimer($signature)
     {
         $this->timers->cancel($signature);

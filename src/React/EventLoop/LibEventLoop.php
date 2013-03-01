@@ -201,6 +201,11 @@ class LibEventLoop implements LoopInterface
         return $this->addTimerInternal($interval, $callback, true);
     }
 
+    public function nextTick($callback)
+    {
+        $this->addTimerInternal(self::MIN_TIMER_RESOLUTION, $callback);
+    }
+
     public function cancelTimer($signature)
     {
         if (isset($this->timers[$signature])) {

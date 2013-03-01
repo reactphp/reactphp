@@ -99,6 +99,11 @@ class LibEvLoop implements LoopInterface
         return $this->createTimer($timer, $callback, true);
     }
 
+    public function nextTick($callback)
+    {
+        $this->addTimer(0, $callback);
+    }
+
     public function cancelTimer($signature)
     {
         $this->loop->remove($this->timers[$signature]);
