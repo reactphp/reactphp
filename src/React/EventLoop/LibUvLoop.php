@@ -8,6 +8,7 @@ class LibUvLoop implements LoopInterface
     private $events = array();
     private $timers = array();
     private $suspended = false;
+    public $listeners = array();
 
     public function __construct()
     {
@@ -27,19 +28,30 @@ class LibUvLoop implements LoopInterface
     public function removeReadStream($stream)
     {
         \uv_poll_stop($this->events[(int) $stream]);
-        unset($this->events[(int) $stream]);
+        unset($this->listeners[(int) $stream]['read']);
+        if (!isset($this->listeners[(int) $stream]['read'])
+            && !isset($this->listeners[(int) $stream]['write'])) {
+            unset($this->events[(int) $stream]);
+        }
     }
 
     public function removeWriteStream($stream)
     {
         \uv_poll_stop($this->events[(int) $stream]);
-        unset($this->events[(int) $stream]);
+        unset($this->listeners[(int) $stream]['read']);
+        if (!isset($this->listeners[(int) $stream]['read'])
+            && !isset($this->listeners[(int) $stream]['write'])) {
+            unset($this->events[(int) $stream]);
+        }
     }
 
     public function removeStream($stream)
     {
         if (isset($this->events[(int) $stream])) {
             \uv_poll_stop($this->events[(int) $stream]);
+            unset($this->listeners[(int) $stream]['read']);
+            unset($this->listeners[(int) $stream]['write']);
+            unset($this->events[(int) $stream]);
         }
     }
 
@@ -51,33 +63,39 @@ class LibUvLoop implements LoopInterface
 
             return false;
         }
-        $listener = $this->wrapStreamListener($stream, $listener, $flags);
 
+        if (($flags & \UV::READABLE) === $flags) {
+            $this->listeners[(int) $stream]['read'] = $listener;
+        } elseif (($flags & \UV::WRITABLE) === $flags) {
+            $this->listeners[(int) $stream]['write'] = $listener;
+        }
         if (!isset($this->events[(int) $stream])) {
             $event = \uv_poll_init($this->loop, $stream);
             $this->events[(int) $stream] = $event;
         } else {
             $event = $this->events[(int) $stream];
         }
+        $listener = $this->wrapStreamListener();
         \uv_poll_start($event, $flags, $listener);
     }
 
-    private function wrapStreamListener($stream, $listener, $flags)
+    private function wrapStreamListener()
     {
-        if (($flags & \UV::READABLE) === $flags) {
-            $removeCallback = array($this, 'removeReadStream');
-        } elseif (($flags & \UV::WRITABLE) === $flags) {
-            $removeCallback = array($this, 'removeWriteStream');
-        }
+       $loop = $this;
 
-        return function ($poll, $status, $event, $stream) use ($listener, $removeCallback) {
+        return function ($poll, $status, $event, $stream) use ($loop) {
             if ($status < 0) {
-                call_user_func($removeCallback, $stream);
+                if (isset($loop->listeners[(int) $stream]['read']))
+                    call_user_func(array($this, 'removeReadStream'), $stream);
+                if (isset($loop->writeListeners[(int) $stream]['write']))
+                    call_user_func(array($this, 'removeWriteStream'), $stream);
 
                 return;
             }
-
-            call_user_func($listener, $stream);
+            if (isset($loop->listeners[(int) $stream]['read']))
+                call_user_func($loop->listeners[(int) $stream]['read'], $stream);
+            if (isset($loop->listeners[(int) $stream]['write']))
+                call_user_func($loop->listeners[(int) $stream]['write'], $stream);
         };
     }
 

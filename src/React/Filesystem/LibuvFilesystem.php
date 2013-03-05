@@ -16,13 +16,6 @@ class LibuvFilesystem implements FilesystemInterface
         $this->loop = $loop;
     }
 
-    /**
-     *
-     * @param String  $dirname
-     * @param Integer $permissions
-     *
-     * @return Deferred
-     */
     public function mkdir($dirname, $mode = 0755)
     {
         $deferred = new Deferred();
@@ -41,14 +34,6 @@ class LibuvFilesystem implements FilesystemInterface
         return $deferred->promise();
     }
 
-    /**
-     *
-     * @param String  $path
-     * @param Integer $options
-     * @param Integer $mode
-     *
-     * @return Deferred
-     */
     public function open($path, $flags = \UV::O_RDONLY, $mode = 0755)
     {
         $deferred = new Deferred();
@@ -67,14 +52,6 @@ class LibuvFilesystem implements FilesystemInterface
         return $deferred->promise();
     }
 
-    /**
-     *
-     * @param Integer $fd
-     * @param String  $buffer
-     * @param Integer $offset
-     *
-     * @return Deferred
-     */
     public function write($fd, $buffer, $offset = 0)
     {
         $deferred = new Deferred();
@@ -93,12 +70,6 @@ class LibuvFilesystem implements FilesystemInterface
         return $deferred->promise();
     }
 
-    /**
-     *
-     * @param type $fd
-     *
-     * @return Deferred
-     */
     public function close($fd)
     {
         $deferred = new Deferred();
@@ -117,13 +88,6 @@ class LibuvFilesystem implements FilesystemInterface
         return $deferred->promise();
     }
 
-    /**
-     *
-     * @param Integer $fd
-     * @param String  $buffer
-     *
-     * @return Deferred
-     */
     public function read($fd, $length)
     {
         $deferred = new Deferred();
@@ -142,12 +106,6 @@ class LibuvFilesystem implements FilesystemInterface
         return $deferred->promise();
     }
 
-    /**
-     *
-     * @param String $filename
-     *
-     * @return Deferred
-     */
     public function stat($filename)
     {
         $deferred = new Deferred();
@@ -166,12 +124,6 @@ class LibuvFilesystem implements FilesystemInterface
      return $deferred->promise();
     }
 
-    /**
-     *
-     * @param String $filename
-     *
-     * @return Deferred
-     */
     public function readfile($filename)
     {
         $fs = $this;
