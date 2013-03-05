@@ -85,17 +85,20 @@ class LibUvLoop implements LoopInterface
 
         return function ($poll, $status, $event, $stream) use ($loop) {
             if ($status < 0) {
-                if (isset($loop->listeners[(int) $stream]['read']))
+                if (isset($loop->listeners[(int) $stream]['read'])) {
                     call_user_func(array($this, 'removeReadStream'), $stream);
-                if (isset($loop->writeListeners[(int) $stream]['write']))
+                }
+                if (isset($loop->writeListeners[(int) $stream]['write'])) {
                     call_user_func(array($this, 'removeWriteStream'), $stream);
-
+                }
                 return;
             }
-            if (isset($loop->listeners[(int) $stream]['read']))
+            if (isset($loop->listeners[(int) $stream]['read'])) {
                 call_user_func($loop->listeners[(int) $stream]['read'], $stream);
-            if (isset($loop->listeners[(int) $stream]['write']))
+            }
+            if (isset($loop->listeners[(int) $stream]['write'])) {
                 call_user_func($loop->listeners[(int) $stream]['write'], $stream);
+            }
         };
     }
 
