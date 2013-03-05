@@ -19,12 +19,12 @@ class LibUvEventLoopTest extends AbstractLoopTest
     {
         $loop = new LibUvLoop();
     }
-    
+
     public function testRemoveStream()
     {
         $this->markTestSkipped('testRemoveStream skipped since libuv does not handle read and write streams separately');
     }
-    
+
     public function testLibUVRemoveStream()
     {
         $input = fopen('php://temp', 'r+');
@@ -32,7 +32,6 @@ class LibUvEventLoopTest extends AbstractLoopTest
         $this->loop->addReadStream($input, $this->expectCallableNever());
         $this->loop->addWriteStream($input, $this->expectCallableOnce());
 
-        
         fwrite($input, "bar\n");
         rewind($input);
         $this->loop->tick();
@@ -42,5 +41,6 @@ class LibUvEventLoopTest extends AbstractLoopTest
         fwrite($input, "bar\n");
         rewind($input);
         $this->loop->tick();
+        fclose($input);
     }
 }

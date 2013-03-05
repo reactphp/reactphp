@@ -26,20 +26,20 @@ class LibUvLoop implements LoopInterface
 
     public function removeReadStream($stream)
     {
-        \uv_poll_stop($this->events[(int)$stream]);
-        unset($this->events[(int)$stream]);
+        \uv_poll_stop($this->events[(int) $stream]);
+        unset($this->events[(int) $stream]);
     }
 
     public function removeWriteStream($stream)
     {
-        \uv_poll_stop($this->events[(int)$stream]);
-        unset($this->events[(int)$stream]);
+        \uv_poll_stop($this->events[(int) $stream]);
+        unset($this->events[(int) $stream]);
     }
 
     public function removeStream($stream)
     {
-        if (isset($this->events[(int)$stream])) {
-            \uv_poll_stop($this->events[(int)$stream]);
+        if (isset($this->events[(int) $stream])) {
+            \uv_poll_stop($this->events[(int) $stream]);
         }
     }
 
@@ -48,16 +48,16 @@ class LibUvLoop implements LoopInterface
         if (get_resource_type($stream) == "Unknown") {
             error_log("Unknown resource handle passed. something wrong");
             var_dump(debug_backtrace());
+
             return false;
         }
         $listener = $this->wrapStreamListener($stream, $listener, $flags);
-        
-        if (!isset($this->events[(int)$stream])){
+
+        if (!isset($this->events[(int) $stream])) {
             $event = \uv_poll_init($this->loop, $stream);
-            $this->events[(int)$stream] = $event;
-        }
-        else {
-            $event = $this->events[(int)$stream];
+            $this->events[(int) $stream] = $event;
+        } else {
+            $event = $this->events[(int) $stream];
         }
         \uv_poll_start($event, $flags, $listener);
     }
@@ -73,6 +73,7 @@ class LibUvLoop implements LoopInterface
         return function ($poll, $status, $event, $stream) use ($listener, $removeCallback) {
             if ($status < 0) {
                 call_user_func($removeCallback, $stream);
+
                 return;
             }
 
@@ -97,12 +98,13 @@ class LibUvLoop implements LoopInterface
     }
 
     private function createTimer($interval, $callback, $periodic)
-    {  
+    {
         $timer = \uv_timer_init($this->loop);
-        $signature = (int)$timer;
+        $signature = (int) $timer;
         $callback = $this->wrapTimerCallback($timer, $callback, $periodic);
         uv_timer_start($timer, 0, $interval * 1000, $callback);
         $this->timers[$signature] = $timer;
+
         return $signature;
     }
 
@@ -111,7 +113,7 @@ class LibUvLoop implements LoopInterface
         $loop = $this;
 
         return function ($timer, $status) use ($timer, $callback, $periodic, $loop) {
-            call_user_func($callback, (int)$timer, $loop);
+            call_user_func($callback, (int) $timer, $loop);
             if (!$periodic) {
                 \uv_timer_stop($timer);
             }
@@ -142,7 +144,7 @@ class LibUvLoop implements LoopInterface
         $this->suspended = false;
         $this->run();
     }
-    
+
     public function stop()
     {
         // @codeCoverageIgnoreStart

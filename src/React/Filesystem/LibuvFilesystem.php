@@ -7,21 +7,20 @@ use React\Filesystem\Exception\IOException;
 use React\Promise\Deferred;
 use React\Promise\When;
 
-
 class LibuvFilesystem implements FilesystemInterface
 {
     private $loop;
-    
+
     public function __construct(LibUvLoop $loop)
     {
         $this->loop = $loop;
     }
-    
+
     /**
-     * 
-     * @param String $dirname
+     *
+     * @param String  $dirname
      * @param Integer $permissions
-     * 
+     *
      * @return Deferred
      */
     public function mkdir($dirname, $mode = 0755)
@@ -33,6 +32,7 @@ class LibuvFilesystem implements FilesystemInterface
                 $deferred->reject(new IOException(
                     uv_strerror(uv_last_error($loop))
                 ));
+
                 return;
             }
             $deferred->resolve($dirname);
@@ -40,17 +40,17 @@ class LibuvFilesystem implements FilesystemInterface
 
         return $deferred->promise();
     }
-    
+
     /**
-     * 
-     * @param String $path
+     *
+     * @param String  $path
      * @param Integer $options
      * @param Integer $mode
-     * 
+     *
      * @return Deferred
      */
     public function open($path, $flags = \UV::O_RDONLY, $mode = 0755)
-    {    
+    {
         $deferred = new Deferred();
         $loop = $this->loop->loop;
         uv_fs_open($loop, $path, $flags, $mode, function ($r) use ($deferred, $path, $loop) {
@@ -58,6 +58,7 @@ class LibuvFilesystem implements FilesystemInterface
                 $deferred->reject(new IOException(
                     uv_strerror(uv_last_error($loop))
                 ));
+
                 return;
             }
             $deferred->resolve($r);
@@ -67,15 +68,15 @@ class LibuvFilesystem implements FilesystemInterface
     }
 
     /**
-     * 
+     *
      * @param Integer $fd
-     * @param String $buffer
+     * @param String  $buffer
      * @param Integer $offset
      *
      * @return Deferred
      */
     public function write($fd, $buffer, $offset = 0)
-    {   
+    {
         $deferred = new Deferred();
         $loop = $this->loop->loop;
         uv_fs_write($loop, $fd, $buffer, $offset, function ($stream, $result) use ($deferred, $loop) {
@@ -83,6 +84,7 @@ class LibuvFilesystem implements FilesystemInterface
                 $deferred->reject(new IOException(
                     uv_strerror(uv_last_error($loop))
                 ));
+
                 return;
             }
             $deferred->resolve($result);
@@ -90,11 +92,11 @@ class LibuvFilesystem implements FilesystemInterface
 
         return $deferred->promise();
     }
-    
+
     /**
-     * 
+     *
      * @param type $fd
-     * 
+     *
      * @return Deferred
      */
     public function close($fd)
@@ -106,6 +108,7 @@ class LibuvFilesystem implements FilesystemInterface
                 $deferred->reject(new IOException(
                     uv_strerror(uv_last_error($loop))
                 ));
+
                 return;
             }
             $deferred->resolve($result);
@@ -113,12 +116,12 @@ class LibuvFilesystem implements FilesystemInterface
 
         return $deferred->promise();
     }
-    
+
     /**
-     * 
+     *
      * @param Integer $fd
-     * @param String $buffer
-     * 
+     * @param String  $buffer
+     *
      * @return Deferred
      */
     public function read($fd, $length)
@@ -130,6 +133,7 @@ class LibuvFilesystem implements FilesystemInterface
                 $deferred->reject(new IOException(
                     uv_strerror(uv_last_error($loop))
                 ));
+
                 return;
             }
             $deferred->resolve($buffer);
@@ -137,11 +141,11 @@ class LibuvFilesystem implements FilesystemInterface
 
         return $deferred->promise();
     }
-    
+
     /**
-     * 
+     *
      * @param String $filename
-     * 
+     *
      * @return Deferred
      */
     public function stat($filename)
@@ -153,42 +157,48 @@ class LibuvFilesystem implements FilesystemInterface
                 $deferred->reject(new IOException(
                         uv_strerror(uv_last_error($loop))
                 ));
+
                 return;
             }
            $deferred->resolve($stat);
         });
+
      return $deferred->promise();
     }
-    
+
     /**
-     * 
+     *
      * @param String $filename
-     * 
+     *
      * @return Deferred
-     */ 
+     */
     public function readfile($filename)
     {
         $fs = $this;
         $thatFd = null;
         $deferred = new Deferred();
         $buffer = null;
-        
+
         $all = array(
             'stat' => $fs->stat($filename),
             'fd'   => $fs->open($filename)
         );
+
         return When::all($all)
             ->then(function ($result) use ($fs, &$thatFd, &$buffer) {
                 $thatFd = $result['fd'];
-                return $fs->read($thatFd, $result['stat']['size'])->then(function ($res) use (&$buffer){
+
+                return $fs->read($thatFd, $result['stat']['size'])->then(function ($res) use (&$buffer) {
                     $buffer = $res;
                 });
             })
             ->then(function ($data) use ($fs, &$thatFd, &$buffer, $deferred) {
                 $deferred->resolve($buffer);
                 $fs->close($thatFd);
+
                 return $deferred->promise();
             });
+
        return $deferred->reject(new IOException(uv_strerror(uv_last_error($loop))));
     }
 }
