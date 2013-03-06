@@ -12,7 +12,7 @@ class LibUvLoop implements LoopInterface
 
     public function __construct()
     {
-        $this->loop = \uv_loop_new();
+        $this->loop = uv_loop_new();
     }
 
     public function addReadStream($stream, $listener)
@@ -27,7 +27,7 @@ class LibUvLoop implements LoopInterface
 
     public function removeReadStream($stream)
     {
-        \uv_poll_stop($this->events[(int) $stream]);
+        uv_poll_stop($this->events[(int) $stream]);
         unset($this->listeners[(int) $stream]['read']);
         if (!isset($this->listeners[(int) $stream]['read'])
             && !isset($this->listeners[(int) $stream]['write'])) {
@@ -37,7 +37,7 @@ class LibUvLoop implements LoopInterface
 
     public function removeWriteStream($stream)
     {
-        \uv_poll_stop($this->events[(int) $stream]);
+        uv_poll_stop($this->events[(int) $stream]);
         unset($this->listeners[(int) $stream]['read']);
         if (!isset($this->listeners[(int) $stream]['read'])
             && !isset($this->listeners[(int) $stream]['write'])) {
@@ -48,7 +48,7 @@ class LibUvLoop implements LoopInterface
     public function removeStream($stream)
     {
         if (isset($this->events[(int) $stream])) {
-            \uv_poll_stop($this->events[(int) $stream]);
+            uv_poll_stop($this->events[(int) $stream]);
             unset($this->listeners[(int) $stream]['read']);
             unset($this->listeners[(int) $stream]['write']);
             unset($this->events[(int) $stream]);
@@ -59,8 +59,6 @@ class LibUvLoop implements LoopInterface
     {
         if (get_resource_type($stream) == "Unknown") {
             error_log("Unknown resource handle passed. something wrong");
-            var_dump(debug_backtrace());
-
             return false;
         }
 
@@ -77,13 +75,13 @@ class LibUvLoop implements LoopInterface
             $this->listeners[(int) $stream]['write'] = $listener;
         }
         if (!isset($this->events[(int) $stream])) {
-            $event = \uv_poll_init($this->loop, $stream);
+            $event = uv_poll_init($this->loop, $stream);
             $this->events[(int) $stream] = $event;
         } else {
             $event = $this->events[(int) $stream];
         }
         $listener = $this->wrapStreamListener();
-        \uv_poll_start($event, $currentFlag | $flags, $listener);
+        uv_poll_start($event, $currentFlag | $flags, $listener);
     }
 
     private function wrapStreamListener()
@@ -121,13 +119,13 @@ class LibUvLoop implements LoopInterface
 
     public function cancelTimer($signature)
     {
-        \uv_timer_stop($this->timers[$signature]);
+        uv_timer_stop($this->timers[$signature]);
         unset($this->timers[$signature]);
     }
 
     private function createTimer($interval, $callback, $periodic)
     {
-        $timer = \uv_timer_init($this->loop);
+        $timer = uv_timer_init($this->loop);
         $signature = (int) $timer;
         $callback = $this->wrapTimerCallback($timer, $callback, $periodic);
         uv_timer_start($timer, 0, $interval * 1000, $callback);
@@ -143,14 +141,14 @@ class LibUvLoop implements LoopInterface
         return function ($timer, $status) use ($timer, $callback, $periodic, $loop) {
             call_user_func($callback, (int) $timer, $loop);
             if (!$periodic) {
-                \uv_timer_stop($timer);
+                uv_timer_stop($timer);
             }
         };
     }
 
     public function tick()
     {
-        \uv_run_once($this->loop);
+        uv_run_once($this->loop);
     }
 
     public function run()
@@ -158,7 +156,7 @@ class LibUvLoop implements LoopInterface
        if ($this->suspended === true) {
            return;
        }
-       while (\uv_run_once($this->loop)) {
+       while (uv_run_once($this->loop)) {
            if ($this->suspended === true) {
                return;
            }
@@ -173,8 +171,6 @@ class LibUvLoop implements LoopInterface
 
     public function stop()
     {
-        // @codeCoverageIgnoreStart
         $this->suspended = true;
-        // @codeCoverageIgnoreEnd
     }
 }
