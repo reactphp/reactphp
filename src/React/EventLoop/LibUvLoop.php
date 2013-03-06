@@ -64,6 +64,13 @@ class LibUvLoop implements LoopInterface
             return false;
         }
 
+        $currentFlag = 0;
+        if (isset($this->listeners[(int) $stream]['read'])) {
+            $currentFlag |= \UV::READABLE;
+        }
+        if (isset($this->listeners[(int) $stream]['write'])) {
+            $currentFlag |= \UV::WRITABLE;
+        }
         if (($flags & \UV::READABLE) === $flags) {
             $this->listeners[(int) $stream]['read'] = $listener;
         } elseif (($flags & \UV::WRITABLE) === $flags) {
@@ -76,13 +83,13 @@ class LibUvLoop implements LoopInterface
             $event = $this->events[(int) $stream];
         }
         $listener = $this->wrapStreamListener();
-        \uv_poll_start($event, $flags, $listener);
+        \uv_poll_start($event, $currentFlag | $flags, $listener);
     }
 
     private function wrapStreamListener()
     {
+            
        $loop = $this;
-
         return function ($poll, $status, $event, $stream) use ($loop) {
             if ($status < 0) {
                 if (isset($loop->listeners[(int) $stream]['read'])) {
@@ -93,10 +100,10 @@ class LibUvLoop implements LoopInterface
                 }
                 return;
             }
-            if (isset($loop->listeners[(int) $stream]['read'])) {
+            if ($event & \UV::READABLE && isset($loop->listeners[(int) $stream]['read'])) {
                 call_user_func($loop->listeners[(int) $stream]['read'], $stream);
             }
-            if (isset($loop->listeners[(int) $stream]['write'])) {
+            if ($event & \UV::WRITABLE && isset($loop->listeners[(int) $stream]['write'])) {
                 call_user_func($loop->listeners[(int) $stream]['write'], $stream);
             }
         };
@@ -148,16 +155,14 @@ class LibUvLoop implements LoopInterface
 
     public function run()
     {
-        // @codeCoverageIgnoreStart
-       if ($this->suspended == true) {
+       if ($this->suspended === true) {
            return;
        }
        while (\uv_run_once($this->loop)) {
-           if ($this->suspended == true) {
+           if ($this->suspended === true) {
                return;
            }
        }
-        // @codeCoverageIgnoreEnd
     }
 
     public function resume()
