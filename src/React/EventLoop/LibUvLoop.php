@@ -59,6 +59,7 @@ class LibUvLoop implements LoopInterface
     {
         if (get_resource_type($stream) == "Unknown") {
             error_log("Unknown resource handle passed. something wrong");
+
             return false;
         }
 
@@ -86,8 +87,9 @@ class LibUvLoop implements LoopInterface
 
     private function wrapStreamListener()
     {
-            
+
        $loop = $this;
+
         return function ($poll, $status, $event, $stream) use ($loop) {
             if ($status < 0) {
                 if (isset($loop->listeners[(int) $stream]['read'])) {
@@ -96,6 +98,7 @@ class LibUvLoop implements LoopInterface
                 if (isset($loop->writeListeners[(int) $stream]['write'])) {
                     call_user_func(array($this, 'removeWriteStream'), $stream);
                 }
+
                 return;
             }
             if ($event & \UV::READABLE && isset($loop->listeners[(int) $stream]['read'])) {
@@ -127,19 +130,20 @@ class LibUvLoop implements LoopInterface
     {
         $timer = uv_timer_init($this->loop);
         $signature = (int) $timer;
-        $callback = $this->wrapTimerCallback($timer, $callback, $periodic);  
+        $callback = $this->wrapTimerCallback($timer, $callback, $periodic);
         $this->timers[$signature] = $timer;
         uv_timer_start($timer, $interval * 1000, $interval * 1000, $callback);
+
         return $signature;
     }
 
     private function wrapTimerCallback($timer, $callback, $periodic)
     {
         $loop = $this;
-        
+
         return function ($timer, $status) use ($timer, $callback, $periodic, $loop) {
             call_user_func($callback, (int) $timer, $loop);
-            if (!$periodic || !isset($loop->timers[(int) $timer])) {
+            if (!$periodic) {
                 uv_timer_stop($timer);
             }
         };
