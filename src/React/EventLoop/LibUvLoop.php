@@ -127,20 +127,19 @@ class LibUvLoop implements LoopInterface
     {
         $timer = uv_timer_init($this->loop);
         $signature = (int) $timer;
-        $callback = $this->wrapTimerCallback($timer, $callback, $periodic);
-        uv_timer_start($timer, 0, $interval * 1000, $callback);
+        $callback = $this->wrapTimerCallback($timer, $callback, $periodic);  
         $this->timers[$signature] = $timer;
-
+        uv_timer_start($timer, $interval * 1000, $interval * 1000, $callback);
         return $signature;
     }
 
     private function wrapTimerCallback($timer, $callback, $periodic)
     {
         $loop = $this;
-
+        
         return function ($timer, $status) use ($timer, $callback, $periodic, $loop) {
             call_user_func($callback, (int) $timer, $loop);
-            if (!$periodic) {
+            if (!$periodic || !isset($loop->timers[(int) $timer])) {
                 uv_timer_stop($timer);
             }
         };
