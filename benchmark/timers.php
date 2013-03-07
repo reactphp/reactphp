@@ -3,6 +3,11 @@
 require __DIR__.'/../vendor/autoload.php';
 require __DIR__.'/bench.php';
 
+if (extension_loaded('xdebug')) {
+    echo "Warning: xdebug is loaded, it can impact performance negatively.\n";
+    echo "\n";
+}
+
 $tests = array(
     '1000 one-off timers' => function ($loop) {
         for ($i = 0; $i < 1000; $i++) {
