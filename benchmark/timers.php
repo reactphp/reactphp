@@ -12,7 +12,7 @@ $tests = array(
     },
     '1000 periodic timers' => function ($loop) {
         for ($i = 0; $i < 1000; $i++) {
-            $loop->addPeriodicTimer(1, function ($signature, $loop) use (&$i) {
+            $loop->addPeriodicTimer(2, function ($signature, $loop) use (&$i) {
                 if ($i >= 1000) {
                     $loop->cancelTimer($signature);
                 }
