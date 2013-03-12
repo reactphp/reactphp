@@ -30,6 +30,10 @@ Here is a server that closes the connection if you send it anything.
         $conn->on('data', function ($data) use ($conn) {
             $conn->close();
         });
+
+        $conn->on('close', function{
+          echo 'Connection with client closed';
+        });
     });
     $socket->listen(1337);
 
