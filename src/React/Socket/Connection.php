@@ -26,6 +26,7 @@ class Connection extends Stream implements ConnectionInterface
         if (is_resource($this->stream)) {
             stream_socket_shutdown($this->stream, STREAM_SHUT_RDWR);
             fclose($this->stream);
+            $this->emit('close');
         }
     }
 
