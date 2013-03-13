@@ -26,6 +26,8 @@ class Process extends EventEmitter
     private $signalCode = null;
 
     private $exited = false;
+    
+    private $stopped = false;
 
     public function __construct($process, WritableStreamInterface $stdin, ReadableStreamInterface $stdout, ReadableStreamInterface $stderr)
     {
@@ -51,7 +53,10 @@ class Process extends EventEmitter
     {
         if ($this->process && is_null($this->signalCode)) {
             $this->status = proc_get_status($this->process);
-
+            if (!$this->status['running'] && !$this->stopped) {
+                $this->exitCode = $this->status['exitcode'];
+                $this->stopped = true;
+            }
             if ($this->status['signaled']) {
                 $this->signalCode = $this->status['termsig'];
             }
@@ -70,13 +75,13 @@ class Process extends EventEmitter
 
     public function exits()
     {
-        $exitCode = proc_close($this->process);
+        proc_close($this->process);
         $this->process = null;
 
         if ($this->signalCode) {
             $this->handleExit(null, $this->signalCode);
         } else {
-            $this->handleExit($exitCode, null);
+            $this->handleExit($this->exitCode, null);
         }
     }
 
