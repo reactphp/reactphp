@@ -216,7 +216,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($capturedExitCodeOfExit);
         $this->assertNull($capturedExitCodeOfClose);
         $this->assertSame(self::SIGNAL_CODE_SIGTERM, $capturedSignalCodeOfExit);
-        $this->assertSame(self:: SIGNAL_CODE_SIGTERM, $capturedSignalCodeOfClose);
+        $this->assertSame(self::SIGNAL_CODE_SIGTERM, $capturedSignalCodeOfClose);
     }
 
     private function createProcess($command)
