@@ -3,22 +3,24 @@
 require __DIR__.'/../vendor/autoload.php';
 require __DIR__.'/bench.php';
 
+$x = 1000;
+
 if (extension_loaded('xdebug')) {
     echo "Warning: xdebug is loaded, it can impact performance negatively.\n";
     echo "\n";
 }
 
 $tests = array(
-    '1000 one-off timers' => function ($loop) {
-        for ($i = 0; $i < 1000; $i++) {
+    $x . ' one-off timers' => function ($loop) use ($x) {
+        for ($i = 0; $i < $x; $i++) {
             $loop->addTimer(1, function ($signature, $loop) {});
         }
         $loop->run();
     },
-    '1000 periodic timers' => function ($loop) {
-        for ($i = 0; $i < 1000; $i++) {
-            $loop->addPeriodicTimer(2, function ($signature, $loop) use (&$i) {
-                if ($i >= 1000) {
+    $x . ' periodic timers' => function ($loop) use ($x) {
+        for ($i = 0; $i < $x; $i++) {
+            $loop->addPeriodicTimer(2, function ($signature, $loop) use (&$i, $x) {
+                if ($i >= $x) {
                     $loop->cancelTimer($signature);
                 }
             });
