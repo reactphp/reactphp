@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+* 0.2.8 (2013-03-13)
+
+  * Feature: [Stream] Factory method for BufferedSink
+
 * 0.2.7 (2013-01-05)
 
   * Bug fix: [EventLoop] Fix libevent timers with PHP 5.3
