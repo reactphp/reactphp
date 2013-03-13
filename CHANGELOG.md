@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-* 0.2.8 (2013-03-13)
+* 0.2.8 (2013-xx-xx)
 
   * Feature: [Stream] Factory method for BufferedSink
 
