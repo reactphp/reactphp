@@ -1,0 +1,21 @@
+{
+    "name": "react/child-process",
+    "description": "Library for creating and managing child processes.",
+    "keywords": ["process"],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.3",
+        "evenement/evenement": "1.0.*",
+        "react/event-loop": "0.2.*",
+        "react/stream": "0.2.*"
+    },
+    "autoload": {
+        "psr-0": { "React\\ChildProcess": "" }
+    },
+    "target-dir": "React/ChildProcess",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2-dev"
+        }
+    }
+}
