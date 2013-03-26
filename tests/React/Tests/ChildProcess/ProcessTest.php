@@ -79,11 +79,8 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
         $output = '';
 
-        $loop->addTimer(0.001, function() use ($process, $loop) {
+        $loop->addTimer(0.001, function() use ($process, $loop, &$output) {
             $process->start($loop);
-        });
-
-        $loop->addTimer(0.002, function() use ($process, &$output) {
             $process->stdout->on('data', function () use (&$output) {
                 $output .= func_get_arg(0);
             });
@@ -104,11 +101,8 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
         $output = '';
 
-        $loop->addTimer(0.001, function() use ($process, $loop) {
+        $loop->addTimer(0.001, function() use ($process, $loop, &$output) {
             $process->start($loop);
-        });
-
-        $loop->addTimer(0.002, function() use ($process, &$output) {
             $process->stdout->on('data', function () use (&$output) {
                 $output .= func_get_arg(0);
             });
@@ -128,11 +122,8 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
         $output = '';
 
-        $loop->addTimer(0.001, function() use ($process, $loop) {
+        $loop->addTimer(0.001, function() use ($process, $loop, &$output) {
             $process->start($loop);
-        });
-
-        $loop->addTimer(0.002, function() use ($process, &$output) {
             $process->stdout->on('data', function () use (&$output) {
                 $output .= func_get_arg(0);
             });
@@ -183,11 +174,8 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
         $output = '';
 
-        $loop->addTimer(0.001, function() use ($process, $loop) {
+        $loop->addTimer(0.001, function() use ($process, $loop, &$output) {
             $process->start($loop);
-        });
-
-        $loop->addTimer(0.002, function() use ($process, &$output) {
             $process->stderr->on('data', function () use (&$output) {
                 $output .= func_get_arg(0);
             });
@@ -235,9 +223,6 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
         $loop->addTimer(0.001, function() use ($process, $loop) {
             $process->start($loop);
-        });
-
-        $loop->addTimer(0.002, function() use ($process) {
             $process->terminate();
         });
 
@@ -278,27 +263,18 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
         $self = $this;
 
-        $loop->addTimer(0.001, function() use ($process, $loop) {
+        $loop->addTimer(0.001, function() use ($process, $loop, $self) {
             $process->start($loop);
-        });
-
-        $loop->addTimer(0.002, function() use ($process) {
             $process->terminate(SIGSTOP);
-        });
 
-        $loop->addTimer(0.002, function() use ($self, $process) {
             $self->assertSoon(function() use ($self, $process) {
                 $self->assertTrue($process->isStopped());
                 $self->assertTrue($process->isRunning());
                 $self->assertEquals(SIGSTOP, $process->getStopSignal());
             });
-        });
 
-        $loop->addTimer(0.003, function() use ($process) {
             $process->terminate(SIGCONT);
-        });
 
-        $loop->addTimer(0.004, function() use ($self, $process) {
             $self->assertSoon(function() use ($self, $process) {
                 $self->assertFalse($process->isStopped());
                 $self->assertEquals(SIGSTOP, $process->getStopSignal());
