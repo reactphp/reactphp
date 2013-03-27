@@ -16,15 +16,19 @@ class LibuvFilesystemTest extends TestCase
         mkdir($this->testdir);
     }
 
-   private function rmdir_recursive($dir) {
-    foreach(scandir($dir) as $file) {
-        if ('.' === $file || '..' === $file) continue;
-        if (is_dir("$dir/$file")) $this->rmdir_recursive("$dir/$file");
-        else unlink("$dir/$file");
+    private function rmdir_recursive($dir)
+    {
+        foreach (scandir($dir) as $file) {
+            if ('.' != $file && '..' != $file) {
+                if (is_dir("$dir/$file"))
+                    $this->rmdir_recursive("$dir/$file");
+                else
+                    unlink("$dir/$file");
+            }
+        }
+        rmdir($dir);
     }
-    rmdir($dir);
-    } 
-    
+
     public function tearDown()
     {
         $this->rmdir_recursive($this->testdir);
@@ -48,6 +52,7 @@ class LibuvFilesystemTest extends TestCase
             ->mkdir($directory)
             ->then($callable, $tests->expectCallableNever());
         $loop->run();
+        $tests->assertTrue(is_dir($directory));
     }
 
     public function testThatMkdirOnAnExistingDirectoryShouldThrowAnException()
@@ -86,6 +91,7 @@ class LibuvFilesystemTest extends TestCase
             ->mkdir($directory, $mode)
             ->then($callable, $this->expectCallableNever());
         $loop->run();
+        $this->assertTrue(is_dir($directory));
 
         if (file_exists($directory)) {
             rmdir($directory);
@@ -102,9 +108,15 @@ class LibuvFilesystemTest extends TestCase
 
         $path = $this->testdir . '/test-open1';
         
+        $callable = $this->createCallableMock();
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->logicalNot($this->isInstanceOf("Exception")));
+        
         $fs
             ->open($path, \UV::O_WRONLY | \UV::O_CREAT, $mode)
-            ->then($this->expectCallableOnce(), $this->expectCallableNever());
+            ->then($callable, $this->expectCallableNever());
         $loop->run();
         $this->assertEquals(decoct($mode), $this->getFileMode($path));
         
@@ -171,8 +183,7 @@ class LibuvFilesystemTest extends TestCase
 
         $fs
             ->open($path, \UV::O_WRONLY, 0064)
-            ->then($tests->expectCallableNever(),
-            $this->expectCallableOnce());
+            ->then($tests->expectCallableNever(), $this->expectCallableOnce());
         $loop->run();
 
         unlink($path);
@@ -236,7 +247,6 @@ class LibuvFilesystemTest extends TestCase
                 });
             });
         $loop->run();
-        $this->assertEquals($buffer, $testbuffer);
     }
 
     public function testThatReadfileCanReadFromAFile()
@@ -245,16 +255,16 @@ class LibuvFilesystemTest extends TestCase
          $fs = new LibuvFilesystem($loop);
          $path = $this->testdir . '/test-readfile1';
          $testbuffer = "test2";
-
-         $buffer = null;
+         $callable = $this->createCallableMock();
+         $callable
+             ->expects($this->once())
+             ->method('__invoke')
+             ->with($testbuffer);
 
          file_put_contents($path, $testbuffer);
          $fs->readFile($path)
-             ->then(function($result) use ($testbuffer, &$buffer) {
-                 $buffer= $result;
-             }, $this->expectCallableNever());
+             ->then($callable, $this->expectCallableNever());
          $loop->run();
-         $this->assertEquals($testbuffer, $buffer);
     }
 
     public function testThatReadfileCannotReadAnUnexistingFile()
@@ -262,9 +272,6 @@ class LibuvFilesystemTest extends TestCase
          $loop = new EventLoop\LibUvLoop();
          $fs = new LibuvFilesystem($loop);
          $path = $this->testdir . '/test-readfile2';
-         $testbuffer = "test2";
-
-         $buffer = null;
 
          $fs->readFile($path)
              ->then($this->expectCallableNever(), $this->expectCallableOnce());
