@@ -2,6 +2,6 @@
 
 namespace React\Filesystem\Exception;
 
-class IOException extends \RuntimeException
+class IoException extends \RuntimeException
 {
 }

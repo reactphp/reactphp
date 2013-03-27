@@ -6,11 +6,6 @@ use React\EventLoop\LibUvLoop;
 
 class LibUvTimerTest extends AbstractTimerTest
 {
-    public function setUp()
-    {
-        
-    }
-    
     public function createLoop()
     {
         if (!function_exists('uv_default_loop')) {

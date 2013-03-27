@@ -3,7 +3,7 @@
 namespace React\Filesystem;
 
 use React\EventLoop\LibUvLoop;
-use React\Filesystem\Exception\IOException;
+use React\Filesystem\Exception\IoException;
 use React\Promise\Deferred;
 use React\Promise\When;
 
@@ -13,7 +13,12 @@ class LibuvFilesystem implements FilesystemInterface
 
     public function __construct(LibUvLoop $loop)
     {
-        $this->loop = $loop;
+        if ($loop instanceof LibUvLoop) {
+            $this->loop = $loop;
+        }
+        else {
+            throw new \InvalidArgumentException('Argument 1 should be an instance of LibUvLoop.');
+        }
     }
 
     public function mkdir($dirname, $mode = 0755)
@@ -22,10 +27,7 @@ class LibuvFilesystem implements FilesystemInterface
         $loop = $this->loop->loop;
         uv_fs_mkdir($loop, $dirname, $mode | \UV::O_CREAT, function ($result) use ($deferred, $dirname, $loop) {
             if (-1 === $result) {
-                $deferred->reject(new IOException(
-                    uv_strerror(uv_last_error($loop))
-                ));
-
+                $deferred->reject($this->createIoException($loop));
                 return;
             }
             $deferred->resolve($dirname);
@@ -40,10 +42,7 @@ class LibuvFilesystem implements FilesystemInterface
         $loop = $this->loop->loop;
         uv_fs_open($loop, $path, $flags, $mode, function ($r) use ($deferred, $path, $loop) {
             if (-1 === $r) {
-                $deferred->reject(new IOException(
-                    uv_strerror(uv_last_error($loop))
-                ));
-
+                $deferred->reject($this->createIoException($loop));
                 return;
             }
             $deferred->resolve($r);
@@ -58,10 +57,7 @@ class LibuvFilesystem implements FilesystemInterface
         $loop = $this->loop->loop;
         uv_fs_write($loop, $fd, $buffer, $offset, function ($stream, $result) use ($deferred, $loop) {
             if (-1 === $result) {
-                $deferred->reject(new IOException(
-                    uv_strerror(uv_last_error($loop))
-                ));
-
+                $deferred->reject($this->createIoException($loop));
                 return;
             }
             $deferred->resolve($result);
@@ -76,10 +72,7 @@ class LibuvFilesystem implements FilesystemInterface
         $loop = $this->loop->loop;
         uv_fs_close($loop, $fd, function ($result) use ($deferred, $loop) {
             if (-1 === $result) {
-                $deferred->reject(new IOException(
-                    uv_strerror(uv_last_error($loop))
-                ));
-
+                $deferred->reject($this->createIoException($loop));
                 return;
             }
             $deferred->resolve($result);
@@ -94,10 +87,7 @@ class LibuvFilesystem implements FilesystemInterface
         $loop = $this->loop->loop;
         uv_fs_read($loop, $fd, $length, function ($r, $nbread, $buffer) use ($deferred, $loop) {
             if ($nbread <= 0) {
-                $deferred->reject(new IOException(
-                    uv_strerror(uv_last_error($loop))
-                ));
-
+                $deferred->reject($this->createIoException($loop));
                 return;
             }
             $deferred->resolve($buffer);
@@ -112,19 +102,16 @@ class LibuvFilesystem implements FilesystemInterface
         $loop = $this->loop->loop;
         uv_fs_stat($loop, $filename, function ($result, $stat) use ($deferred, $loop) {
             if (-1 === $result) {
-                $deferred->reject(new IOException(
-                        uv_strerror(uv_last_error($loop))
-                ));
-
+                $deferred->reject($this->createIoException($loop));
                 return;
             }
-           $deferred->resolve($stat);
+            $deferred->resolve($stat);
         });
 
      return $deferred->promise();
     }
 
-    public function readfile($filename)
+    public function readFile($filename)
     {
         $fs = $this;
         $thatFd = null;
@@ -151,6 +138,11 @@ class LibuvFilesystem implements FilesystemInterface
                 return $deferred->promise();
             });
 
-       return $deferred->reject(new IOException(uv_strerror(uv_last_error($loop))));
+       return $deferred->reject($this->createIoException($loop));
+    }
+    
+    private function createIoException($loop)
+    {
+        return new IoException(uv_strerror(uv_last_error($loop)));
     }
 }

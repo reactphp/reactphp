@@ -10,5 +10,5 @@ interface FilesystemInterface
   public function read($fd, $length);
   public function close($fd);
   public function stat($filename);
-  public function readfile($filename);
+  public function readFile($filename);
 }

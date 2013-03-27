@@ -8,7 +8,7 @@ class LibUvLoop implements LoopInterface
     private $events = array();
     private $timers = array();
     private $suspended = false;
-    public $listeners = array();
+    private $listeners = array();
 
     public function __construct()
     {
@@ -58,7 +58,7 @@ class LibUvLoop implements LoopInterface
     private function addStream($stream, $listener, $flags)
     {
         if (get_resource_type($stream) == "Unknown") {
-            error_log("Unknown resource handle passed. something wrong");
+            throw new \InvalidArgumentException("Unknown resource handle passed. something wrong");
 
             return false;
         }
@@ -81,13 +81,12 @@ class LibUvLoop implements LoopInterface
         } else {
             $event = $this->events[(int) $stream];
         }
-        $listener = $this->wrapStreamListener();
+        $listener = $this->createStreamListener();
         uv_poll_start($event, $currentFlag | $flags, $listener);
     }
 
-    private function wrapStreamListener()
+    private function createStreamListener()
     {
-
        $loop = $this;
 
         return function ($poll, $status, $event, $stream) use ($loop) {
@@ -101,10 +100,10 @@ class LibUvLoop implements LoopInterface
 
                 return;
             }
-            if ($event & \UV::READABLE && isset($loop->listeners[(int) $stream]['read'])) {
+            if (($event & \UV::READABLE) && isset($loop->listeners[(int) $stream]['read'])) {
                 call_user_func($loop->listeners[(int) $stream]['read'], $stream);
             }
-            if ($event & \UV::WRITABLE && isset($loop->listeners[(int) $stream]['write'])) {
+            if (($event & \UV::WRITABLE) && isset($loop->listeners[(int) $stream]['write'])) {
                 call_user_func($loop->listeners[(int) $stream]['write'], $stream);
             }
         };
@@ -156,11 +155,11 @@ class LibUvLoop implements LoopInterface
 
     public function run()
     {
-       if ($this->suspended === true) {
+       if ($this->suspended) {
            return;
        }
        while (uv_run_once($this->loop)) {
-           if ($this->suspended === true) {
+           if ($this->suspended) {
                return;
            }
        }
