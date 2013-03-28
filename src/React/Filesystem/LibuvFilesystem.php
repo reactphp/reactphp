@@ -116,31 +116,20 @@ class LibuvFilesystem implements FilesystemInterface
     public function readFile($filename)
     {
         $fs = $this;
-        $thatFd = null;
-        $deferred = new Deferred();
-        $buffer = null;
 
         $all = array(
             'stat' => $fs->stat($filename),
             'fd'   => $fs->open($filename)
         );
 
-        return When::all($all)
-            ->then(function ($result) use ($fs, &$thatFd, &$buffer) {
-                $thatFd = $result['fd'];
+        return When::all($all)->then(function ($result) use ($fs) {
+            $fd = $result['fd'];
 
-                return $fs->read($thatFd, $result['stat']['size'])->then(function ($res) use (&$buffer) {
-                    $buffer = $res;
-                });
-            })
-            ->then(function ($data) use ($fs, &$thatFd, &$buffer, $deferred) {
-                $deferred->resolve($buffer);
-                $fs->close($thatFd);
-
-                return $deferred->promise();
+            return $fs->read($fd, $result['stat']['size'])->then(function ($data) use ($fs, $fd) {
+                $fs->close($fd);
+                return $data;
             });
-
-       return $deferred->reject($this->createIoException($loop));
+        });
     }
     
     private function createIoException($loop)
