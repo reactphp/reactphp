@@ -23,7 +23,7 @@ class LibUvFlagConverter implements FlagConverterInterface
         $res = 0;
         
         foreach ($this->flags as $fsFlag => $uvFlag) {
-            if (($flags & $fsFlag)){
+            if (($flags & $fsFlag)) {
                 $res |= $uvFlag;
             }
         }
