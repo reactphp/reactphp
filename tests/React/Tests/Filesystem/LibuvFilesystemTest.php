@@ -4,6 +4,7 @@ namespace React\Tests\Filesystem;
 
 use React\Tests\Socket\TestCase;
 use React\Filesystem\LibuvFilesystem;
+use React\Filesystem\FilesystemInterface;
 use React\EventLoop;
 
 class LibuvFilesystemTest extends TestCase
@@ -42,6 +43,10 @@ class LibuvFilesystemTest extends TestCase
         $tests = $this;
         $directory = $this->testdir . '/test-mkdir1';
 
+        if (file_exists($directory)) {
+           rmdir($directory);
+        }
+        
         $callable = $this->createCallableMock();
         $callable
             ->expects($this->once())
@@ -107,6 +112,10 @@ class LibuvFilesystemTest extends TestCase
         $fs = new LibuvFilesystem($loop);
 
         $path = $this->testdir . '/test-open1';
+
+        if (file_exists($path)) {
+            unlink($path);
+        }
         
         $callable = $this->createCallableMock();
         $callable
@@ -115,14 +124,11 @@ class LibuvFilesystemTest extends TestCase
             ->with($this->logicalNot($this->isInstanceOf("Exception")));
         
         $fs
-            ->open($path, \UV::O_WRONLY | \UV::O_CREAT, $mode)
+            ->open($path, FilesystemInterface::FLAG_WRONLY | FilesystemInterface::FLAG_CREAT, $mode)
             ->then($callable, $this->expectCallableNever());
         $loop->run();
         $this->assertEquals(decoct($mode), $this->getFileMode($path));
         
-        if (file_exists($path)) {
-            unlink($path);
-        }
     }
 
     public function provideFilePermissions()
@@ -148,7 +154,7 @@ class LibuvFilesystemTest extends TestCase
         $path = $this->testdir . '/test-open2';
 
         $fs
-            ->open($path, \UV::O_WRONLY | \UV::O_CREAT, 0664)
+            ->open($path, FilesystemInterface::FLAG_WRONLY | FilesystemInterface::FLAG_CREAT, 0664)
             ->then($tests->expectCallableOnce(), $this->expectCallableNever());
         $loop->run();
         if (file_exists($path)) {
@@ -165,7 +171,7 @@ class LibuvFilesystemTest extends TestCase
         $path = $this->testdir . '/unexisting-file';
 
         $fs
-            ->open($path, \UV::O_WRONLY, 0664)
+            ->open($path, FilesystemInterface::FLAG_WRONLY, 0664)
             ->then($tests->expectCallableNever(), $this->expectCallableOnce());
         $loop->run();
     }
@@ -182,7 +188,7 @@ class LibuvFilesystemTest extends TestCase
         chmod($path, 0000);
 
         $fs
-            ->open($path, \UV::O_WRONLY, 0064)
+            ->open($path, FilesystemInterface::FLAG_WRONLY, 0064)
             ->then($tests->expectCallableNever(), $this->expectCallableOnce());
         $loop->run();
 
@@ -197,7 +203,7 @@ class LibuvFilesystemTest extends TestCase
         $testbuffer = "testwrite";
 
         $fs
-            ->open($path, \UV::O_WRONLY | \UV::O_CREAT)->then(function($result) use ($fs, $testbuffer) {
+            ->open($path, FilesystemInterface::FLAG_WRONLY | FilesystemInterface::FLAG_CREAT)->then(function($result) use ($fs, $testbuffer) {
                 $fs->write($result, $testbuffer);
             });
         $loop->run();
@@ -212,7 +218,7 @@ class LibuvFilesystemTest extends TestCase
         $testbuffer = "testwrite";
 
         $fs
-            ->open($path, \UV::O_RDONLY | \UV::O_CREAT)->then(function($result) use ($fs, $testbuffer) {
+            ->open($path, FilesystemInterface::FLAG_RDONLY | FilesystemInterface::FLAG_CREAT)->then(function($result) use ($fs, $testbuffer) {
                 $fs->write($result, $testbuffer);
             });
         $loop->run();

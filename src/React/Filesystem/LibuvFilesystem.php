@@ -3,6 +3,7 @@
 namespace React\Filesystem;
 
 use React\EventLoop\LibUvLoop;
+use React\Filesystem\FlagConverter\LibUvFlagConverter;
 use React\Filesystem\Exception\IoException;
 use React\Promise\Deferred;
 use React\Promise\When;
@@ -10,22 +11,22 @@ use React\Promise\When;
 class LibuvFilesystem implements FilesystemInterface
 {
     private $loop;
-
+    private $converter;
+    
     public function __construct(LibUvLoop $loop)
     {
-        if ($loop instanceof LibUvLoop) {
-            $this->loop = $loop;
-        }
-        else {
+        if (!$loop instanceof LibUvLoop) {
             throw new \InvalidArgumentException('Argument 1 should be an instance of LibUvLoop.');
         }
+        $this->loop = $loop;
+        $this->converter = new LibUvFlagConverter();
     }
 
     public function mkdir($dirname, $mode = 0755)
     {
         $deferred = new Deferred();
         $loop = $this->loop->loop;
-        uv_fs_mkdir($loop, $dirname, $mode | \UV::O_CREAT, function ($result) use ($deferred, $dirname, $loop) {
+        uv_fs_mkdir($loop, $dirname, $mode, function ($result) use ($deferred, $dirname, $loop) {
             if (-1 === $result) {
                 $deferred->reject($this->createIoException($loop));
                 return;
@@ -36,10 +37,11 @@ class LibuvFilesystem implements FilesystemInterface
         return $deferred->promise();
     }
 
-    public function open($path, $flags = \UV::O_RDONLY, $mode = 0755)
+    public function open($path, $flags = FilesystemInterface::FLAG_RDONLY, $mode = 0755)
     {
         $deferred = new Deferred();
         $loop = $this->loop->loop;
+        $flags = $this->converter->convertFlags($flags);
         uv_fs_open($loop, $path, $flags, $mode, function ($r) use ($deferred, $path, $loop) {
             if (-1 === $r) {
                 $deferred->reject($this->createIoException($loop));
