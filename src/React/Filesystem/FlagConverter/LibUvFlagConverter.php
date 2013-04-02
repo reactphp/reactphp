@@ -16,7 +16,7 @@ class LibUvFlagConverter implements FlagConverterInterface
     public function convertFlags($flags)
     {
         $res = 0;
-        foreach (self::$flags as $fsFlag => $uvFlag) {
+        foreach (static::$flags as $fsFlag => $uvFlag) {
             if (($flags & $fsFlag)) {
                 $res |= $uvFlag;
             }
