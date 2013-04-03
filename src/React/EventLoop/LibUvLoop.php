@@ -2,6 +2,10 @@
 
 namespace React\EventLoop;
 
+use SplObjectStorage;
+use React\EventLoop\Timer\Timer;
+use React\EventLoop\Timer\TimerInterface;
+
 class LibUvLoop implements LoopInterface
 {
     public $loop;
@@ -13,6 +17,7 @@ class LibUvLoop implements LoopInterface
     public function __construct()
     {
         $this->loop = uv_loop_new();
+        $this->timers = new SplObjectStorage();
     }
 
     public function addReadStream($stream, $listener)
@@ -119,35 +124,41 @@ class LibUvLoop implements LoopInterface
         return $this->createTimer($interval, $callback, 1);
     }
 
-    public function cancelTimer($signature)
+    public function cancelTimer(TimerInterface $timer)
     {
-        uv_timer_stop($this->timers[$signature]);
-        unset($this->timers[$signature]);
+        uv_timer_stop($this->timers[$timer]);
+        $this->timers->detach($timer);
     }
 
     private function createTimer($interval, $callback, $periodic)
     {
-        $timer = uv_timer_init($this->loop);
-        $signature = (int) $timer;
-        $callback = $this->wrapTimerCallback($timer, $callback, $periodic);
-        $this->timers[$signature] = $timer;
-        uv_timer_start($timer, $interval * 1000, $interval * 1000, $callback);
+        $timer = new Timer($this, $interval, $callback, $periodic);
+        $ressource = uv_timer_init($this->loop);
+        
+        $timers = $this->timers;
+        $timers->attach($timer, $ressource);
+        
+        $callback = $this->wrapTimerCallback($timer, $periodic);
+        uv_timer_start($ressource, $interval * 1000, $interval * 1000, $callback);
 
-        return $signature;
+        return $timer;
     }
 
-    private function wrapTimerCallback($timer, $callback, $periodic)
+    private function wrapTimerCallback($timer, $periodic)
     {
-        $loop = $this;
-
-        return function ($timer, $status) use ($timer, $callback, $periodic, $loop) {
-            call_user_func($callback, (int) $timer, $loop);
+        return function ($timer, $status) use ($timer, $periodic) {
+            call_user_func($timer->getCallback(), $timer);
             if (!$periodic) {
-                uv_timer_stop($timer);
+                $timer->cancel();
             }
         };
     }
 
+    public function isTimerActive(TimerInterface $timer)
+    {
+        return $this->timers->contains($timer);
+    }
+    
     public function tick()
     {
         uv_run_once($this->loop);
