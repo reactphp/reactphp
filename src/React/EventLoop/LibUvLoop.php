@@ -146,7 +146,7 @@ class LibUvLoop implements LoopInterface
 
     private function wrapTimerCallback($timer, $periodic)
     {
-        return function ($timer, $status) use ($timer, $periodic) {
+        return function () use ($timer, $periodic) {
             call_user_func($timer->getCallback(), $timer);
             if (!$periodic) {
                 $timer->cancel();
