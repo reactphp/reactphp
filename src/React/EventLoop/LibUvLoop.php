@@ -10,7 +10,7 @@ class LibUvLoop implements LoopInterface
 {
     public $loop;
     private $events = array();
-    private $timers = array();
+    private $timers;
     private $suspended = false;
     private $listeners = array();
 
