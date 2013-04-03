@@ -92,7 +92,7 @@ class LibUvLoop implements LoopInterface
 
     private function createStreamListener()
     {
-       $loop = $this;
+        $loop = $this;
 
         return function ($poll, $status, $event, $stream) use ($loop) {
             if ($status < 0) {
