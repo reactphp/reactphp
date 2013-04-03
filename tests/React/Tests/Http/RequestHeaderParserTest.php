@@ -91,7 +91,7 @@ class RequestHeaderParserTest extends TestCase
         $this->assertSame('1.1', $request->getHttpVersion());
         $headers = array(
             'Host' => 'example.com:80',
-            'User-Agent' => 'Guzzle/2.0 (Language=PHP/5.3.8; curl=7.21.4; Host=universal-apple-darwin11.0)',
+            'User-Agent' => 'react/alpha',
             'Connection' => 'close',
         );
         $this->assertSame($headers, $request->getHeaders());
@@ -128,7 +128,7 @@ class RequestHeaderParserTest extends TestCase
     {
         $data = "POST /foo?bar=baz HTTP/1.1\r\n";
         $data .= "Host: example.com:80\r\n";
-        $data .= "User-Agent: Guzzle/2.0 (Language=PHP/5.3.8; curl=7.21.4; Host=universal-apple-darwin11.0)\r\n";
+        $data .= "User-Agent: react/alpha\r\n";
         $data .= "Connection: close\r\n";
         $data .= "\r\n";
 
