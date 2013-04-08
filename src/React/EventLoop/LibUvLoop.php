@@ -127,6 +127,7 @@ class LibUvLoop implements LoopInterface
     public function cancelTimer(TimerInterface $timer)
     {
         uv_timer_stop($this->timers[$timer]);
+        uv_unref($this->timers[$timer]);
         $this->timers->detach($timer);
     }
 
