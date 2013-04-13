@@ -94,7 +94,7 @@ class LibUvLoop implements LoopInterface
     {
         $loop = $this;
 
-        return function ($poll, $status, $event, $stream) use ($loop) {
+        $callback = function ($poll, $status, $event, $stream) use ($loop, &$callback) {
             if ($status < 0) {
                 if (isset($loop->listeners[(int) $stream]['read'])) {
                     call_user_func(array($this, 'removeReadStream'), $stream);
@@ -112,6 +112,8 @@ class LibUvLoop implements LoopInterface
                 call_user_func($loop->listeners[(int) $stream]['write'], $stream);
             }
         };
+
+        return $callback;
     }
 
     public function addTimer($interval, $callback)
@@ -135,10 +137,10 @@ class LibUvLoop implements LoopInterface
     {
         $timer = new Timer($this, $interval, $callback, $periodic);
         $ressource = uv_timer_init($this->loop);
-        
+
         $timers = $this->timers;
         $timers->attach($timer, $ressource);
-        
+
         $callback = $this->wrapTimerCallback($timer, $periodic);
         uv_timer_start($ressource, $interval * 1000, $interval * 1000, $callback);
 
@@ -159,7 +161,7 @@ class LibUvLoop implements LoopInterface
     {
         return $this->timers->contains($timer);
     }
-    
+
     public function tick()
     {
         uv_run_once($this->loop);
