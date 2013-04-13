@@ -1,5 +1,5 @@
 {
-    "hash": "a4f3292bdf733bd9da8ada4d28043e3e",
+    "hash": "e0800392c629b8cc2bf5f5e7ee8a1cf2",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -42,17 +42,17 @@
         },
         {
             "name": "guzzle/parser",
-            "version": "v3.2.0",
+            "version": "v3.3.1",
             "target-dir": "Guzzle/Parser",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/parser.git",
-                "reference": "v3.1.0"
+                "reference": "v3.3.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/parser/zipball/v3.1.0",
-                "reference": "v3.1.0",
+                "url": "https://api.github.com/repos/guzzle/parser/zipball/v3.3.1",
+                "reference": "v3.3.1",
                 "shasum": ""
             },
             "require": {
@@ -61,7 +61,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0-dev"
+                    "dev-master": "3.3-dev"
                 }
             },
             "autoload": {
@@ -69,7 +69,7 @@
                     "Guzzle\\Parser": ""
                 }
             },
-            "notification-url": "http://packagist.org/downloads/",
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -82,7 +82,7 @@
                 "message",
                 "url"
             ],
-            "time": "2013-01-12 21:43:21"
+            "time": "2013-03-07 22:13:59"
         },
         {
             "name": "react/promise",
@@ -127,12 +127,22 @@
             "time": "2012-11-17 21:29:48"
         }
     ],
-    "packages-dev": null,
+    "packages-dev": [
+
+    ],
     "aliases": [
 
     ],
     "minimum-stability": "stable",
     "stability-flags": [
 
-    ]
+    ],
+    "platform": {
+        "php": ">=5.3.3"
+    },
+    "platform-dev": {
+        "ext-libevent": "*",
+        "ext-libev": "*",
+        "ext-uv": "*"
+    }
 }
