@@ -30,20 +30,9 @@ class Connector implements ConnectorInterface
             });
     }
 
-    public function createUdp($host, $port)
+    public function createSocketForAddress($address, $port)
     {
-        $that = $this;
-
-        return $this
-            ->resolveHostname($host)
-            ->then(function ($address) use ($port, $that) {
-                return $that->createSocketForAddress($address, $port, 'udp');
-            });
-    }
-
-    public function createSocketForAddress($address, $port, $transport = 'tcp')
-    {
-        $url = $this->getSocketUrl($address, $port, $transport);
+        $url = $this->getSocketUrl($address, $port);
 
         $socket = stream_socket_client($url, $errno, $errstr, 0, STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
 
@@ -95,9 +84,9 @@ class Connector implements ConnectorInterface
         return new Stream($socket, $this->loop);
     }
 
-    protected function getSocketUrl($host, $port, $transport)
+    protected function getSocketUrl($host, $port)
     {
-        return sprintf('%s://%s:%s', $transport, $host, $port);
+        return sprintf('tcp://%s:%s', $host, $port);
     }
 
     protected function resolveHostname($host)

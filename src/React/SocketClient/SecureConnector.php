@@ -31,9 +31,4 @@ class SecureConnector implements ConnectorInterface
             });
         });
     }
-
-    public function createUdp($host, $port)
-    {
-        return When::reject(new \RuntimeException('Secured UDP connection is not supported.'));
-    }
 }
