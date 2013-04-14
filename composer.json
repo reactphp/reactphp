@@ -13,10 +13,6 @@
         "guzzle/parser": "~3.0",
         "react/promise": "~1.0"
     },
-    "require-dev": {
-        "ext-libevent": "*",
-        "ext-libev": "*"
-    },
     "replace": {
         "react/event-loop": "self.version",
         "react/cache": "self.version",
@@ -26,6 +22,10 @@
         "react/http": "self.version",
         "react/http-client": "self.version",
         "react/dns": "self.version"
+    },
+    "suggest": {
+        "ext-libevent": "*",
+        "ext-libev": "*"
     },
     "autoload": {
         "psr-0": { "React": "src" }
