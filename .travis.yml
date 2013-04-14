@@ -6,12 +6,10 @@ php:
   - 5.4
 
 before_script:
-  - sudo apt-get install -y libevent-dev libev-dev
+  - sudo apt-get install -y libevent-dev
   - sh -c " if [ \"\$(php --re libevent | grep 'does not exist')\" != '' ]; then
               (yes '' | pecl install libevent-beta)
             fi"
-  - (git clone --recursive https://github.com/m4rw3r/php-libev && cd php-libev && phpize && ./configure --with-libev && make && make install)
-  - echo "extension=libev.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - composer self-update
   - composer install --dev --prefer-source
 
