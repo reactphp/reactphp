@@ -36,15 +36,24 @@ Node.js (V8).
 
 React is non-blocking by default. Use workers for blocking I/O.
 
+## High-level abstractions
+
+There are two main abstractions that make dealing with control flow a lot more
+manageable.
+
+* **Stream:** A stream represents an I/O source (ReadableStream) or
+  destination (WritableStream). These can be used to model pipes, similar
+  to a unix pipe that is composed of processes. Streams represent very large
+  values as chunks.
+
+* **Promise:** A promise represents an eventual return value. Promises can be
+  composed and are a lot easier to deal with than traditional CPS callback
+  spaghetti and allow for almost sane error handling. Promises represent the
+  computation for producing single values.
+
+You should use these abstractions whenever you can.
+
 ## Usage
-
-### Events
-
-Most classes extend
-[événement](https://github.com/igorw/evenement), allowing you to bind to
-events.
-
-### Example
 
 Here is an example of a simple HTTP server listening on port 1337:
 ```php
