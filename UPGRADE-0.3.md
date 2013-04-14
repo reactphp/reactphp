@@ -22,7 +22,7 @@ HttpClient
 ----------
 
 * `HttpClient\*ConnectionManager` has been moved to `SocketClient\*Connector`,
-  and the `getConnection` method has been renamed to `createTcp`.
+  and the `getConnection` method has been renamed to `create`.
 
   Before:
 
@@ -30,4 +30,4 @@ HttpClient
 
   After:
 
-    $connector->createTcp($host, $port);
+    $connector->create($host, $port);
