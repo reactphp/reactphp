@@ -1,15 +1,12 @@
 CHANGELOG
 =========
 
-* 0.3.0 (2013-01-xx)
+* 0.3.0 (2013-04-14)
 
   * BC break: [EventLoop] New timers API (@nrk)
   * BC break: [EventLoop] Remove check on return value from stream callbacks (@nrk)
   * BC break: [HttpClient] Socket connection handling moved to new SocketClient component
   * Feature: [SocketClient] New SocketClient component extracted from HttpClient (@clue)
-
-* 0.2.8 (2013-xx-xx)
-
   * Feature: [Stream] Factory method for BufferedSink
 
 * 0.2.7 (2013-01-05)
