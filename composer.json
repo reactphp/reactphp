@@ -16,7 +16,6 @@
     },
     "require-dev": {
         "ext-libevent": "*",
-        "ext-libev": "*",
         "ext-eio": ">=1.2.0"
     },
     "replace": {
