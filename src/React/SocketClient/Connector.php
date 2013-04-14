@@ -19,7 +19,7 @@ class Connector implements ConnectorInterface
         $this->resolver = $resolver;
     }
 
-    public function createTcp($host, $port)
+    public function create($host, $port)
     {
         $that = $this;
 
