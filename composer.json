@@ -10,28 +10,29 @@
     "require": {
         "php": ">=5.3.3",
         "evenement/evenement": "1.0.*",
-        "guzzle/http": "3.0.*",
-        "guzzle/parser": "3.0.*",
-        "react/promise": "1.0.*"
-    },
-    "require-dev": {
-        "ext-libevent": "*",
-        "ext-libev": "*"
+        "guzzle/parser": "~3.0",
+        "react/promise": "~1.0"
     },
     "replace": {
         "react/event-loop": "self.version",
+        "react/cache": "self.version",
         "react/stream": "self.version",
         "react/socket": "self.version",
+        "react/socket-client": "self.version",
         "react/http": "self.version",
         "react/http-client": "self.version",
         "react/dns": "self.version"
+    },
+    "suggest": {
+        "ext-libevent": "*",
+        "ext-libev": "*"
     },
     "autoload": {
         "psr-0": { "React": "src" }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }

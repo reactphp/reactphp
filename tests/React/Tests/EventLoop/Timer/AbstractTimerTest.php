@@ -1,23 +1,14 @@
 <?php
 
-namespace React\Tests\EventLoop;
+namespace React\Tests\EventLoop\Timer;
 
 use React\Tests\Socket\TestCase;
-use React\EventLoop\StreamSelectLoop;
 use React\EventLoop\Timer\Timers;
 
-class TimerTest extends TestCase
+abstract class AbstractTimerTest extends TestCase
 {
-    private function createLoop()
-    {
-        return new StreamSelectLoop();
-    }
+    abstract public function createLoop();
 
-    /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\EventLoop\StreamSelectLoop::addTimer
-     * @covers React\EventLoop\Timer\Timers
-     */
     public function testAddTimer()
     {
         // usleep is intentionally high
@@ -29,11 +20,6 @@ class TimerTest extends TestCase
         $loop->tick();
     }
 
-    /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\EventLoop\StreamSelectLoop::addTimer
-     * @covers React\EventLoop\Timer\Timers
-     */
     public function testAddPeriodicTimer()
     {
         $loop = $this->createLoop();
@@ -47,11 +33,6 @@ class TimerTest extends TestCase
         $loop->tick();
     }
 
-    /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\EventLoop\StreamSelectLoop::addTimer
-     * @covers React\EventLoop\Timer\Timers
-     */
     public function testAddPeriodicTimerWithCancel()
     {
         $loop = $this->createLoop();
@@ -63,28 +44,23 @@ class TimerTest extends TestCase
         usleep(1000);
         $loop->tick();
 
-        $loop->cancelTimer($timer);
+        $timer->cancel();
 
         usleep(1000);
         $loop->tick();
     }
 
-    /**
-     * @covers React\EventLoop\StreamSelectLoop::tick
-     * @covers React\EventLoop\StreamSelectLoop::addTimer
-     * @covers React\EventLoop\Timer\Timers
-     */
     public function testAddPeriodicTimerCancelsItself()
     {
         $i = 0;
 
         $loop = $this->createLoop();
 
-        $loop->addPeriodicTimer(0.001, function ($timer, $loop) use (&$i) {
+        $loop->addPeriodicTimer(0.001, function ($timer) use (&$i) {
             $i++;
 
             if ($i == 2) {
-                $loop->cancelTimer($timer);
+                $timer->cancel();
             }
         });
 

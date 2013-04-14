@@ -11,9 +11,9 @@ use React\Promise\When;
 class CachedExecutorTest extends \PHPUnit_Framework_TestCase
 {
     /**
-    * @covers React\Dns\Query\CachedExecutor
-    * @test
-    */
+     * @covers React\Dns\Query\CachedExecutor
+     * @test
+     */
     public function queryShouldDelegateToDecoratedExecutor()
     {
         $executor = $this->createExecutorMock();
@@ -23,7 +23,13 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
             ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'))
             ->will($this->returnValue($this->createPromiseMock()));
 
-        $cache = $this->getMock('React\Dns\Query\RecordCache');
+        $cache = $this->getMockBuilder('React\Dns\Query\RecordCache')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $cache
+            ->expects($this->once())
+            ->method('lookup')
+            ->will($this->returnValue(When::reject()));
         $cachedExecutor = new CachedExecutor($executor, $cache);
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
@@ -31,9 +37,9 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-    * @covers React\Dns\Query\CachedExecutor
-    * @test
-    */
+     * @covers React\Dns\Query\CachedExecutor
+     * @test
+     */
     public function callingQueryTwiceShouldUseCachedResult()
     {
         $cachedRecords = array(new Record('igor.io', Message::TYPE_A, Message::CLASS_IN));
@@ -44,12 +50,14 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
             ->method('query')
             ->will($this->callQueryCallbackWithAddress('178.79.169.131'));
 
-        $cache = $this->getMock('React\Dns\Query\RecordCache');
+        $cache = $this->getMockBuilder('React\Dns\Query\RecordCache')
+            ->disableOriginalConstructor()
+            ->getMock();
         $cache
             ->expects($this->at(0))
             ->method('lookup')
             ->with($this->isInstanceOf('React\Dns\Query\Query'))
-            ->will($this->returnValue(array()));
+            ->will($this->returnValue(When::reject()));
         $cache
             ->expects($this->at(1))
             ->method('storeResponseMessage')
@@ -58,7 +66,7 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
             ->expects($this->at(2))
             ->method('lookup')
             ->with($this->isInstanceOf('React\Dns\Query\Query'))
-            ->will($this->returnValue($cachedRecords));
+            ->will($this->returnValue(When::resolve($cachedRecords)));
 
         $cachedExecutor = new CachedExecutor($executor, $cache);
 
@@ -98,7 +106,7 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
     {
         return $this->getMock('React\Dns\Query\ExecutorInterface');
     }
-    
+
     private function createPromiseMock()
     {
         return $this->getMock('React\Promise\PromiseInterface');

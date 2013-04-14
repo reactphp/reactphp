@@ -1,5 +1,9 @@
 {
-    "hash": "db8f254e657053a020cd6117714b6f49",
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+    ],
+    "hash": "cff88550c9ac83dc0aa91c6fe6adb377",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -18,9 +22,7 @@
             "require": {
                 "php": ">=5.3.0"
             },
-            "time": "2012-05-30 08:01:08",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Evenement": "src"
@@ -39,210 +41,82 @@
             "description": "Événement is a very simple event dispatching library for PHP 5.3",
             "keywords": [
                 "event-dispatcher"
-            ]
-        },
-        {
-            "name": "guzzle/common",
-            "version": "v3.0.4",
-            "target-dir": "Guzzle/Common",
-            "source": {
-                "type": "git",
-                "url": "git://github.com/guzzle/common.git",
-                "reference": "v3.0.4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://github.com/guzzle/common/archive/v3.0.4.zip",
-                "reference": "v3.0.4",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2",
-                "symfony/event-dispatcher": "2.1.*"
-            },
-            "time": "2012-11-12 00:00:24",
-            "type": "library",
-            "installation-source": "dist",
-            "autoload": {
-                "psr-0": {
-                    "Guzzle\\Common": ""
-                }
-            },
-            "license": [
-                "MIT"
             ],
-            "description": "Common libraries used by Guzzle",
-            "homepage": "http://guzzlephp.org/",
-            "keywords": [
-                "event",
-                "exception",
-                "common",
-                "collection"
-            ]
-        },
-        {
-            "name": "guzzle/http",
-            "version": "v3.0.4",
-            "target-dir": "Guzzle/Http",
-            "source": {
-                "type": "git",
-                "url": "git://github.com/guzzle/http.git",
-                "reference": "v3.0.4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://github.com/guzzle/http/archive/v3.0.4.zip",
-                "reference": "v3.0.4",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2",
-                "guzzle/common": "self.version",
-                "guzzle/parser": "self.version",
-                "guzzle/stream": "self.version"
-            },
-            "time": "2012-11-11 23:54:57",
-            "type": "library",
-            "installation-source": "dist",
-            "autoload": {
-                "psr-0": {
-                    "Guzzle\\Http": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Michael Dowling",
-                    "email": "mtdowling@gmail.com",
-                    "homepage": "https://github.com/mtdowling"
-                }
-            ],
-            "description": "HTTP libraries used by Guzzle",
-            "homepage": "http://guzzlephp.org/",
-            "keywords": [
-                "curl",
-                "http",
-                "http client",
-                "client",
-                "Guzzle"
-            ]
+            "time": "2012-05-30 08:01:08"
         },
         {
             "name": "guzzle/parser",
-            "version": "v3.0.4",
+            "version": "v3.4.0",
             "target-dir": "Guzzle/Parser",
             "source": {
                 "type": "git",
-                "url": "git://github.com/guzzle/parser.git",
-                "reference": "v3.0.4"
+                "url": "https://github.com/guzzle/parser.git",
+                "reference": "v3.4.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/parser/archive/v3.0.4.zip",
-                "reference": "v3.0.4",
+                "url": "https://api.github.com/repos/guzzle/parser/zipball/v3.4.0",
+                "reference": "v3.4.0",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2"
             },
-            "time": "2012-11-01 18:03:45",
             "type": "library",
-            "installation-source": "dist",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.3-dev"
+                }
+            },
             "autoload": {
                 "psr-0": {
                     "Guzzle\\Parser": ""
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Interchangeable parsers used by Guzzle",
             "homepage": "http://guzzlephp.org/",
             "keywords": [
-                "http",
-                "url",
-                "message",
+                "URI Template",
                 "cookie",
-                "URI Template"
-            ]
-        },
-        {
-            "name": "guzzle/stream",
-            "version": "v3.0.4",
-            "target-dir": "Guzzle/Stream",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/guzzle/stream",
-                "reference": "v3.0.4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://github.com/guzzle/stream/archive/v3.0.4.zip",
-                "reference": "v3.0.4",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2",
-                "guzzle/common": "self.version"
-            },
-            "time": "2012-11-11 23:54:57",
-            "type": "library",
-            "installation-source": "dist",
-            "autoload": {
-                "psr-0": {
-                    "Guzzle\\Stream": ""
-                }
-            },
-            "license": [
-                "MIT"
+                "http",
+                "message",
+                "url"
             ],
-            "authors": [
-                {
-                    "name": "Michael Dowling",
-                    "email": "mtdowling@gmail.com",
-                    "homepage": "https://github.com/mtdowling"
-                }
-            ],
-            "description": "Guzzle stream wrapper component",
-            "homepage": "http://guzzlephp.org/",
-            "keywords": [
-                "stream",
-                "Guzzle",
-                "component"
-            ]
+            "time": "2013-03-07 22:13:59"
         },
         {
             "name": "react/promise",
-            "version": "v1.0.3",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/reactphp/promise",
-                "reference": "v1.0.3"
+                "url": "https://github.com/reactphp/promise.git",
+                "reference": "v1.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/reactphp/promise/archive/v1.0.3.zip",
-                "reference": "v1.0.3",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/v1.0.4",
+                "reference": "v1.0.4",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "2012-11-17 21:29:48",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "1.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "React\\Promise": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -254,69 +128,24 @@
                     "role": "maintainer"
                 }
             ],
-            "description": "A lightweight implementation of CommonJS Promises/A for PHP"
-        },
-        {
-            "name": "symfony/event-dispatcher",
-            "version": "v2.1.3",
-            "target-dir": "Symfony/Component/EventDispatcher",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/EventDispatcher",
-                "reference": "v2.1.3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://github.com/symfony/EventDispatcher/zipball/v2.1.3",
-                "reference": "v2.1.3",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3"
-            },
-            "require-dev": {
-                "symfony/dependency-injection": "2.1.*"
-            },
-            "suggest": {
-                "symfony/dependency-injection": "2.1.*",
-                "symfony/http-kernel": "2.1.*"
-            },
-            "time": "2012-10-04 08:17:57",
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1-dev"
-                }
-            },
-            "installation-source": "dist",
-            "autoload": {
-                "psr-0": {
-                    "Symfony\\Component\\EventDispatcher": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony EventDispatcher Component",
-            "homepage": "http://symfony.com"
+            "description": "A lightweight implementation of CommonJS Promises/A for PHP",
+            "time": "2013-04-03 14:05:55"
         }
     ],
-    "packages-dev": null,
+    "packages-dev": [
+
+    ],
     "aliases": [
 
     ],
     "minimum-stability": "stable",
     "stability-flags": [
+
+    ],
+    "platform": {
+        "php": ">=5.3.3"
+    },
+    "platform-dev": [
 
     ]
 }

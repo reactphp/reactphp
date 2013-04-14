@@ -5,6 +5,7 @@ namespace React\Socket;
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
 
+/** @event connection */
 class Server extends EventEmitter implements ServerInterface
 {
     public $master;
@@ -57,6 +58,7 @@ class Server extends EventEmitter implements ServerInterface
     {
         $this->loop->removeStream($this->master);
         fclose($this->master);
+        $this->removeAllListeners();
     }
 
     public function createConnection($socket)

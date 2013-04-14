@@ -159,10 +159,15 @@ subsplit_publish()
 
         for HEAD in $HEADS
         do
+            if ! git show-ref --quiet --verify -- "refs/remotes/origin/${HEAD}"
+            then
+                say " - skipping head '${HEAD}' (does not exist)"
+                continue
+            fi
             LOCAL_BRANCH="${REMOTE_NAME}-branch-${HEAD}"
-            say " - syncing branch ${HEAD}"
+            say " - syncing branch '${HEAD}'"
             git branch -D "$LOCAL_BRANCH" >/dev/null 2>&1
-            git subtree split -q --prefix="$SUBPATH" --branch="$LOCAL_BRANCH" "origin/${HEAD}" >/dev/null 2>&1
+            git subtree split -q --prefix="$SUBPATH" --branch="$LOCAL_BRANCH" "origin/${HEAD}" >/dev/null
             if [ $? -eq 0 ]
             then
                 PUSH_CMD="git push -q ${DRY_RUN} --force $REMOTE_NAME ${LOCAL_BRANCH}:${HEAD}"
@@ -178,15 +183,23 @@ subsplit_publish()
 
         for TAG in $TAGS
         do
+            if ! git show-ref --quiet --verify -- "refs/tags/${TAG}"
+            then
+                say " - skipping tag '${TAG}' (does not exist)"
+                continue
+            fi
             LOCAL_TAG="${REMOTE_NAME}-tag-${TAG}"
             if git branch | grep "${LOCAL_TAG}$" >/dev/null && [ -z "$REBUILD_TAGS" ]
             then
-                say " - skpping tag ${TAG} (already synced)"
+                say " - skpping tag '${TAG}' (already synced)"
                 continue
             fi
-            say " - syncing tag ${TAG}"
+            say " - syncing tag '${TAG}'"
+            say " - deleting '${LOCAL_TAG}'"
             git branch -D "$LOCAL_TAG" >/dev/null 2>&1
-            git subtree split -q --annotate="${ANNOTATE}" --prefix="$SUBPATH" --branch="$LOCAL_TAG" "$TAG" >/dev/null 2>&1
+            say " - subtree split for '${TAG}'"
+            git subtree split -q --annotate="${ANNOTATE}" --prefix="$SUBPATH" --branch="$LOCAL_TAG" "$TAG" >/dev/null
+            say " - subtree split for '${TAG}' [DONE]"
             if [ $? -eq 0 ]
             then
                 PUSH_CMD="git push -q ${DRY_RUN} --force ${REMOTE_NAME} ${LOCAL_TAG}:refs/tags/${TAG}"

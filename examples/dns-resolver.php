@@ -14,6 +14,8 @@ $dns
     ->resolve($domain)
     ->then(function ($ip) {
         echo "Host: $ip\n";
+    }, function ($e) {
+        echo "Error: {$e->getMessage()}\n";
     });
 
 echo "Resolving domain $domain...\n";

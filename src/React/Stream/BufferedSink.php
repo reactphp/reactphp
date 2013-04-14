@@ -49,4 +49,12 @@ class BufferedSink extends WritableStream implements PromisorInterface
     {
         return $this->deferred->promise();
     }
+
+    public static function createPromise(ReadableStream $stream)
+    {
+        $sink = new static();
+        $stream->pipe($sink);
+
+        return $sink->promise();
+    }
 }

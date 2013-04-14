@@ -2,19 +2,38 @@
 
 namespace React\Dns\Query;
 
+use React\Cache\CacheInterface;
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;
+use React\Promise\When;
 
 class RecordCache
 {
-    private $records = array();
+    private $cache;
+    private $expiredAt;
+
+    public function __construct(CacheInterface $cache)
+    {
+        $this->cache = $cache;
+    }
 
     public function lookup(Query $query)
     {
         $id = $this->serializeQueryToIdentity($query);
-        $records = isset($this->records[$id]) ? $this->records[$id]->all() : array();
 
-        return $records;
+        $expiredAt = $this->expiredAt;
+
+        return $this->cache
+            ->get($id)
+            ->then(function ($value) use ($query, $expiredAt) {
+                $recordBag = unserialize($value);
+
+                if (null !== $expiredAt && $expiredAt <= $query->currentTime) {
+                    return When::reject();
+                }
+
+                return $recordBag->all();
+            });
     }
 
     public function storeResponseMessage($currentTime, Message $message)
@@ -27,15 +46,28 @@ class RecordCache
     public function storeRecord($currentTime, Record $record)
     {
         $id = $this->serializeRecordToIdentity($record);
-        $this->records[$id] = isset($this->records[$id]) ? $this->records[$id] : new RecordBag();
-        $this->records[$id]->set($currentTime, $record);
+
+        $cache = $this->cache;
+
+        $this->cache
+            ->get($id)
+            ->then(
+                function ($value) {
+                    return unserialize($value);
+                },
+                function ($e) {
+                    return new RecordBag();
+                }
+            )
+            ->then(function ($recordBag) use ($id, $currentTime, $record, $cache) {
+                $recordBag->set($currentTime, $record);
+                $cache->set($id, serialize($recordBag));
+            });
     }
 
     public function expire($currentTime)
     {
-        foreach ($this->records as $recordBag) {
-            $recordBag->expire($currentTime);
-        }
+        $this->expiredAt = $currentTime;
     }
 
     public function serializeQueryToIdentity(Query $query)

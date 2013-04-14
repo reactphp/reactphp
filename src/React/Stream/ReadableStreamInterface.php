@@ -4,7 +4,12 @@ namespace React\Stream;
 
 use Evenement\EventEmitterInterface;
 
-// Events: data, end, error, close
+/**
+ * @event data
+ * @event end
+ * @event error
+ * @event close
+ */
 interface ReadableStreamInterface extends StreamInterface
 {
     public function isReadable();
