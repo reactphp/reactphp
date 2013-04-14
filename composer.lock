@@ -1,4 +1,8 @@
 {
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+    ],
     "hash": "a4f3292bdf733bd9da8ada4d28043e3e",
     "packages": [
         {
@@ -42,17 +46,17 @@
         },
         {
             "name": "guzzle/parser",
-            "version": "v3.2.0",
+            "version": "v3.4.0",
             "target-dir": "Guzzle/Parser",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/parser.git",
-                "reference": "v3.1.0"
+                "reference": "v3.4.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/parser/zipball/v3.1.0",
-                "reference": "v3.1.0",
+                "url": "https://api.github.com/repos/guzzle/parser/zipball/v3.4.0",
+                "reference": "v3.4.0",
                 "shasum": ""
             },
             "require": {
@@ -61,7 +65,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0-dev"
+                    "dev-master": "3.3-dev"
                 }
             },
             "autoload": {
@@ -69,7 +73,7 @@
                     "Guzzle\\Parser": ""
                 }
             },
-            "notification-url": "http://packagist.org/downloads/",
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -82,20 +86,20 @@
                 "message",
                 "url"
             ],
-            "time": "2013-01-12 21:43:21"
+            "time": "2013-03-07 22:13:59"
         },
         {
             "name": "react/promise",
-            "version": "v1.0.3",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/reactphp/promise",
-                "reference": "v1.0.3"
+                "url": "https://github.com/reactphp/promise.git",
+                "reference": "v1.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/reactphp/promise/archive/v1.0.3.zip",
-                "reference": "v1.0.3",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/v1.0.4",
+                "reference": "v1.0.4",
                 "shasum": ""
             },
             "require": {
@@ -112,6 +116,7 @@
                     "React\\Promise": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -124,15 +129,24 @@
                 }
             ],
             "description": "A lightweight implementation of CommonJS Promises/A for PHP",
-            "time": "2012-11-17 21:29:48"
+            "time": "2013-04-03 14:05:55"
         }
     ],
-    "packages-dev": null,
+    "packages-dev": [
+
+    ],
     "aliases": [
 
     ],
     "minimum-stability": "stable",
     "stability-flags": [
 
-    ]
+    ],
+    "platform": {
+        "php": ">=5.3.3"
+    },
+    "platform-dev": {
+        "ext-libevent": "*",
+        "ext-libev": "*"
+    }
 }
