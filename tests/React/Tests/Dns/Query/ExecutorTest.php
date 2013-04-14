@@ -66,6 +66,13 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
     {
         $conn = $this->createConnectionMock();
 
+        $timer = $this->getMock('React\EventLoop\Timer\TimerInterface');
+
+        $this->loop
+            ->expects($this->any())
+            ->method('addTimer')
+            ->will($this->returnValue($timer));
+
         $this->parser
             ->expects($this->at(0))
             ->method('parseChunk')
@@ -98,6 +105,13 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
     {
         $self = $this;
 
+        $timer = $this->getMock('React\EventLoop\Timer\TimerInterface');
+
+        $this->loop
+            ->expects($this->any())
+            ->method('addTimer')
+            ->will($this->returnValue($timer));
+
         $this->parser
             ->expects($this->once())
             ->method('parseChunk')
@@ -110,7 +124,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->method('createConnection')
             ->with('8.8.8.8:53', 'tcp')
             ->will($this->returnNewConnectionMock());
-        
+
         $mock = $this->createCallableMock();
         $mock
             ->expects($this->once())
@@ -143,16 +157,17 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->with('8.8.8.8:53', 'udp')
             ->will($this->returnNewConnectionMock());
 
+
+        $timer = $this->getMock('React\EventLoop\Timer\TimerInterface');
+        $timer
+            ->expects($this->once())
+            ->method('cancel');
+
         $this->loop
             ->expects($this->once())
             ->method('addTimer')
             ->with(5, $this->isInstanceOf('Closure'))
-            ->will($this->returnValue('timer0'));
-
-        $this->loop
-            ->expects($this->once())
-            ->method('cancelTimer')
-            ->with('timer0');
+            ->will($this->returnValue($timer));
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
         $this->executor->query('8.8.8.8:53', $query, function () {}, function () {});

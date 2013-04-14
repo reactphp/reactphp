@@ -2,6 +2,10 @@
 
 namespace React\EventLoop;
 
+use SplObjectStorage;
+use React\EventLoop\Timer\Timer;
+use React\EventLoop\Timer\TimerInterface;
+
 /**
  * @see https://github.com/m4rw3r/php-libev
  * @see https://gist.github.com/1688204
@@ -9,13 +13,14 @@ namespace React\EventLoop;
 class LibEvLoop implements LoopInterface
 {
     private $loop;
+    private $timers;
     private $readEvents = array();
     private $writeEvents = array();
-    private $timers = array();
 
     public function __construct()
     {
         $this->loop = new \libev\EventLoop();
+        $this->timers = new SplObjectStorage();
     }
 
     public function addReadStream($stream, $listener)
@@ -85,49 +90,56 @@ class LibEvLoop implements LoopInterface
 
     public function addTimer($interval, $callback)
     {
-        $dummyCallback = function () {};
-        $timer = new \libev\TimerEvent($dummyCallback, $interval);
+        $timer = new Timer($this, $interval, $callback, false);
+        $this->setupTimer($timer);
 
-        return $this->createTimer($timer, $callback, false);
+        return $timer;
     }
 
     public function addPeriodicTimer($interval, $callback)
     {
+        $timer = new Timer($this, $interval, $callback, true);
+        $this->setupTimer($timer);
+
+        return $timer;
+    }
+
+    public function cancelTimer(TimerInterface $timer)
+    {
+        if (isset($this->timers[$timer])) {
+            $this->loop->remove($this->timers[$timer]);
+            $this->timers->detach($timer);
+        }
+    }
+
+    private function setupTimer(TimerInterface $timer)
+    {
         $dummyCallback = function () {};
-        $timer = new \libev\TimerEvent($dummyCallback, $interval, $interval);
+        $interval = $timer->getInterval();
 
-        return $this->createTimer($timer, $callback, true);
-    }
+        if ($timer->isPeriodic()) {
+            $libevTimer = new \libev\TimerEvent($dummyCallback, $interval, $interval);
+        } else {
+            $libevTimer = new \libev\TimerEvent($dummyCallback, $interval);
+        }
 
-    public function cancelTimer($signature)
-    {
-        $this->loop->remove($this->timers[$signature]);
-        unset($this->timers[$signature]);
-    }
+        $libevTimer->setCallback(function () use ($timer) {
+            call_user_func($timer->getCallback(), $timer);
 
-    private function createTimer($timer, $callback, $periodic)
-    {
-        $signature = spl_object_hash($timer);
-        $callback = $this->wrapTimerCallback($signature, $callback, $periodic);
-        $timer->setCallback($callback);
-
-        $this->timers[$signature] = $timer;
-        $this->loop->add($timer);
-
-        return $signature;
-    }
-
-    private function wrapTimerCallback($signature, $callback, $periodic)
-    {
-        $loop = $this;
-
-        return function ($event) use ($signature, $callback, $periodic, $loop) {
-            call_user_func($callback, $signature, $loop);
-
-            if (!$periodic) {
-                $loop->cancelTimer($signature);
+            if (!$timer->isPeriodic()) {
+                $timer->cancel();
             }
-        };
+        });
+
+        $this->timers->attach($timer, $libevTimer);
+        $this->loop->add($libevTimer);
+
+        return $timer;
+    }
+
+    public function isTimerActive(TimerInterface $timer)
+    {
+        return $this->timers->contains($timer);
     }
 
     public function tick()

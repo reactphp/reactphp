@@ -3,7 +3,6 @@
 namespace React\Http;
 
 use Evenement\EventEmitter;
-use Guzzle\Http\Message\Response as GuzzleResponse;
 use React\Socket\ConnectionInterface;
 use React\Stream\WritableStreamInterface;
 
@@ -59,16 +58,35 @@ class Response extends EventEmitter implements WritableStreamInterface
             $this->chunkedEncoding = false;
         }
 
-        $response = new GuzzleResponse($status);
-        $response->setHeader('X-Powered-By', 'React/alpha');
-        $response->addHeaders($headers);
+        $headers = array_merge(
+            array('X-Powered-By' => 'React/alpha'),
+            $headers
+        );
         if ($this->chunkedEncoding) {
-            $response->setHeader('Transfer-Encoding', 'chunked');
+            $headers['Transfer-Encoding'] = 'chunked';
         }
-        $data = (string) $response;
+
+        $data = $this->formatHead($status, $headers);
         $this->conn->write($data);
 
         $this->headWritten = true;
+    }
+
+    private function formatHead($status, array $headers)
+    {
+        $status = (int) $status;
+        $text = isset(ResponseCodes::$statusTexts[$status]) ? ResponseCodes::$statusTexts[$status] : '';
+        $data = "HTTP/1.1 $status $text\r\n";
+
+        foreach ($headers as $name => $value) {
+            $name = str_replace(array("\r", "\n"), '', $name);
+            $value = str_replace(array("\r", "\n"), '', $value);
+
+            $data .= "$name: $value\r\n";
+        }
+        $data .= "\r\n";
+
+        return $data;
     }
 
     public function write($data)

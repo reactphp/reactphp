@@ -58,6 +58,7 @@ class Server extends EventEmitter implements ServerInterface
     {
         $this->loop->removeStream($this->master);
         fclose($this->master);
+        $this->removeAllListeners();
     }
 
     public function createConnection($socket)

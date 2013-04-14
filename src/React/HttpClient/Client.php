@@ -2,61 +2,34 @@
 
 namespace React\HttpClient;
 
-use Guzzle\Http\Message\Request as GuzzleRequest;
 use React\EventLoop\LoopInterface;
-use React\HttpClient\ConnectionManager;
-use React\HttpClient\Request as ClientRequest;
-use React\HttpClient\SecureConnectionManager;
+use React\HttpClient\Request;
+use React\SocketClient\ConnectorInterface;
 
 class Client
 {
     private $loop;
-
     private $connectionManager;
-
     private $secureConnectionManager;
 
-    public function __construct(LoopInterface $loop, ConnectionManagerInterface $connectionManager, ConnectionManagerInterface $secureConnectionManager)
+    public function __construct(LoopInterface $loop, ConnectorInterface $connector, ConnectorInterface $secureConnector)
     {
         $this->loop = $loop;
-        $this->connectionManager = $connectionManager;
-        $this->secureConnectionManager = $secureConnectionManager;
+        $this->connector = $connector;
+        $this->secureConnector = $secureConnector;
     }
 
     public function request($method, $url, array $headers = array())
     {
-        $guzzleRequest = new GuzzleRequest($method, $url, $headers);
-        $connectionManager = $this->getConnectionManagerForScheme($guzzleRequest->getScheme());
-        return new ClientRequest($this->loop, $connectionManager, $guzzleRequest);
+        $requestData = new RequestData($method, $url, $headers);
+        $connectionManager = $this->getConnectorForScheme($requestData->getScheme());
+        return new Request($this->loop, $connectionManager, $requestData);
+
     }
 
-    public function setConnectionManager(ConnectionManagerInterface $connectionManager)
+    private function getConnectorForScheme($scheme)
     {
-        $this->connectionManager = $connectionManager;
-    }
-
-    public function getConnectionManager()
-    {
-        return $this->connectionManager;
-    }
-
-    public function setSecureConnectionManager(ConnectionManagerInterface $connectionManager)
-    {
-        $this->secureConnectionManager = $connectionManager;
-    }
-
-    public function getSecureConnectionManager()
-    {
-        return $this->secureConnectionManager;
-    }
-
-    private function getConnectionManagerForScheme($scheme)
-    {
-        if ('https' === $scheme) {
-            return $this->getSecureConnectionManager();
-        } else {
-            return $this->getConnectionManager();
-        }
+        return ('https' === $scheme) ? $this->secureConnector : $this->connector;
     }
 }
 
