@@ -9,7 +9,7 @@ CHANGELOG
   * Feature: [SocketClient] New SocketClient component extracted from HttpClient (@clue)
   * Feature: [Stream] Factory method for BufferedSink
 
-* 0.2.7 (2013-01-05)
+### 0.2.7 (2013-01-05)
 
   * Bug fix: [EventLoop] Fix libevent timers with PHP 5.3
   * Bug fix: [EventLoop] Fix libevent timer cancellation (@nrk)
