@@ -23,14 +23,16 @@ class LibeioFilesystem implements FilesystemInterface
 
         $deferred = new Deferred();
 
-        eio_mkdir($dirname, $permissions, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($deferred) {
+        if (!@eio_mkdir($dirname, $permissions, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($deferred) {
             if (0 !== $result) {
                 $deferred->reject(new IoException(eio_get_last_error($req)));
                 return;
             }
 
             $deferred->resolve($result);
-        });
+        })) {
+            $deferred->reject(new IoException('Unable to create directory'));
+        }
 
         return $deferred->promise();
     }
@@ -100,14 +102,16 @@ class LibeioFilesystem implements FilesystemInterface
 
         $deferred = new Deferred();
 
-        eio_stat($filename, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($deferred) {
+        if (!@eio_stat($filename, EIO_PRI_DEFAULT, function ($data, $result, $req) use ($deferred) {
             if (-1 === $result) {
                 $deferred->reject(new IoException(eio_get_last_error($req)));
                 return;
             }
 
             $deferred->resolve($result);
-        });
+        })) {
+            $deferred->reject(new IoException('Unable to stat file'));
+        }
 
         return $deferred->promise();
     }
