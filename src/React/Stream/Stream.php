@@ -21,15 +21,13 @@ class Stream extends EventEmitter implements ReadableStreamInterface, WritableSt
         $this->loop = $loop;
         $this->buffer = new Buffer($this->stream, $this->loop);
 
-        $that = $this;
-
-        $this->buffer->on('error', function ($error) use ($that) {
-            $that->emit('error', array($error, $that));
-            $that->close();
+        $this->buffer->on('error', function ($error) {
+            $this->emit('error', array($error, $this));
+            $this->close();
         });
 
-        $this->buffer->on('drain', function () use ($that) {
-            $that->emit('drain');
+        $this->buffer->on('drain', function () {
+            $this->emit('drain');
         });
 
         $this->resume();
@@ -95,10 +93,8 @@ class Stream extends EventEmitter implements ReadableStreamInterface, WritableSt
         $this->readable = false;
         $this->writable = false;
 
-        $that = $this;
-
-        $this->buffer->on('close', function () use ($that) {
-            $that->close();
+        $this->buffer->on('close', function () {
+            $this->close();
         });
 
         $this->buffer->end($data);

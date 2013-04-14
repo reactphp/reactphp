@@ -18,19 +18,17 @@ class Response extends EventEmitter implements WritableStreamInterface
     {
         $this->conn = $conn;
 
-        $that = $this;
-
-        $this->conn->on('end', function () use ($that) {
-            $that->close();
+        $this->conn->on('end', function () {
+            $this->close();
         });
 
-        $this->conn->on('error', function ($error) use ($that) {
-            $that->emit('error', array($error, $that));
-            $that->close();
+        $this->conn->on('error', function ($error) {
+            $this->emit('error', array($error, $this));
+            $this->close();
         });
 
-        $this->conn->on('drain', function () use ($that) {
-            $that->emit('drain');
+        $this->conn->on('drain', function () {
+            $this->emit('drain');
         });
     }
 
