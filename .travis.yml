@@ -10,10 +10,9 @@ before_script:
   - yes "" | pecl install libevent-beta
   - echo "extension=libevent.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - yes "" | pecl install eio
-  - echo "extension=eio.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - composer self-update
   - composer install --dev
 
-script: 
+script:
   - phpunit --coverage-text
   - phpunit -c phpunit-functional.xml.dist
