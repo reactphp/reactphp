@@ -9,11 +9,10 @@ before_script:
   - sudo apt-get install -y libevent-dev libev-dev
   - yes "" | pecl install libevent-beta
   - echo "extension=libevent.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
-  - (git clone --recursive https://github.com/m4rw3r/php-libev && cd php-libev && phpize && ./configure && make && make install)
-  - echo "extension=libev.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - yes "" | pecl install eio
-  - echo "extension=eio.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - composer self-update
   - composer install --dev
 
-script: phpunit --coverage-text
+script:
+  - phpunit --coverage-text
+  - yes "" | phpunit -c phpunit-functional.xml.dist

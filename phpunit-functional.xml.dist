@@ -13,7 +13,7 @@
 >
     <testsuites>
         <testsuite name="React Test Suite">
-            <directory>./tests/React/Tests</directory>
+            <directory>./tests/React/Functional</directory>
         </testsuite>
     </testsuites>
 
