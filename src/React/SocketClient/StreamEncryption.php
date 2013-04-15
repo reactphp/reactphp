@@ -47,9 +47,8 @@ class StreamEncryption
         // get actual stream socket from stream instance
         $socket = $stream->stream;
 
-        $that = $this;
-        $toggleCrypto = function () use ($that, $socket, $deferred, $toggle) {
-            $that->toggleCrypto($socket, $deferred, $toggle);
+        $toggleCrypto = function () use ($socket, $deferred, $toggle) {
+            $this->toggleCrypto($socket, $deferred, $toggle);
         };
 
         $this->loop->addWriteStream($socket, $toggleCrypto);
