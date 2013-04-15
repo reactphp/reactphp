@@ -96,6 +96,7 @@ class LibeioFilesystemTest extends TestCase
 
         $this->handleReadEvents($fs, 3);
 
+        $this->assertEquals(6, strlen($fileContents), "Asserts that `$fileContents` length is 6");
         $this->assertSame("hello\n", $fileContents);
     }
 
