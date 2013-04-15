@@ -10,6 +10,7 @@ use Guzzle\Parser\Message\MessageParser;
 /**
  * @event request
  * @event connection-end
+ * @event error
  */
 class RequestParser extends WritableStream
 {
@@ -19,9 +20,11 @@ class RequestParser extends WritableStream
     const STATE_CONSUMING_RAW_BODY = 3;
     const STATE_REQUEST_END = 4;
     const STATE_CONNECTION_END = 5;
+    const STATE_ERROR = 6;
 
     private $state = self::STATE_INIT;
     private $buffer = '';
+    private $maxSize = 4096;
 
     private $request;
     private $keepAlive;
@@ -38,6 +41,10 @@ class RequestParser extends WritableStream
 
     private function poll()
     {
+        if ($this->bufferExceeded()) {
+            $this->handleError();
+        }
+
         if ($this->isState(static::STATE_INIT)) {
             if ($this->hasHeaders()) {
                 $this->consumeHeaders();
@@ -55,6 +62,17 @@ class RequestParser extends WritableStream
         if ($this->isState(static::STATE_REQUEST_END)) {
             $this->checkForConnectionEnd();
         }
+    }
+
+    private function bufferExceeded()
+    {
+        return strlen($this->buffer) > $this->maxSize;
+    }
+
+    private function handleError()
+    {
+        $this->emit('error', [new \OverflowException("Maximum header size of {$this->maxSize} exceeded.")]);
+        $this->setState(static::STATE_ERROR);
     }
 
     private function hasHeaders()
@@ -75,7 +93,7 @@ class RequestParser extends WritableStream
         $this->keepAlive = !(isset($headers['Connection']) && 'close' === $headers['Connection']);
         $this->chunkedEncoding = isset($headers['Transfer-Encoding']) && 'chunked' === $headers['Transfer-encoding'];
         $this->contentLength = isset($headers['Content-Length']) ? $headers['Content-Length'] : 0;
-        $this->remainingLength = $this->contentLength;
+        $this->contentRemaining = $this->contentLength;
 
         $this->emit('request', [$this->request]);
 
@@ -83,6 +101,8 @@ class RequestParser extends WritableStream
             ? static::STATE_CONSUMING_CHUNKED_BODY
             : static::STATE_CONSUMING_RAW_BODY;
         $this->setState($newState);
+
+        $this->poll();
     }
 
     private function consumeChunkedBody()
