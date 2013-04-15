@@ -103,6 +103,7 @@ class RequestParser extends WritableStream
             : static::STATE_CONSUMING_RAW_BODY;
         $this->setState($newState);
 
+        // TODO: prevent stackoverflow by not using recursion
         $this->poll();
     }
 
@@ -170,6 +171,7 @@ class RequestParser extends WritableStream
     private function checkForConnectionEnd()
     {
         if ($this->keepAlive) {
+            // TODO: prevent stackoverflow by not using recursion
             $this->reset();
             $this->setState(static::STATE_INIT);
             $this->poll();
