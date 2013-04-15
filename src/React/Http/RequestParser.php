@@ -6,6 +6,7 @@ use React\Stream\WritableStream;
 use Guzzle\Parser\Message\MessageParser;
 
 // TODO: validate state transitions
+// TODO: handle timeouts
 
 /**
  * @event request
