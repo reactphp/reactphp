@@ -15,4 +15,4 @@ before_script:
 
 script:
   - phpunit --coverage-text
-  - phpunit -c phpunit-functional.xml.dist
+  - yes "" | phpunit -c phpunit-functional.xml.dist
