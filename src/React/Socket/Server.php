@@ -18,11 +18,33 @@ class Server extends EventEmitter implements ServerInterface
 
     public function listen($port, $host = '127.0.0.1')
     {
-        $this->master = @stream_socket_server("tcp://$host:$port", $errno, $errstr);
-        if (false === $this->master) {
+        $socket = @stream_socket_server("tcp://$host:$port", $errno, $errstr);
+        if (false === $socket) {
             $message = "Could not bind to tcp://$host:$port: $errstr";
             throw new ConnectionException($message, $errno);
         }
+
+        $this->handleServerConnection($socket);
+    }
+
+    public function listenUnix($descriptor)
+    {
+        if ('WINNT' === PHP_OS) {
+            throw new \RuntimeException("Unix sockets are unavailable on Windows");
+        }
+
+        $socket = @stream_socket_server("unix://$descriptor", $errno, $errstr);
+        if (false === $socket) {
+            throw new ConnectionException("Could not open file descriptor for unix socket {$descriptor}: $errstr", $errno);
+        }
+
+        $this->handleServerConnection($socket);
+    }
+
+    private function handleServerConnection($socket)
+    {
+        $this->master = $socket;
+
         stream_set_blocking($this->master, 0);
 
         $that = $this;
