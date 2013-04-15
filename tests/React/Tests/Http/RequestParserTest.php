@@ -2,49 +2,46 @@
 
 namespace React\Tests\Http;
 
-use React\Http\RequestHeaderParser;
+use React\Http\RequestParser;
 use React\Tests\Socket\TestCase;
 
-class RequestHeaderParserTest extends TestCase
+class RequestParserTest extends TestCase
 {
     public function testSplitShouldHappenOnDoubleCrlf()
     {
-        $parser = new RequestHeaderParser();
-        $parser->on('headers', $this->expectCallableNever());
+        $parser = new RequestParser();
+        $parser->on('request', $this->expectCallableNever());
 
-        $parser->feed("GET / HTTP/1.1\r\n");
-        $parser->feed("Host: example.com:80\r\n");
-        $parser->feed("Connection: close\r\n");
+        $parser->write("GET / HTTP/1.1\r\n");
+        $parser->write("Host: example.com:80\r\n");
+        $parser->write("Connection: close\r\n");
 
         $parser->removeAllListeners();
-        $parser->on('headers', $this->expectCallableOnce());
+        $parser->on('request', $this->expectCallableOnce());
 
-        $parser->feed("\r\n");
+        $parser->write("\r\n");
     }
 
     public function testFeedInOneGo()
     {
-        $parser = new RequestHeaderParser();
-        $parser->on('headers', $this->expectCallableOnce());
+        $parser = new RequestParser();
+        $parser->on('request', $this->expectCallableOnce());
 
         $data = $this->createGetRequest();
-        $parser->feed($data);
+        $parser->write($data);
     }
 
-    public function testHeadersEventShouldReturnRequestAndBodyBuffer()
+    public function testHeadersEventShouldReturnRequest()
     {
         $request = null;
-        $bodyBuffer = null;
 
-        $parser = new RequestHeaderParser();
-        $parser->on('headers', function ($parsedRequest, $parsedBodyBuffer) use (&$request, &$bodyBuffer) {
+        $parser = new RequestParser();
+        $parser->on('request', function ($parsedRequest) use (&$request) {
             $request = $parsedRequest;
-            $bodyBuffer = $parsedBodyBuffer;
         });
 
         $data = $this->createGetRequest();
-        $data .= 'RANDOM DATA';
-        $parser->feed($data);
+        $parser->write($data);
 
         $this->assertInstanceOf('React\Http\Request', $request);
         $this->assertSame('GET', $request->getMethod());
@@ -52,22 +49,22 @@ class RequestHeaderParserTest extends TestCase
         $this->assertSame(array(), $request->getQuery());
         $this->assertSame('1.1', $request->getHttpVersion());
         $this->assertSame(array('Host' => 'example.com:80', 'Connection' => 'close'), $request->getHeaders());
-
-        $this->assertSame('RANDOM DATA', $bodyBuffer);
     }
 
     public function testHeadersEventShouldReturnBinaryBodyBuffer()
     {
         $bodyBuffer = null;
 
-        $parser = new RequestHeaderParser();
-        $parser->on('headers', function ($parsedRequest, $parsedBodyBuffer) use (&$bodyBuffer) {
-            $bodyBuffer = $parsedBodyBuffer;
+        $parser = new RequestParser();
+        $parser->on('request', function ($request) use (&$bodyBuffer) {
+            $bodyBuffer = '';
+            $request->on('data', function ($data) use (&$bodyBuffer) {
+                $bodyBuffer = $data;
+            });
         });
 
-        $data = $this->createGetRequest();
-        $data .= "\0x01\0x02\0x03\0x04\0x05";
-        $parser->feed($data);
+        $data = $this->createAdvancedPostRequest("\0x01\0x02\0x03\0x04\0x05");
+        $parser->write($data);
 
         $this->assertSame("\0x01\0x02\0x03\0x04\0x05", $bodyBuffer);
     }
@@ -76,13 +73,13 @@ class RequestHeaderParserTest extends TestCase
     {
         $request = null;
 
-        $parser = new RequestHeaderParser();
-        $parser->on('headers', function ($parsedRequest, $parsedBodyBuffer) use (&$request) {
+        $parser = new RequestParser();
+        $parser->on('request', function ($parsedRequest) use (&$request) {
             $request = $parsedRequest;
         });
 
         $data = $this->createAdvancedPostRequest();
-        $parser->feed($data);
+        $parser->write($data);
 
         $this->assertInstanceOf('React\Http\Request', $request);
         $this->assertSame('POST', $request->getMethod());
@@ -92,6 +89,7 @@ class RequestHeaderParserTest extends TestCase
         $headers = array(
             'Host' => 'example.com:80',
             'User-Agent' => 'react/alpha',
+            'Content-Length' => '0',
             'Connection' => 'close',
         );
         $this->assertSame($headers, $request->getHeaders());
@@ -101,14 +99,14 @@ class RequestHeaderParserTest extends TestCase
     {
         $error = null;
 
-        $parser = new RequestHeaderParser();
-        $parser->on('headers', $this->expectCallableNever());
-        $parser->on('error', function ($message) use (&$error) {
-            $error = $message;
+        $parser = new RequestParser();
+        $parser->on('request', $this->expectCallableNever());
+        $parser->on('error', function ($e) use (&$error) {
+            $error = $e;
         });
 
         $data = str_repeat('A', 4097);
-        $parser->feed($data);
+        $parser->write($data);
 
         $this->assertInstanceOf('OverflowException', $error);
         $this->assertSame('Maximum header size of 4096 exceeded.', $error->getMessage());
@@ -124,13 +122,17 @@ class RequestHeaderParserTest extends TestCase
         return $data;
     }
 
-    private function createAdvancedPostRequest()
+    private function createAdvancedPostRequest($body = '')
     {
+        $contentLength = strlen($body);
+
         $data = "POST /foo?bar=baz HTTP/1.1\r\n";
         $data .= "Host: example.com:80\r\n";
         $data .= "User-Agent: react/alpha\r\n";
+        $data .= "Content-Length: $contentLength\r\n";
         $data .= "Connection: close\r\n";
         $data .= "\r\n";
+        $data .= $body;
 
         return $data;
     }
