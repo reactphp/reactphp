@@ -22,7 +22,7 @@ class LibeioFilesystemTest extends TestCase
     /** @test */
     public function mkdirShouldCreateDirectory()
     {
-        $dirname = __DIR__.'/Fixtures/le_dir';
+        $dirname = __DIR__.'/../../Fixtures/le_dir';
         if (is_dir($dirname)) {
             rmdir($dirname);
         }
@@ -70,11 +70,11 @@ class LibeioFilesystemTest extends TestCase
 
         $this->assertFalse(is_dir($dirname));
     }
-    
+
     /** @test */
     public function openReadAndCloseShouldGetFileContents()
     {
-        $filename = __DIR__.'/Fixtures/hello.txt';
+        $filename = __DIR__.'/../../Fixtures/hello.txt';
 
         $fileContents = $thatFd = null;
 
@@ -102,7 +102,7 @@ class LibeioFilesystemTest extends TestCase
     /** @test */
     public function statShouldReturnHashWithInfo()
     {
-        $filename = __DIR__.'/Fixtures/hello.txt';
+        $filename = __DIR__.'/../../Fixtures/hello.txt';
 
         $capturedStatData = null;
 
@@ -130,7 +130,7 @@ class LibeioFilesystemTest extends TestCase
     /** @test */
     public function statOnNonExistentFileShouldFail()
     {
-        $filename = __DIR__.'/Fixtures/nobody.here';
+        $filename = __DIR__.'/../../Fixtures/nobody.here';
 
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $loop
@@ -152,7 +152,7 @@ class LibeioFilesystemTest extends TestCase
     /** @test */
     public function readFileShouldReadEntireFile()
     {
-        $filename = __DIR__.'/Fixtures/hello.txt';
+        $filename = __DIR__.'/../../Fixtures/hello.txt';
 
         $fileContents = null;
 
@@ -175,7 +175,7 @@ class LibeioFilesystemTest extends TestCase
     /** @test */
     public function readFileOnNonExistentShouldFail()
     {
-        $filename = __DIR__.'/Fixtures/nobody.here';
+        $filename = __DIR__.'/../../Fixtures/nobody.here';
 
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $loop
