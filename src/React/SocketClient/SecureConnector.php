@@ -19,10 +19,9 @@ class SecureConnector implements ConnectorInterface
 
     public function create($host, $port)
     {
-        $streamEncryption = $this->streamEncryption;
-        return $this->connector->create($host, $port)->then(function (Stream $stream) use ($streamEncryption) {
+        return $this->connector->create($host, $port)->then(function (Stream $stream) {
             // (unencrypted) connection succeeded => try to enable encryption
-            return $streamEncryption->enable($stream)->then(null, function ($error) use ($stream) {
+            return $this->streamEncryption->enable($stream)->then(null, function ($error) use ($stream) {
                 // establishing encryption failed => close invalid connection and return error
                 $stream->close();
                 throw $error;

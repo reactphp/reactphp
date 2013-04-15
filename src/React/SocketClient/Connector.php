@@ -21,12 +21,10 @@ class Connector implements ConnectorInterface
 
     public function create($host, $port)
     {
-        $that = $this;
-
         return $this
             ->resolveHostname($host)
-            ->then(function ($address) use ($port, $that) {
-                return $that->createSocketForAddress($address, $port);
+            ->then(function ($address) use ($port) {
+                return $this->createSocketForAddress($address, $port);
             });
     }
 

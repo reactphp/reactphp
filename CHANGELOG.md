@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+### 0.4.0 (2013-xx-xx)
+
+  * BC break: Bump minimum PHP version to PHP 5.4, remove 5.3 specific hacks
+
 ### 0.3.0 (2013-04-14)
 
   * BC break: [EventLoop] New timers API (@nrk)
