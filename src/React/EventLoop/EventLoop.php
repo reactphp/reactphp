@@ -79,11 +79,6 @@ class EventLoop implements LoopInterface
         $flags = isset($this->flags[$id]) ? $this->flags[$id] | $eventClass : $eventClass;
         $event->set($this->base, $stream, $flags | \Event::PERSIST, $this->callback, $this);
 
-        if (!$existing) {
-            // Set the base only if $event has been newly created or be ready for segfaults.
-           // event_base_set($event, $this->base);
-        }
-
         $event->add();
 
         $this->events[$id] = $event;
