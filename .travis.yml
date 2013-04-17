@@ -19,7 +19,7 @@ before_script:
               echo "extension=libevent.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`;
             fi"
   - sh -c " if [ \"\$(php --re ev | grep 'does not exist')\" != '' ]; then
-              git clone https://bitbucket.org/osmanov/pecl-event.git;
+              git clone https://bitbucket.org/osmanov/pecl-ev.git;
               cd pecl-ev;
               phpize && ./configure --enable-ev && make && make install;
               echo "extension=ev.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`;
