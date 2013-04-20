@@ -86,6 +86,10 @@ class Connector implements ConnectorInterface
 
     protected function getSocketUrl($host, $port)
     {
+        if (strpos($host, ':') !== false) {
+            // enclose IPv6 addresses in square brackets before appending port
+            $host = '[' . $host . ']';
+        }
         return sprintf('tcp://%s:%s', $host, $port);
     }
 
