@@ -4,7 +4,6 @@ namespace React\Stream;
 
 use React\Promise\Deferred;
 use React\Promise\PromisorInterface;
-use React\Stream\WritableStream;
 
 class BufferedSink extends WritableStream implements PromisorInterface
 {
@@ -50,7 +49,7 @@ class BufferedSink extends WritableStream implements PromisorInterface
         return $this->deferred->promise();
     }
 
-    public static function createPromise(ReadableStream $stream)
+    public static function createPromise(ReadableStreamInterface $stream)
     {
         $sink = new static();
         $stream->pipe($sink);
