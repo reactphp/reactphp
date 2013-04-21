@@ -3,6 +3,7 @@ CHANGELOG
 
 ### 0.3.1 (2013-04-21)
 
+  * Bug fix: [Stream] Allow any `ReadableStreamInterface` on `BufferedSink::createPromise()`
   * Bug fix: [HttpClient] Correct requirement for socket-client
 
 ### 0.3.0 (2013-04-14)
