@@ -6,7 +6,7 @@
     "require": {
         "php": ">=5.3.3",
         "guzzle/parser": "2.8.*",
-        "react/socket": "0.3.*",
+        "react/socket-client": "0.3.*",
         "react/dns": "0.3.*"
     },
     "autoload": {
