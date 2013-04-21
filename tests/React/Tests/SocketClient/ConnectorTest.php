@@ -59,8 +59,9 @@ class ConnectorTest extends TestCase
         $dns = $this->createResolverMock();
 
         $connector = new Connector($loop, $dns);
-        $connector->create('::1', 9999)
-        ->then($this->expectCallableNever(), $this->expectCallableOnce());
+        $connector
+            ->create('::1', 9999)
+            ->then($this->expectCallableNever(), $this->expectCallableOnce());
 
         $loop->run();
     }
@@ -74,23 +75,22 @@ class ConnectorTest extends TestCase
 
         $server = new Server($loop);
         $server->on('connection', $this->expectCallableOnce());
-        $server->on('connection', function () use ($server, $loop) {
-            $server->shutdown();
-        });
+        $server->on('connection', array($server, 'shutdown'));
         $server->listen(9999, '::1');
 
         $dns = $this->createResolverMock();
 
         $connector = new Connector($loop, $dns);
-        $connector->create('::1', 9999)
-        ->then(function ($stream) use (&$capturedStream) {
-            $capturedStream = $stream;
-            $stream->end();
-        });
+        $connector
+            ->create('::1', 9999)
+            ->then(function ($stream) use (&$capturedStream) {
+                $capturedStream = $stream;
+                $stream->end();
+            });
 
-            $loop->run();
+        $loop->run();
 
-            $this->assertInstanceOf('React\Stream\Stream', $capturedStream);
+        $this->assertInstanceOf('React\Stream\Stream', $capturedStream);
     }
 
     private function createResolverMock()
