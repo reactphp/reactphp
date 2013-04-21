@@ -4,6 +4,7 @@ CHANGELOG
 ### 0.3.1 (2013-04-21)
 
   * Feature: [Socket] Support binding to IPv6 addresses (@clue)
+  * Feature: [SocketClient] Support connecting to IPv6 addresses (@clue)
   * Bug fix: [Stream] Allow any `ReadableStreamInterface` on `BufferedSink::createPromise()`
   * Bug fix: [HttpClient] Correct requirement for socket-client
 
