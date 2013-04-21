@@ -48,15 +48,14 @@ class Executor implements ExecutorInterface
 
     public function doQuery($nameserver, $transport, $queryData, $name)
     {
-        $that = $this;
         $parser = $this->parser;
         $loop = $this->loop;
 
         $response = new Message();
         $deferred = new Deferred();
 
-        $retryWithTcp = function () use ($that, $nameserver, $queryData, $name) {
-            return $that->doQuery($nameserver, 'tcp', $queryData, $name);
+        $retryWithTcp = function () use ($nameserver, $queryData, $name) {
+            return $this->doQuery($nameserver, 'tcp', $queryData, $name);
         };
 
         $timer = $this->loop->addTimer($this->timeout, function () use (&$conn, $name, $deferred) {

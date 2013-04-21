@@ -215,10 +215,8 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
 
     private function returnStandardResponse()
     {
-        $that = $this;
-
-        $callback = function ($data, $response) use ($that) {
-            $that->convertMessageToStandardResponse($response);
+        $callback = function ($data, $response) {
+            $this->convertMessageToStandardResponse($response);
             return $response;
         };
 
@@ -227,10 +225,8 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
 
     private function returnTruncatedResponse()
     {
-        $that = $this;
-
-        $callback = function ($data, $response) use ($that) {
-            $that->convertMessageToTruncatedResponse($response);
+        $callback = function ($data, $response) {
+            $this->convertMessageToTruncatedResponse($response);
             return $response;
         };
 
