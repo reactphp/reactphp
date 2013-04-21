@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+### 0.4.0 (2013-xx-xx)
+
+  * BC break: [HttpClient] Drop unused `Response::getBody()`
+
 ### 0.3.0 (2013-04-14)
 
   * BC break: [EventLoop] New timers API (@nrk)
