@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+### 0.3.1 (2013-04-21)
+
+  * Bug fix: [HttpClient] Correct requirement for socket-client
+
 ### 0.3.0 (2013-04-14)
 
   * BC break: [EventLoop] New timers API (@nrk)
