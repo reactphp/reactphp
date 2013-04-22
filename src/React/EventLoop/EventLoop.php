@@ -148,6 +148,7 @@ class EventLoop implements LoopInterface
         }
 
         $timer = new Timer($this, $interval, $callback, $periodic);
+        $flags = 0;
         if ($periodic == true)
             $flags = \Event::PERSIST;
         $resource = new \Event($this->base, -1, $flags | \Event::TIMEOUT, $callback);
