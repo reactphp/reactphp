@@ -150,7 +150,6 @@ class EventLoop implements LoopInterface
         $timer = new Timer($this, $interval, $callback, $periodic);
 
         $timers = $this->timers;
-        $timers->attach($timer, $resource);
 
         $callback = function () use ($timers, $timer, &$callback) {
             if (isset($timers[$timer])) {
@@ -166,6 +165,7 @@ class EventLoop implements LoopInterface
 
         $resource = \Event::timer($this->base, $callback);
         $resource->add($interval * 1000000);
+        $timers->attach($timer, $resource);
 
         return $timer;
     }
