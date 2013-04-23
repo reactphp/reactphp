@@ -161,9 +161,7 @@ class EventLoop implements LoopInterface
             if (isset($timers[$timer])) {
                 call_user_func($timer->getCallback(), $timer);
 
-                if ($timer->isPeriodic() && isset($timers[$timer])) {
-                    $timers[$timer]->add($timer->getInterval());
-                } else {
+                if (!$timer->isPeriodic() || isset($timers[$timer])) {
                     $timer->cancel();
                 }
             }
