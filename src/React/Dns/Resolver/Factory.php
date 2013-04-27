@@ -46,16 +46,15 @@ class Factory
 
     protected function addPortToServerIfMissing($nameserver)
     {
-        $colon = strrpos($nameserver, ':');
-
-        // there is no colon at all or the last one does not have a closing IPv6 bracket right before it
-        if ($colon === false || (strpos($nameserver, ':') !== $colon && strpos($nameserver, ']') !== ($colon - 1))) {
-            if (strpos($nameserver, ':') !== $colon) {
-                // several colons => enclose IPv6 address in square brackets
-                $nameserver = '[' . $nameserver . ']';
-            }
+        if (strpos($nameserver, '[') === false && substr_count($nameserver, ':') >= 2) {
+            // several colons, but not enclosed in square brackets => enclose IPv6 address in square brackets
+            $nameserver = '[' . $nameserver . ']';
+        }
+        // assume a dummy scheme when checking for the port, otherwise parse_url() fails
+        if (parse_url('dummy://' . $nameserver, PHP_URL_PORT) === null) {
             $nameserver .= ':53';
         }
+
         return $nameserver;
     }
 }
