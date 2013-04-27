@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+### 0.3.2 (2013-xx-xx)
+
+  * Feature: [Dns] Support default port for IPv6 addresses (@clue)
+
 ### 0.3.1 (2013-04-21)
 
   * Feature: [Socket] Support binding to IPv6 addresses (@clue)
