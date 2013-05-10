@@ -4,6 +4,7 @@ CHANGELOG
 ### 0.3.2 (2013-xx-xx)
 
   * Feature: [Dns] Support default port for IPv6 addresses (@clue)
+  * Bug fix: [Stream] Make sure CompositeStream is closed properly
 
 ### 0.3.1 (2013-04-21)
 

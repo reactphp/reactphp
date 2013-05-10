@@ -76,7 +76,7 @@ class CompositeStream extends EventEmitter implements ReadableStreamInterface, W
 
     public function close()
     {
-        $this->pipeSource = true;
+        $this->pipeSource = null;
 
         $this->readable->close();
         $this->writable->close();
