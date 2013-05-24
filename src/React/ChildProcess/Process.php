@@ -7,6 +7,7 @@ use React\EventLoop\LoopInterface;
 use React\Stream\ReadableStreamInterface;
 use React\Stream\Stream;
 use React\Stream\WritableStreamInterface;
+use React\EventLoop\Timer\Timer;
 
 /**
  * Process component.
@@ -113,10 +114,10 @@ class Process extends EventEmitter
 
         $self = $this;
 
-        $timer = $loop->addPeriodicTimer($interval, function() use ($self, $loop, &$timer) {
+        $loop->addPeriodicTimer($interval, function(Timer $timer) use ($self) {
             if (!$self->isRunning()) {
                 $self->close();
-                $loop->cancelTimer($timer);
+                $timer->cancel();
                 $self->emit('exit', array($self->getExitCode(), $self->getTermSignal()));
             }
         });
