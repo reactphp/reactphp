@@ -5,8 +5,10 @@ namespace React\Tests\ChildProcess;
 use React\ChildProcess\Process;
 use React\EventLoop\Factory as LoopFactory;
 
-class ProcessTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
 {
+    abstract public function createLoop();
+
     public function testGetEnhanceSigchildCompatibility()
     {
         $process = new Process('echo foo');
@@ -42,7 +44,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testIsRunning()
     {
-        $loop = LoopFactory::create();
+        $loop = $this->createLoop();
         $process = new Process('sleep 1');
 
         $this->assertFalse($process->isRunning());
@@ -74,7 +76,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     {
         $cmd = 'php -r ' . escapeshellarg('echo getcwd(), PHP_EOL, count($_ENV), PHP_EOL;');
 
-        $loop = LoopFactory::create();
+        $loop = $this->createLoop();
         $process = new Process($cmd);
 
         $output = '';
@@ -96,7 +98,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     {
         $cmd = 'php -r ' . escapeshellarg('echo getcwd(), PHP_EOL;');
 
-        $loop = LoopFactory::create();
+        $loop = $this->createLoop();
         $process = new Process($cmd, '/');
 
         $output = '';
@@ -117,7 +119,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     {
         $cmd = 'php -r ' . escapeshellarg('echo getenv("foo"), PHP_EOL;');
 
-        $loop = LoopFactory::create();
+        $loop = $this->createLoop();
         $process = new Process($cmd, null, array('foo' => 'bar'));
 
         $output = '';
@@ -136,7 +138,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testStartAndAllowProcessToExitSuccessfullyUsingEventLoop()
     {
-        $loop = LoopFactory::create();
+        $loop = $this->createLoop();
         $process = new Process('exit 0');
 
         $called = false;
@@ -169,7 +171,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     {
         $cmd = tempnam(sys_get_temp_dir(), 'react');
 
-        $loop = LoopFactory::create();
+        $loop = $this->createLoop();
         $process = new Process($cmd);
 
         $output = '';
@@ -192,7 +194,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     {
         $cmd = tempnam(sys_get_temp_dir(), 'react');
 
-        $loop = LoopFactory::create();
+        $loop = $this->createloop();
         $process = new Process($cmd);
         $process->start($loop, 0.1, false);
         unlink($cmd);
@@ -208,7 +210,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('SIGTERM is not defined');
         }
 
-        $loop = LoopFactory::create();
+        $loop = $this->createloop();
         $process = new Process('sleep 1; exit 0');
 
         $called = false;
@@ -248,7 +250,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('SIGSTOP and/or SIGCONT is not defined');
         }
 
-        $loop = LoopFactory::create();
+        $loop = $this->createloop();
         $process = new Process('sleep 1; exit 0');
 
         $called = false;
@@ -302,7 +304,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
      * @param integer $interval Interval for retrying the callback (milliseconds)
      * @throws PHPUnit_Framework_ExpectationFailedException Last exception raised by the callback
      */
-    private function assertSoon(\Closure $callback, $timeout = 20000, $interval = 200)
+    protected function assertSoon(\Closure $callback, $timeout = 20000, $interval = 200)
     {
         $start = microtime(true);
         $timeout /= 1000; // convert to seconds
