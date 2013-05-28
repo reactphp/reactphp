@@ -3,7 +3,7 @@
 namespace React\Tests\ChildProcess;
 
 use React\ChildProcess\Process;
-use React\EventLoop\Factory as LoopFactory;
+use React\EventLoop\Timer\Timer;
 
 abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
 {
@@ -44,13 +44,10 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testIsRunning()
     {
-        $loop = $this->createLoop();
         $process = new Process('sleep 1');
 
         $this->assertFalse($process->isRunning());
-
-        $process->start($loop);
-
+        $process->start($this->createLoop());
         $this->assertTrue($process->isRunning());
 
         return $process;
@@ -81,8 +78,8 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
 
         $output = '';
 
-        $loop->addTimer(0.001, function() use ($process, $loop, &$output) {
-            $process->start($loop);
+        $loop->addTimer(0.001, function(Timer $timer) use ($process, &$output) {
+            $process->start($timer->getLoop());
             $process->stdout->on('data', function () use (&$output) {
                 $output .= func_get_arg(0);
             });
@@ -103,8 +100,8 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
 
         $output = '';
 
-        $loop->addTimer(0.001, function() use ($process, $loop, &$output) {
-            $process->start($loop);
+        $loop->addTimer(0.001, function(Timer $timer) use ($process, &$output) {
+            $process->start($timer->getLoop());
             $process->stdout->on('data', function () use (&$output) {
                 $output .= func_get_arg(0);
             });
@@ -124,8 +121,8 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
 
         $output = '';
 
-        $loop->addTimer(0.001, function() use ($process, $loop, &$output) {
-            $process->start($loop);
+        $loop->addTimer(0.001, function(Timer $timer) use ($process, &$output) {
+            $process->start($timer->getLoop());
             $process->stdout->on('data', function () use (&$output) {
                 $output .= func_get_arg(0);
             });
@@ -151,8 +148,8 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
             $termSignal = func_get_arg(1);
         });
 
-        $loop->addTimer(0.001, function() use ($process, $loop) {
-            $process->start($loop);
+        $loop->addTimer(0.001, function(Timer $timer) use ($process) {
+            $process->start($timer->getLoop());
         });
 
         $loop->run();
@@ -176,8 +173,8 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
 
         $output = '';
 
-        $loop->addTimer(0.001, function() use ($process, $loop, &$output) {
-            $process->start($loop);
+        $loop->addTimer(0.001, function(Timer $timer) use ($process, &$output) {
+            $process->start($timer->getLoop());
             $process->stderr->on('data', function () use (&$output) {
                 $output .= func_get_arg(0);
             });
@@ -223,8 +220,8 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
             $termSignal = func_get_arg(1);
         });
 
-        $loop->addTimer(0.001, function() use ($process, $loop) {
-            $process->start($loop);
+        $loop->addTimer(0.001, function(Timer $timer) use ($process) {
+            $process->start($timer->getLoop());
             $process->terminate();
         });
 
@@ -265,8 +262,8 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
 
         $self = $this;
 
-        $loop->addTimer(0.001, function() use ($process, $loop, $self) {
-            $process->start($loop);
+        $loop->addTimer(0.001, function(Timer $timer) use ($process, $self) {
+            $process->start($timer->getLoop());
             $process->terminate(SIGSTOP);
 
             $self->assertSoon(function() use ($self, $process) {
