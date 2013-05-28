@@ -236,9 +236,14 @@ class Process extends EventEmitter
      *
      * @param boolean $enhance
      * @return self
+     * @throws RuntimeException If the process is already running
      */
     public final function setEnhanceSigchildCompatibility($enhance)
     {
+        if ($this->isRunning()) {
+            throw new \RuntimeException('Process is already running');
+        }
+
         $this->enhanceSigchildCompatibility = (bool) $enhance;
 
         return $this;
@@ -250,15 +255,13 @@ class Process extends EventEmitter
      * This value is only meaningful if isRunning() has returned false. Null
      * will be returned if the process is still running.
      *
+     * Null may also be returned if the process has terminated, but the exit
+     * code could not be determined (e.g. sigchild compatibility was disabled).
+     *
      * @return int|null
-     * @throws RuntimeException If PHP was compiled with --enable-sigchild but sigchild compatibility mode is disabled
      */
     public function getExitCode()
     {
-        if ($this->isSigchildEnabled() && !$this->enhanceSigchildCompatibility) {
-            throw new \RuntimeException('PHP has been compiled with --enable-sigchild. You must use setEnhanceSigchildCompatibility() to use this method.');
-        }
-
         return $this->exitCode;
     }
 

@@ -23,16 +23,12 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException RuntimeException
      */
-    public function testGetExitCodeShouldThrowExceptionIfSigchildCompatibilityIsRequired()
+    public function testSetEnhanceSigchildCompatibilityCannotBeCalledIfProcessIsRunning()
     {
-        if (!Process::isSigchildEnabled()) {
-            $this->markTestSkipped('PHP has not been compiled with --enable-sigchild.');
-        }
+        $process = new Process('sleep 1');
 
-        $process = new Process('echo foo');
+        $process->start($this->createLoop());
         $process->setEnhanceSigchildCompatibility(false);
-
-        $process->getExitCode();
     }
 
     public function testGetCommand()
