@@ -4,10 +4,8 @@ namespace React\ChildProcess;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
-use React\Stream\ReadableStreamInterface;
-use React\Stream\Stream;
-use React\Stream\WritableStreamInterface;
 use React\EventLoop\Timer\Timer;
+use React\Stream\Stream;
 
 /**
  * Process component.
@@ -174,37 +172,6 @@ class Process extends EventEmitter
         }
 
         return proc_terminate($this->process);
-    }
-
-    /**
-     * Update the process status, stop/term signals, and exit code.
-     *
-     * Stop/term signals are only updated if the process is currently stopped or
-     * signaled, respectively. Otherwise, signal values will remain as-is so the
-     * corresponding getter methods may be used at a later point in time.
-     *
-     * This is an internal method and is public so that it may be called by the
-     * "end" event listeners on the process' output streams.
-     */
-    public function updateStatus()
-    {
-        if (!isset($this->process)) {
-            return;
-        }
-
-        $this->status = proc_get_status($this->process);
-
-        if ($this->status['stopped']) {
-            $this->stopSignal = $this->status['stopsig'];
-        }
-
-        if ($this->status['signaled']) {
-            $this->termSignal = $this->status['termsig'];
-        }
-
-        if (!$this->status['running'] && -1 !== $this->status['exitcode']) {
-            $this->exitCode = $this->status['exitcode'];
-        }
     }
 
     /**
@@ -427,5 +394,33 @@ class Process extends EventEmitter
         $this->updateStatus();
 
         return $this->status;
+    }
+
+    /**
+     * Update the process status, stop/term signals, and exit code.
+     *
+     * Stop/term signals are only updated if the process is currently stopped or
+     * signaled, respectively. Otherwise, signal values will remain as-is so the
+     * corresponding getter methods may be used at a later point in time.
+     */
+    private function updateStatus()
+    {
+        if (!isset($this->process)) {
+            return;
+        }
+
+        $this->status = proc_get_status($this->process);
+
+        if ($this->status['stopped']) {
+            $this->stopSignal = $this->status['stopsig'];
+        }
+
+        if ($this->status['signaled']) {
+            $this->termSignal = $this->status['termsig'];
+        }
+
+        if (!$this->status['running'] && -1 !== $this->status['exitcode']) {
+            $this->exitCode = $this->status['exitcode'];
+        }
     }
 }
