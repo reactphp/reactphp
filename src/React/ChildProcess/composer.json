@@ -1,6 +1,6 @@
 {
     "name": "react/child-process",
-    "description": "Library for creating and managing child processes.",
+    "description": "Library for executing child processes.",
     "keywords": ["process"],
     "license": "MIT",
     "require": {
