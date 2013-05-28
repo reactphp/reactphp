@@ -110,6 +110,10 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testProcessWithEnv()
     {
+        if (getenv('TRAVIS')) {
+            $this->markTestSkipped('Cannot execute PHP processes with custom environments on Travis CI.');
+        }
+
         $cmd = 'php -r ' . escapeshellarg('echo getenv("foo"), PHP_EOL;');
 
         $loop = $this->createLoop();
