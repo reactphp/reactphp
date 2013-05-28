@@ -183,14 +183,15 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEmpty($output);
     }
 
-    public function testStartInvalidProcessWithoutErrorChecking()
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testStartAlreadyRunningProcess()
     {
-        $cmd = tempnam(sys_get_temp_dir(), 'react');
+        $process = new Process('sleep 1');
 
-        $loop = $this->createloop();
-        $process = new Process($cmd);
-        $process->start($loop, 0.1, false);
-        unlink($cmd);
+        $process->start($this->createLoop());
+        $process->start($this->createLoop());
     }
 
     public function testTerminateWithDefaultTermSignalUsingEventLoop()

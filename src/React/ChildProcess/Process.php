@@ -81,7 +81,7 @@ class Process extends EventEmitter
     public function start(LoopInterface $loop, $interval = 0.1)
     {
         if ($this->isRunning()) {
-            throw new RuntimeException('Process is already running');
+            throw new \RuntimeException('Process is already running');
         }
 
         $cmd = $this->cmd;
