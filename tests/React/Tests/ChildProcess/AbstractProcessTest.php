@@ -304,7 +304,7 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
      * @param integer $interval Interval for retrying the callback (milliseconds)
      * @throws PHPUnit_Framework_ExpectationFailedException Last exception raised by the callback
      */
-    protected function assertSoon(\Closure $callback, $timeout = 20000, $interval = 200)
+    public function assertSoon(\Closure $callback, $timeout = 20000, $interval = 200)
     {
         $start = microtime(true);
         $timeout /= 1000; // convert to seconds
