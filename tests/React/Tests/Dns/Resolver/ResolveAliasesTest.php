@@ -10,7 +10,7 @@ use React\Dns\Model\Record;
 class ResolveAliasesTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @covers React\Dns\Resolver::resolveAliases
+     * @covers React\Dns\Resolver\Resolver::resolveAliases
      * @dataProvider provideAliasedAnswers
      */
     public function testResolveAliases(array $expectedAnswers, array $answers, $name)
