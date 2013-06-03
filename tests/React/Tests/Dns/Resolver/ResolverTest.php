@@ -32,6 +32,29 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test */
+    public function resolveShouldFilterByName()
+    {
+        $executor = $this->createExecutorMock();
+        $executor
+            ->expects($this->once())
+            ->method('query')
+            ->with($this->anything(), $this->isInstanceOf('React\Dns\Query\Query'))
+            ->will($this->returnCallback(function ($nameserver, $query) {
+                $response = new Message();
+                $response->header->set('qr', 1);
+                $response->questions[] = new Record($query->name, $query->type, $query->class);
+                $response->answers[] = new Record('foo.bar', $query->type, $query->class, 3600, '178.79.169.131');
+
+                return When::resolve($response);
+            }));
+
+        $errback = $this->expectCallableOnceWith($this->isInstanceOf('React\Dns\RecordNotFoundException'));
+
+        $resolver = new Resolver('8.8.8.8:53', $executor);
+        $resolver->resolve('igor.io')->then($this->expectCallableNever(), $errback);
+    }
+
+    /** @test */
     public function resolveWithNoAnswersShouldThrowException()
     {
         $executor = $this->createExecutorMock();
@@ -46,17 +69,11 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
 
                 return When::resolve($response);
             }));
-            
-        $mock = $this->createCallableMock();
-        $mock
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->callback(function($e) {
-                return $e instanceof \React\Dns\RecordNotFoundException;
-            }));
+
+        $errback = $this->expectCallableOnceWith($this->isInstanceOf('React\Dns\RecordNotFoundException'));
 
         $resolver = new Resolver('8.8.8.8:53', $executor);
-        $resolver->resolve('igor.io')->then($this->expectCallableNever(), $mock);
+        $resolver->resolve('igor.io')->then($this->expectCallableNever(), $errback);
     }
 
     /**

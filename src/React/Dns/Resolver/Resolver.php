@@ -26,34 +26,75 @@ class Resolver
 
         return $this->executor
             ->query($this->nameserver, $query)
-            ->then(function (Message $response) use ($that) {
-                return $that->extractAddress($response, Message::TYPE_A);
+            ->then(function (Message $response) use ($that, $query) {
+                return $that->extractAddress($query, $response);
             });
     }
 
-    public function extractAddress(Message $response, $type)
+    public function extractAddress(Query $query, Message $response)
     {
-        $answer = $this->pickRandomAnswerOfType($response, $type);
-        $address = $answer->data;
-        return $address;
-    }
+        $answers = $response->answers;
 
-    public function pickRandomAnswerOfType(Message $response, $type)
-    {
-        // TODO: filter by name to make sure domain matches
-        // TODO: resolve CNAME aliases
+        $addresses = $this->resolveAliases($answers, $query->name);
 
-        $filteredAnswers = array_filter($response->answers, function ($answer) use ($type) {
-            return $type === $answer->type;
-        });
-
-        if (0 === count($filteredAnswers)) {
-            $message = sprintf('DNS Request did not return valid answer. Received answers: %s', json_encode($response->answers));
+        if (0 === count($addresses)) {
+            $message = 'DNS Request did not return valid answer.';
             throw new RecordNotFoundException($message);
         }
 
-        $answer = $filteredAnswers[array_rand($filteredAnswers)];
+        $address = $addresses[array_rand($addresses)];
+        return $address;
+    }
 
-        return $answer;
+    public function resolveAliases(array $answers, $name)
+    {
+        $named = $this->filterByName($answers, $name);
+        $aRecords = $this->filterByType($named, Message::TYPE_A);
+        $cnameRecords = $this->filterByType($named, Message::TYPE_CNAME);
+
+        if ($aRecords) {
+            return $this->mapRecordData($aRecords);
+        }
+
+        if ($cnameRecords) {
+            $aRecords = array();
+
+            $cnames = $this->mapRecordData($cnameRecords);
+            foreach ($cnames as $cname) {
+                $targets = $this->filterByName($answers, $cname);
+                $aRecords = array_merge(
+                    $aRecords,
+                    $this->resolveAliases($answers, $cname)
+                );
+            }
+
+            return $aRecords;
+        }
+
+        return array();
+    }
+
+    private function filterByName(array $answers, $name)
+    {
+        return $this->filterByField($answers, 'name', $name);
+    }
+
+    private function filterByType(array $answers, $type)
+    {
+        return $this->filterByField($answers, 'type', $type);
+    }
+
+    private function filterByField(array $answers, $field, $value)
+    {
+        return array_filter($answers, function ($answer) use ($field, $value) {
+            return $value === $answer->$field;
+        });
+    }
+
+    private function mapRecordData(array $records)
+    {
+        return array_map(function ($record) {
+            return $record->data;
+        }, $records);
     }
 }
