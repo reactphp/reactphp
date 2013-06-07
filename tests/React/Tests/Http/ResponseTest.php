@@ -163,4 +163,71 @@ class ResponseTest extends TestCase
         $response = new Response($conn);
         $response->writeHead(700);
     }
+
+    /** @test */
+    public function setAndGetHeader()
+    {
+        $conn = $this->getMock('React\Socket\ConnectionInterface');
+
+        $response = new Response($conn);
+        $response->setHeader('X-Test-Header', 'testing');
+
+        $this->assertSame('testing', $response->getHeader('X-Test-Header'));
+        $this->assertNull($response->getHeader('X-Test-Header2'));
+
+        return $response;
+    }
+
+    /**
+     * @test
+     * @depends setAndGetHeader
+     */
+    public function removeHeader($response)
+    {
+        $response->removeHeader('X-Test-Header', 'testing');
+
+        $this->assertNull($response->getHeader('X-Test-Header'));
+    }
+
+    /** @test */
+    public function writeHeadShouldRespectPreviouslySetHeaders()
+    {
+        $expected = '';
+        $expected .= "HTTP/1.1 200 OK\r\n";
+        $expected .= "X-Powered-By: React/alpha\r\n";
+        $expected .= "X-Test-Header: testing\r\n";
+        $expected .= "Transfer-Encoding: chunked\r\n";
+        $expected .= "\r\n";
+
+        $conn = $this->getMock('React\Socket\ConnectionInterface');
+        $conn
+            ->expects($this->once())
+            ->method('write')
+            ->with($expected);
+
+        $response = new Response($conn);
+        $response->setHeader('X-Test-Header', 'testing');
+        $response->writeHead();
+    }
+
+    /** @test */
+    public function headersPassedToWriteHeadShouldOverwritePreviouslySetHeaders()
+    {
+        $expected = '';
+        $expected .= "HTTP/1.1 200 OK\r\n";
+        $expected .= "X-Powered-By: React/alpha\r\n";
+        $expected .= "X-Test-Header: bar\r\n";
+        $expected .= "Transfer-Encoding: chunked\r\n";
+        $expected .= "\r\n";
+
+        $conn = $this->getMock('React\Socket\ConnectionInterface');
+        $conn
+            ->expects($this->once())
+            ->method('write')
+            ->with($expected);
+
+        $response = new Response($conn);
+        $response->setHeader('X-Test-Header', 'foo');
+        $response->writeHead(200, array('X-Test-Header' => 'bar'));
+    }
 }
