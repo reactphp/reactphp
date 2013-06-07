@@ -74,6 +74,8 @@ class Response extends EventEmitter implements WritableStreamInterface
             throw new \Exception('Response head has already been written.');
         }
 
+        $this->emit('header');
+
         $headers = array_merge(
             $this->headers,
             $headers

@@ -230,4 +230,20 @@ class ResponseTest extends TestCase
         $response->setHeader('X-Test-Header', 'foo');
         $response->writeHead(200, array('X-Test-Header' => 'bar'));
     }
+
+    /** @test */
+    public function responseShouldEmitHeaderOnWriteHead()
+    {
+        $called = false;
+
+        $conn = $this->getMock('React\Socket\ConnectionInterface');
+        $response = new Response($conn);
+
+        $response->on('header', function () use (&$called) {
+            $called = true;
+        });
+        $response->writeHead();
+
+        $this->assertTrue($called);
+    }
 }
