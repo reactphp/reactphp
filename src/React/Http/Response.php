@@ -12,6 +12,7 @@ class Response extends EventEmitter implements WritableStreamInterface
     private $writable = true;
     private $conn;
     private $headWritten = false;
+    private $headers = array();
     private $chunkedEncoding = true;
 
     public function __construct(ConnectionInterface $conn)
@@ -34,6 +35,25 @@ class Response extends EventEmitter implements WritableStreamInterface
         });
     }
 
+    public function setHeader($name, $value)
+    {
+        $this->headers[$name] = $value;
+    }
+
+    public function getHeader($name)
+    {
+        if (!isset($this->headers[$name])) {
+            return null;
+        }
+
+        return $this->headers[$name];
+    }
+
+    public function removeHeader($name)
+    {
+        unset($this->headers[$name]);
+    }
+
     public function isWritable()
     {
         return $this->writable;
@@ -53,6 +73,13 @@ class Response extends EventEmitter implements WritableStreamInterface
         if ($this->headWritten) {
             throw new \Exception('Response head has already been written.');
         }
+
+        $this->emit('header');
+
+        $headers = array_merge(
+            $this->headers,
+            $headers
+        );
 
         if (isset($headers['Content-Length'])) {
             $this->chunkedEncoding = false;
