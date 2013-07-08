@@ -34,6 +34,11 @@ Here is a server that closes the connection if you send it anything.
     $socket->listen(1337);
 
     $loop->run();
+    
+You can change the host the socket is listening on through a second parameter 
+provided to the listen method:
+
+    $socket->listen(1337, '192.168.0.1');
 
 Here's a client that outputs the output of said server and then attempts to
 send it a string.

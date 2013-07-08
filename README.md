@@ -81,9 +81,15 @@ $socket->listen(1337);
 $loop->run();
 ```
 
+## Documentation
+
+Superficial documentation can be found in the README files of the individual
+components. See `src/React/*/README.md`.
+
 ## Community
 
-Check out #reactphp on irc.freenode.net. Also follow [@reactphp](https://twitter.com/#!/reactphp) on twitter.
+Check out #reactphp on irc.freenode.net. Also follow
+[@reactphp](https://twitter.com/#!/reactphp) on twitter.
 
 ## Tests
 

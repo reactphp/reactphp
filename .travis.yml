@@ -2,11 +2,19 @@ language: php
 
 php:
   - 5.4
+  - 5.5
+
+matrix:
+  allow_failures:
+    - php: 5.5
 
 before_script:
   - sudo apt-get install -y libevent-dev
   - sh -c " if [ \"\$(php --re libevent | grep 'does not exist')\" != '' ]; then
-              (yes '' | pecl install libevent-beta)
+              wget http://pecl.php.net/get/libevent-0.0.5.tgz;
+              tar -xzf libevent-0.0.5.tgz;
+              cd libevent-0.0.5 && phpize && ./configure && make && sudo make install;
+              echo "extension=libevent.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`;
             fi"
   - composer self-update
   - composer install --dev --prefer-source

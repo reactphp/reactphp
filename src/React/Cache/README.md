@@ -4,7 +4,7 @@ Promised cache interface.
 
 The cache component provides a promise-based cache interface and an in-memory
 `ArrayCache` implementation of that. This allows consumers to type hint
-against the interface and third parties to provide alternate implementatios.
+against the interface and third parties to provide alternate implementations.
 
 ## Basic usage
 
