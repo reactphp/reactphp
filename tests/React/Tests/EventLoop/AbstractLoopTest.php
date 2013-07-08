@@ -127,6 +127,16 @@ abstract class AbstractLoopTest extends TestCase
         fclose($input);
     }
 
+    public function testRemoveInvalid()
+    {
+        $stream = fopen('php://temp', 'r+');
+
+        // remove a valid stream from the event loop that was never added in the first place
+        $this->loop->removeReadStream($stream);
+        $this->loop->removeWriteStream($stream);
+        $this->loop->removeStream($stream);
+    }
+
     /** @test */
     public function emptyRunShouldSimplyReturn()
     {

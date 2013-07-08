@@ -168,6 +168,20 @@ class BufferedSinkTest extends TestCase
         $readable->close();
     }
 
+    /** @test */
+    public function factoryMethodShouldImplicitlyPipeAndPromise()
+    {
+        $callback = $this->expectCallableOnceWith('foo');
+
+        $readable = new ReadableStream();
+
+        BufferedSink::createPromise($readable)
+            ->then($callback);
+
+        $readable->emit('data', array('foo'));
+        $readable->close();
+    }
+
     private function expectCallableOnceWith($value)
     {
         $callback = $this->createCallableMock();

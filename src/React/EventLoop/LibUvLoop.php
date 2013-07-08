@@ -32,6 +32,10 @@ class LibUvLoop implements LoopInterface
 
     public function removeReadStream($stream)
     {
+        if (!isset($this->events[(int) $stream])) {
+            return;
+        }
+
         uv_poll_stop($this->events[(int) $stream]);
         unset($this->listeners[(int) $stream]['read']);
         if (!isset($this->listeners[(int) $stream]['read'])
@@ -42,6 +46,10 @@ class LibUvLoop implements LoopInterface
 
     public function removeWriteStream($stream)
     {
+        if (!isset($this->events[(int) $stream])) {
+            return;
+        }
+
         uv_poll_stop($this->events[(int) $stream]);
         unset($this->listeners[(int) $stream]['read']);
         if (!isset($this->listeners[(int) $stream]['read'])

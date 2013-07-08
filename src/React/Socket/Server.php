@@ -18,6 +18,11 @@ class Server extends EventEmitter implements ServerInterface
 
     public function listen($port, $host = '127.0.0.1')
     {
+        if (strpos($host, ':') !== false) {
+            // enclose IPv6 addresses in square brackets before appending port
+            $host = '[' . $host . ']';
+        }
+
         $this->master = @stream_socket_server("tcp://$host:$port", $errno, $errstr);
         if (false === $this->master) {
             $message = "Could not bind to tcp://$host:$port: $errstr";
@@ -25,16 +30,14 @@ class Server extends EventEmitter implements ServerInterface
         }
         stream_set_blocking($this->master, 0);
 
-        $that = $this;
-
-        $this->loop->addReadStream($this->master, function ($master) use ($that) {
+        $this->loop->addReadStream($this->master, function ($master) {
             $newSocket = stream_socket_accept($master);
             if (false === $newSocket) {
-                $that->emit('error', array(new \RuntimeException('Error accepting new connection')));
+                $this->emit('error', array(new \RuntimeException('Error accepting new connection')));
 
                 return;
             }
-            $that->handleConnection($newSocket);
+            $this->handleConnection($newSocket);
         });
     }
 

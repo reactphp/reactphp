@@ -1,17 +1,21 @@
 language: php
 
 php:
-  - 5.3.3
-  - 5.3
   - 5.4
+  - 5.5
+
+matrix:
+  allow_failures:
+    - php: 5.5
 
 before_script:
-  - sudo apt-get install -y libevent-dev libev-dev
+  - sudo apt-get install -y libevent-dev
   - sh -c " if [ \"\$(php --re libevent | grep 'does not exist')\" != '' ]; then
-              (yes '' | pecl install libevent-beta)
+              wget http://pecl.php.net/get/libevent-0.0.5.tgz;
+              tar -xzf libevent-0.0.5.tgz;
+              cd libevent-0.0.5 && phpize && ./configure && make && sudo make install;
+              echo "extension=libevent.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`;
             fi"
-  - (git clone --recursive https://github.com/m4rw3r/php-libev && cd php-libev && phpize && ./configure && make && make install)
-  - echo "extension=libev.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - (git clone --recursive https://github.com/chobie/php-uv.git && cd php-uv && cd libuv && make CFLAGS=-fPIC && cd .. && phpize && ./configure && make && make install)
   - echo "extension=uv.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - composer self-update

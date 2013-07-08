@@ -159,7 +159,7 @@ subsplit_publish()
 
         for HEAD in $HEADS
         do
-            if ! git show-ref --quiet --verify -- "refs/heads/${HEAD}"
+            if ! git show-ref --quiet --verify -- "refs/remotes/origin/${HEAD}"
             then
                 say " - skipping head '${HEAD}' (does not exist)"
                 continue
