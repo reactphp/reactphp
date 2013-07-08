@@ -137,6 +137,10 @@ class StreamSelectLoop implements LoopInterface
         if (stream_select($read, $write, $except, 0, $this->getNextEventTimeInMicroSeconds()) > 0) {
             if ($read) {
                 foreach ($read as $stream) {
+                    if (!isset($this->readListeners[(int) $stream])) {
+                        continue;
+                    }
+
                     $listener = $this->readListeners[(int) $stream];
                     call_user_func($listener, $stream, $this);
                 }
