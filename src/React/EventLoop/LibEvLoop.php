@@ -77,12 +77,6 @@ class LibEvLoop implements LoopInterface
         }
 
         return function ($event) use ($stream, $listener, $removeCallback) {
-            if (feof($stream)) {
-                call_user_func($removeCallback, $stream);
-
-                return;
-            }
-
             call_user_func($listener, $stream);
         };
     }
