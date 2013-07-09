@@ -21,11 +21,16 @@ class Buffer extends EventEmitter implements WritableStreamInterface
         'file'    => '',
         'line'    => 0,
     );
+    private $meta;
 
     public function __construct($stream, LoopInterface $loop)
     {
         $this->stream = $stream;
         $this->loop = $loop;
+
+        if (is_resource($stream)) {
+            $this->meta = stream_get_meta_data($stream);
+        }
     }
 
     public function isWritable()
@@ -78,7 +83,7 @@ class Buffer extends EventEmitter implements WritableStreamInterface
 
     public function handleWrite()
     {
-        if (!is_resource($this->stream) || feof($this->stream)) {
+        if (!is_resource($this->stream) || ('generic_socket' === $this->meta['stream_type'] && feof($this->stream))) {
             $this->emit('error', array(new \RuntimeException('Tried to write to closed or invalid stream.')));
 
             return;

@@ -177,6 +177,32 @@ abstract class AbstractLoopTest extends TestCase
         fclose($input);
     }
 
+    public function testIgnoreRemovedCallback()
+    {
+        // two independent streams, both should be readable right away
+        $stream1 = fopen('php://temp', 'r+');
+        $stream2 = fopen('php://temp', 'r+');
+
+        $loop = $this->loop;
+        $loop->addReadStream($stream1, function ($stream) use ($loop, $stream2) {
+            // stream1 is readable, remove stream2 as well => this will invalidate its callback
+            $loop->removeReadStream($stream);
+            $loop->removeReadStream($stream2);
+        });
+        $loop->addReadStream($stream2, function ($stream) use ($loop, $stream1) {
+            // this callback would have to be called as well, but the first stream already removed us
+            $loop->removeReadStream($stream);
+            $loop->removeReadStream($stream1);
+        });
+
+        fwrite($stream1, "foo\n");
+        rewind($stream1);
+        fwrite($stream2, "foo\n");
+        rewind($stream2);
+
+        $loop->run();
+    }
+
     private function assertRunFasterThan($maxInterval)
     {
         $start = microtime(true);
