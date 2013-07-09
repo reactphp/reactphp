@@ -169,9 +169,9 @@ abstract class AbstractLoopTest extends TestCase
 
     public function testIgnoreRemovedCallback()
     {
+        // two independent streams, both should be readable right away
         $stream1 = fopen('php://temp', 'r+');
         $stream2 = fopen('php://temp', 'r+');
-        // two independant streams, both should be readable right away
 
         $loop = $this->loop;
         $loop->addReadStream($stream1, function ($stream) use ($loop, $stream2) {
@@ -184,6 +184,11 @@ abstract class AbstractLoopTest extends TestCase
             $loop->removeReadStream($stream);
             $loop->removeReadStream($stream1);
         });
+
+        fwrite($stream1, "foo\n");
+        rewind($stream1);
+        fwrite($stream2, "foo\n");
+        rewind($stream2);
 
         $loop->run();
     }
