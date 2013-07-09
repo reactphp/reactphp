@@ -3,6 +3,10 @@ CHANGELOG
 
 ### 0.3.3 (2013-xx-xx)
 
+  * Bug fix: [EventLoop] No error on removing non-existent streams (@clue)
+  * Bug fix: [EventLoop] Do not silently remove feof listeners in `LibEvLoop`
+  * Bug fix: [Stream] Correctly detect closed connections
+
 ### 0.3.2 (2013-05-10)
 
   * Feature: [Dns] Support default port for IPv6 addresses (@clue)
