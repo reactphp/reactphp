@@ -10,9 +10,10 @@ use Evenement\EventEmitterInterface;
  * @event close
  * @event pipe
  */
-interface WritableStreamInterface extends StreamInterface
+interface WritableStreamInterface extends EventEmitterInterface
 {
     public function isWritable();
     public function write($data);
     public function end($data = null);
+    public function close();
 }

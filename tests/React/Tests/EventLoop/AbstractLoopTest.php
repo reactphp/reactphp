@@ -28,6 +28,7 @@ abstract class AbstractLoopTest extends TestCase
         fwrite($input, "bar\n");
         rewind($input);
         $this->loop->tick();
+        fclose($input);
     }
 
     public function testAddWriteStream()
@@ -37,6 +38,7 @@ abstract class AbstractLoopTest extends TestCase
         $this->loop->addWriteStream($input, $this->expectCallableExactly(2));
         $this->loop->tick();
         $this->loop->tick();
+        fclose($input);
     }
 
     public function testRemoveReadStreamInstantly()
@@ -49,6 +51,7 @@ abstract class AbstractLoopTest extends TestCase
         fwrite($input, "bar\n");
         rewind($input);
         $this->loop->tick();
+        fclose($input);
     }
 
     public function testRemoveReadStreamAfterReading()
@@ -66,6 +69,7 @@ abstract class AbstractLoopTest extends TestCase
         fwrite($input, "bar\n");
         rewind($input);
         $this->loop->tick();
+        fclose($input);
     }
 
     public function testRemoveWriteStreamInstantly()
@@ -75,6 +79,7 @@ abstract class AbstractLoopTest extends TestCase
         $this->loop->addWriteStream($input, $this->expectCallableNever());
         $this->loop->removeWriteStream($input);
         $this->loop->tick();
+        fclose($input);
     }
 
     public function testRemoveWriteStreamAfterWriting()
@@ -86,6 +91,7 @@ abstract class AbstractLoopTest extends TestCase
 
         $this->loop->removeWriteStream($input);
         $this->loop->tick();
+        fclose($input);
     }
 
     public function testRemoveStreamInstantly()
@@ -99,6 +105,7 @@ abstract class AbstractLoopTest extends TestCase
         fwrite($input, "bar\n");
         rewind($input);
         $this->loop->tick();
+        fclose($input);
     }
 
     public function testRemoveStream()
@@ -117,6 +124,7 @@ abstract class AbstractLoopTest extends TestCase
         fwrite($input, "bar\n");
         rewind($input);
         $this->loop->tick();
+        fclose($input);
     }
 
     public function testRemoveInvalid()
@@ -149,6 +157,7 @@ abstract class AbstractLoopTest extends TestCase
         rewind($input);
 
         $this->assertRunFasterThan(0.005);
+        fclose($input);
     }
 
     /** @test */
@@ -165,6 +174,7 @@ abstract class AbstractLoopTest extends TestCase
         rewind($input);
 
         $this->assertRunFasterThan(0.005);
+        fclose($input);
     }
 
     public function testIgnoreRemovedCallback()

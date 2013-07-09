@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "cff88550c9ac83dc0aa91c6fe6adb377",
+    "hash": "e6d793b10493d61cf95b9a4722d23e4f",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -46,17 +46,17 @@
         },
         {
             "name": "guzzle/parser",
-            "version": "v3.4.0",
+            "version": "v3.7.1",
             "target-dir": "Guzzle/Parser",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/parser.git",
-                "reference": "v3.4.0"
+                "reference": "v3.7.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/parser/zipball/v3.4.0",
-                "reference": "v3.4.0",
+                "url": "https://api.github.com/repos/guzzle/parser/zipball/v3.7.1",
+                "reference": "v3.7.1",
                 "shasum": ""
             },
             "require": {
@@ -65,7 +65,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.3-dev"
+                    "dev-master": "3.7-dev"
                 }
             },
             "autoload": {
@@ -86,7 +86,7 @@
                 "message",
                 "url"
             ],
-            "time": "2013-03-07 22:13:59"
+            "time": "2013-06-11 00:24:07"
         },
         {
             "name": "react/promise",
@@ -143,7 +143,7 @@
 
     ],
     "platform": {
-        "php": ">=5.3.3"
+        "php": ">=5.4.0"
     },
     "platform-dev": [
 
