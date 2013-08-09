@@ -163,4 +163,44 @@ class ResponseTest extends TestCase
         $response = new Response($conn);
         $response->writeHead(700);
     }
+
+    /** @test */
+    public function shouldAllowArrayHeaderValues()
+    {
+        $expected = '';
+        $expected .= "HTTP/1.1 200 OK\r\n";
+        $expected .= "X-Powered-By: React/alpha\r\n";
+        $expected .= "Set-Cookie: foo=bar\r\n";
+        $expected .= "Set-Cookie: bar=baz\r\n";
+        $expected .= "Transfer-Encoding: chunked\r\n";
+        $expected .= "\r\n";
+
+        $conn = $this->getMock('React\Socket\ConnectionInterface');
+        $conn
+            ->expects($this->once())
+            ->method('write')
+            ->with($expected);
+
+        $response = new Response($conn);
+        $response->writeHead(200, array("Set-Cookie" => array("foo=bar", "bar=baz")));
+    }
+
+    /** @test */
+    public function shouldIgnoreHeadersWithNullValues()
+    {
+        $expected = '';
+        $expected .= "HTTP/1.1 200 OK\r\n";
+        $expected .= "X-Powered-By: React/alpha\r\n";
+        $expected .= "Transfer-Encoding: chunked\r\n";
+        $expected .= "\r\n";
+
+        $conn = $this->getMock('React\Socket\ConnectionInterface');
+        $conn
+            ->expects($this->once())
+            ->method('write')
+            ->with($expected);
+
+        $response = new Response($conn);
+        $response->writeHead(200, array("FooBar" => null));
+    }
 }
