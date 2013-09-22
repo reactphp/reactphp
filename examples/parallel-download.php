@@ -11,8 +11,6 @@ $files = array(
     'php-5.4.3.tar.gz' => 'http://it.php.net/get/php-5.4.3.tar.gz/from/this/mirror',
 );
 
-$buffers = array();
-
 foreach ($files as $file => $url) {
     $readStream = fopen($url, 'r');
     $writeStream = fopen($file, 'w');
