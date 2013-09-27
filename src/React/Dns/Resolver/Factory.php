@@ -10,13 +10,14 @@ use React\Dns\Protocol\Parser;
 use React\Dns\Protocol\BinaryDumper;
 use React\EventLoop\LoopInterface;
 use React\Dns\Query\RetryExecutor;
+use React\Dns\Query\HostsFileExecutor;
 
 class Factory
 {
     public function create($nameserver, LoopInterface $loop)
     {
         $nameserver = $this->addPortToServerIfMissing($nameserver);
-        $executor = $this->createRetryExecutor($loop);
+        $executor = $this->createHostsFileExecutor($loop);
 
         return new Resolver($nameserver, $executor);
     }
@@ -39,9 +40,14 @@ class Factory
         return new RetryExecutor($this->createExecutor($loop));
     }
 
+    protected function createHostsFileExecutor(LoopInterface $loop)
+    {
+        return new HostsFileExecutor($loop, $this->createRetryExecutor($loop));
+    }
+
     protected function createCachedExecutor(LoopInterface $loop)
     {
-        return new CachedExecutor($this->createRetryExecutor($loop), new RecordCache(new ArrayCache()));
+        return new CachedExecutor($this->createHostsFileExecutor($loop), new RecordCache(new ArrayCache()));
     }
 
     protected function addPortToServerIfMissing($nameserver)
