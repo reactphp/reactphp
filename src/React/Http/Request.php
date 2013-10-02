@@ -10,7 +10,7 @@ use React\Stream\Util;
 class Request extends EventEmitter implements ReadableStreamInterface
 {
     private $readable = true;
-	private $remoteAddr;
+    private $remoteAddr;
     private $method;
     private $path;
     private $query;
@@ -24,13 +24,13 @@ class Request extends EventEmitter implements ReadableStreamInterface
         $this->query = $query;
         $this->httpVersion = $httpVersion;
         $this->headers = $headers;
-		$this->remoteAddr = $remoteAddr;
+        $this->remoteAddr = $remoteAddr;
     }
 
-	public function getRemoteAddress()
-	{
-		return $this->remoteAddr;
-	}
+    public function getRemoteAddress()
+    {
+        return $this->remoteAddr;
+    }
 
     public function getMethod()
     {
