@@ -10,20 +10,27 @@ use React\Stream\Util;
 class Request extends EventEmitter implements ReadableStreamInterface
 {
     private $readable = true;
+	private $remoteAddr;
     private $method;
     private $path;
     private $query;
     private $httpVersion;
     private $headers;
 
-    public function __construct($method, $path, $query = array(), $httpVersion = '1.1', $headers = array())
+    public function __construct($method, $path, $query = array(), $httpVersion = '1.1', $headers = array(), $remoteAddr = null)
     {
         $this->method = $method;
         $this->path = $path;
         $this->query = $query;
         $this->httpVersion = $httpVersion;
         $this->headers = $headers;
+		$this->remoteAddr = $remoteAddr;
     }
+
+	public function getRemoteAddress()
+	{
+		return $this->remoteAddr;
+	}
 
     public function getMethod()
     {
