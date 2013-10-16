@@ -241,7 +241,7 @@ class Process extends EventEmitter
     {
         $status = $this->getCachedStatus();
 
-        return isset($status) ? $status['pid'] : false;
+        return isset($status) ? $status['pid'] : null;
     }
 
     /**
