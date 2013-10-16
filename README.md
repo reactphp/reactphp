@@ -89,12 +89,14 @@ components. See `src/React/*/README.md`.
 ## Community
 
 Check out #reactphp on irc.freenode.net. Also follow
-[@reactphp](https://twitter.com/#!/reactphp) on twitter.
+[@reactphp](https://twitter.com/reactphp) on twitter.
 
 ## Tests
 
-To run the test suite, you need PHPUnit.
+To run the test suite, you need install the dependencies via composer, then
+run PHPUnit.
 
+    $ composer install
     $ phpunit
 
 ## License

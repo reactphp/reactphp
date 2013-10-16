@@ -122,19 +122,23 @@ class StreamSelectLoop implements LoopInterface
         }
     }
 
-    protected function runStreamSelect()
+    protected function runStreamSelect($block)
     {
         $read = $this->readStreams ?: null;
         $write = $this->writeStreams ?: null;
         $except = null;
 
         if (!$read && !$write) {
-            $this->sleepOnPendingTimers();
+            if ($block) {
+                $this->sleepOnPendingTimers();
+            }
 
             return;
         }
 
-        if (stream_select($read, $write, $except, 0, $this->getNextEventTimeInMicroSeconds()) > 0) {
+        $timeout = $block ? $this->getNextEventTimeInMicroSeconds() : 0;
+
+        if (stream_select($read, $write, $except, 0, $timeout) > 0) {
             if ($read) {
                 foreach ($read as $stream) {
                     if (!isset($this->readListeners[(int) $stream])) {
@@ -159,21 +163,23 @@ class StreamSelectLoop implements LoopInterface
         }
     }
 
-    public function tick()
+    protected function loop($block = true)
     {
         $this->timers->tick();
-        $this->runStreamSelect();
+        $this->runStreamSelect($block);
 
         return $this->running;
+    }
+
+    public function tick()
+    {
+        return $this->loop(false);
     }
 
     public function run()
     {
         $this->running = true;
-
-        while ($this->tick()) {
-            // NOOP
-        }
+        while ($this->loop());
     }
 
     public function stop()
