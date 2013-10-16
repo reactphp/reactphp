@@ -129,7 +129,7 @@ class Process extends EventEmitter
      */
     public function close()
     {
-        if (!isset($this->process)) {
+        if ($this->process === null) {
             return;
         }
 
@@ -145,15 +145,15 @@ class Process extends EventEmitter
         $exitCode = proc_close($this->process);
         $this->process = null;
 
-        if (!isset($this->exitCode) && -1 !== $exitCode) {
+        if ($this->exitCode === null && $exitCode !== -1) {
             $this->exitCode = $exitCode;
         }
 
-        if (!isset($this->exitCode) && -1 !== $this->status['exitcode']) {
+        if ($this->exitCode === null && $this->status['exitcode'] !== -1) {
             $this->exitCode = $this->status['exitcode'];
         }
 
-        if (!isset($this->exitCode) && isset($this->fallbackExitCode)) {
+        if ($this->exitCode === null && $this->fallbackExitCode !== null) {
             $this->exitCode = $this->fallbackExitCode;
             $this->fallbackExitCode = null;
         }
@@ -167,7 +167,7 @@ class Process extends EventEmitter
      */
     public function terminate($signal = null)
     {
-        if (isset($signal)) {
+        if ($signal !== null) {
             return proc_terminate($this->process, $signal);
         }
 
@@ -241,7 +241,7 @@ class Process extends EventEmitter
     {
         $status = $this->getCachedStatus();
 
-        return isset($status) ? $status['pid'] : null;
+        return $status !== null ? $status['pid'] : null;
     }
 
     /**
@@ -277,13 +277,13 @@ class Process extends EventEmitter
      */
     public function isRunning()
     {
-        if (!isset($this->process)) {
+        if ($this->process === null) {
             return false;
         }
 
         $status = $this->getFreshStatus();
 
-        return isset($status) ? $status['running'] : false;
+        return $status !== null ? $status['running'] : false;
     }
 
     /**
@@ -295,7 +295,7 @@ class Process extends EventEmitter
     {
         $status = $this->getFreshStatus();
 
-        return isset($status) ? $status['stopped'] : false;
+        return $status !== null ? $status['stopped'] : false;
     }
 
     /**
@@ -307,7 +307,7 @@ class Process extends EventEmitter
     {
         $status = $this->getFreshStatus();
 
-        return isset($status) ? $status['signaled'] : false;
+        return $status !== null ? $status['signaled'] : false;
     }
 
     /**
@@ -335,7 +335,7 @@ class Process extends EventEmitter
      */
     private function pollExitCodePipe()
     {
-        if (!isset($this->pipes[3])) {
+        if ( ! isset($this->pipes[3])) {
             return;
         }
 
@@ -362,7 +362,7 @@ class Process extends EventEmitter
      */
     private function closeExitCodePipe()
     {
-        if (!isset($this->pipes[3])) {
+        if ( ! isset($this->pipes[3])) {
             return;
         }
 
@@ -377,7 +377,7 @@ class Process extends EventEmitter
      */
     private function getCachedStatus()
     {
-        if (!isset($this->status)) {
+        if ($this->status === null) {
             $this->updateStatus();
         }
 
@@ -405,7 +405,7 @@ class Process extends EventEmitter
      */
     private function updateStatus()
     {
-        if (!isset($this->process)) {
+        if ($this->process === null) {
             return;
         }
 
