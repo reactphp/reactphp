@@ -11,8 +11,14 @@ use Guzzle\Parser\Message\MessageParser;
  */
 class RequestHeaderParser extends EventEmitter
 {
+    private $remoteAddr;
     private $buffer = '';
     private $maxSize = 4096;
+
+    public function __construct($remoteAddr = null)
+    {
+        $this->remoteAddr = $remoteAddr;
+    }
 
     public function feed($data)
     {
@@ -49,7 +55,8 @@ class RequestHeaderParser extends EventEmitter
             $parsed['request_url']['path'],
             $parsedQuery,
             $parsed['version'],
-            $parsed['headers']
+            $parsed['headers'],
+            $this->remoteAddr
         );
 
         return array($request, $bodyBuffer);

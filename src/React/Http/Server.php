@@ -22,7 +22,7 @@ class Server extends EventEmitter implements ServerInterface
             // TODO: chunked transfer encoding (also for outgoing data)
             // TODO: multipart parsing
 
-            $parser = new RequestHeaderParser();
+            $parser = new RequestHeaderParser($conn->getRemoteAddress());
             $parser->on('headers', function (Request $request, $bodyBuffer) use ($server, $conn, $parser) {
                 $server->handleRequest($conn, $request, $bodyBuffer);
 
