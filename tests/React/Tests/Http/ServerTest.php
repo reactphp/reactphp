@@ -27,18 +27,18 @@ class ServerTest extends TestCase
     {
         $io = new ServerStub();
 
-        $test = $this;
         $i = 0;
 
         $server = new Server($io);
-        $server->on('request', function ($request, $response) use ($test, &$i) {
+        $server->on('request', function ($request, $response) use (&$i) {
             $i++;
 
-            $test->assertInstanceOf('React\Http\Request', $request);
-            $test->assertSame('/', $request->getPath());
-            $test->assertSame('GET', $request->getMethod());
+            $this->assertInstanceOf('React\Http\Request', $request);
+            $this->assertSame('/', $request->getPath());
+            $this->assertSame('GET', $request->getMethod());
+            $this->assertSame('127.0.0.1', $request->remoteAddress);
 
-            $test->assertInstanceOf('React\Http\Response', $response);
+            $this->assertInstanceOf('React\Http\Response', $response);
         });
 
         $conn = new ConnectionStub();
