@@ -5,6 +5,7 @@ namespace React\Http;
 use Evenement\EventEmitter;
 use React\Socket\ServerInterface as SocketServerInterface;
 use React\Socket\ConnectionInterface;
+use React\Socket\ReadableStreamInterface;
 
 /** @event request */
 class Server extends EventEmitter implements ServerInterface
@@ -14,49 +15,30 @@ class Server extends EventEmitter implements ServerInterface
     public function __construct(SocketServerInterface $io)
     {
         $this->io = $io;
-
-        $server = $this;
-
-        $this->io->on('connection', function ($conn) use ($server) {
-            // TODO: http 1.1 keep-alive
-            // TODO: chunked transfer encoding (also for outgoing data)
-            // TODO: multipart parsing
-
-            $parser = new RequestHeaderParser();
-            $parser->on('headers', function (Request $request, $bodyBuffer) use ($server, $conn, $parser) {
-                $server->handleRequest($conn, $request, $bodyBuffer);
-
-                $conn->removeListener('data', array($parser, 'feed'));
-                $conn->on('end', function () use ($request) {
-                    $request->emit('end');
-                });
-                $conn->on('data', function ($data) use ($request) {
-                    $request->emit('data', array($data));
-                });
-                $request->on('pause', function () use ($conn) {
-                    $conn->emit('pause');
-                });
-                $request->on('resume', function () use ($conn) {
-                    $conn->emit('resume');
-                });
-            });
-
-            $conn->on('data', array($parser, 'feed'));
-        });
+        $this->io->on('connection', [$this, 'handleConnection']);
     }
 
-    public function handleRequest(ConnectionInterface $conn, Request $request, $bodyBuffer)
+    public function handleConnection(ConnectionInterface $conn)
+    {
+        $parser = new RequestParser();
+        $parser->on('request', function ($request) use ($conn) {
+            $this->handleRequest($conn, $request);
+        });
+        $parser->on('connection-end', [$conn, 'end']);
+
+        $conn->pipe($parser);
+    }
+
+    public function handleRequest(ConnectionInterface $conn, Request $request)
     {
         $response = new Response($conn);
         $response->on('close', array($request, 'close'));
 
         if (!$this->listeners('request')) {
             $response->end();
-
             return;
         }
 
         $this->emit('request', array($request, $response));
-        $request->emit('data', array($bodyBuffer));
     }
 }
