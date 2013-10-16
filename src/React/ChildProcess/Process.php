@@ -411,6 +411,10 @@ class Process extends EventEmitter
 
         $this->status = proc_get_status($this->process);
 
+        if ($this->status === false) {
+            throw new \UnexpectedValueException('proc_get_status() failed');
+        }
+
         if ($this->status['stopped']) {
             $this->stopSignal = $this->status['stopsig'];
         }
