@@ -26,8 +26,7 @@ class RetryExecutor implements ExecutorInterface
 
     public function tryQuery($nameserver, Query $query, $retries, $resolver)
     {
-        $that = $this;
-        $errorback = function ($error) use ($nameserver, $query, $retries, $resolver, $that) {
+        $errorback = function ($error) use ($nameserver, $query, $retries, $resolver) {
             if (!$error instanceof TimeoutException) {
                 $resolver->reject($error);
                 return;
@@ -41,7 +40,7 @@ class RetryExecutor implements ExecutorInterface
                 $resolver->reject($error);
                 return;
             }
-            $that->tryQuery($nameserver, $query, $retries-1, $resolver);
+            $this->tryQuery($nameserver, $query, $retries-1, $resolver);
         };
 
         $this->executor

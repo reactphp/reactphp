@@ -13,8 +13,8 @@ class Connection extends Stream implements ConnectionInterface
 {
     public function handleData($stream)
     {
-        $data = stream_socket_recvfrom($stream, $this->bufferSize);
-        if ('' === $data || false === $data || feof($stream)) {
+        $data = fread($stream, $this->bufferSize);
+        if ('' === $data || false === $data) {
             $this->end();
         } else {
             $this->emit('data', array($data, $this));
