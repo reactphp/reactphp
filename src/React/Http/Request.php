@@ -16,6 +16,9 @@ class Request extends EventEmitter implements ReadableStreamInterface
     private $httpVersion;
     private $headers;
 
+    // metadata, implicitly added externally
+    public $remoteAddress;
+
     public function __construct($method, $path, $query = array(), $httpVersion = '1.1', $headers = array())
     {
         $this->method = $method;
