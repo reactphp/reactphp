@@ -103,8 +103,6 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function resolveShouldFailIfResponseIsTruncatedAfterTcpRequest()
     {
-        $self = $this;
-
         $timer = $this->getMock('React\EventLoop\Timer\TimerInterface');
 
         $this->loop
