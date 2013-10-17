@@ -22,6 +22,9 @@ class Server extends EventEmitter implements ServerInterface
 
             $parser = new RequestHeaderParser();
             $parser->on('headers', function (Request $request, $bodyBuffer) use ($conn, $parser) {
+                // attach remote ip to the request as metadata
+                $request->remoteAddress = $conn->getRemoteAddress();
+
                 $this->handleRequest($conn, $request, $bodyBuffer);
 
                 $conn->removeListener('data', array($parser, 'feed'));
