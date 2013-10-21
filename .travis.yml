@@ -16,6 +16,12 @@ before_script:
               cd libevent-0.0.5 && phpize && ./configure && make && sudo make install;
               echo "extension=libevent.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`;
             fi"
+  - sh -c " if [ \"\$(php --re ev | grep 'does not exist')\" != '' ]; then
+              git clone https://bitbucket.org/osmanov/pecl-ev.git;
+              cd pecl-ev;
+              phpize && ./configure --enable-ev && make && make install;
+              echo "extension=ev.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`;
+            fi"
   - composer self-update
   - composer install --dev --prefer-source
 
