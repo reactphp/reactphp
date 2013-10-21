@@ -11,13 +11,14 @@ abstract class AbstractLoopTest extends TestCase
     public function setUp()
     {
         $this->loop = $this->createLoop();
+        touch("testfile");
     }
 
     abstract public function createLoop();
 
     public function testAddReadStream()
     {
-        $input = fopen('php://temp', 'r+');
+        $input = fopen('testfile', 'r+');
 
         $this->loop->addReadStream($input, $this->expectCallableExactly(2));
 
@@ -32,7 +33,7 @@ abstract class AbstractLoopTest extends TestCase
 
     public function testAddWriteStream()
     {
-        $input = fopen('php://temp', 'r+');
+        $input = fopen('testfile', 'r+');
 
         $this->loop->addWriteStream($input, $this->expectCallableExactly(2));
         $this->loop->tick();
@@ -41,7 +42,7 @@ abstract class AbstractLoopTest extends TestCase
 
     public function testRemoveReadStreamInstantly()
     {
-        $input = fopen('php://temp', 'r+');
+        $input = fopen('testfile', 'r+');
 
         $this->loop->addReadStream($input, $this->expectCallableNever());
         $this->loop->removeReadStream($input);
@@ -53,7 +54,7 @@ abstract class AbstractLoopTest extends TestCase
 
     public function testRemoveReadStreamAfterReading()
     {
-        $input = fopen('php://temp', 'r+');
+        $input = fopen('testfile', 'r+');
 
         $this->loop->addReadStream($input, $this->expectCallableOnce());
 
@@ -70,7 +71,7 @@ abstract class AbstractLoopTest extends TestCase
 
     public function testRemoveWriteStreamInstantly()
     {
-        $input = fopen('php://temp', 'r+');
+        $input = fopen('testfile', 'r+');
 
         $this->loop->addWriteStream($input, $this->expectCallableNever());
         $this->loop->removeWriteStream($input);
@@ -79,7 +80,7 @@ abstract class AbstractLoopTest extends TestCase
 
     public function testRemoveWriteStreamAfterWriting()
     {
-        $input = fopen('php://temp', 'r+');
+        $input = fopen('testfile', 'r+');
 
         $this->loop->addWriteStream($input, $this->expectCallableOnce());
         $this->loop->tick();
@@ -90,7 +91,7 @@ abstract class AbstractLoopTest extends TestCase
 
     public function testRemoveStreamInstantly()
     {
-        $input = fopen('php://temp', 'r+');
+        $input = fopen('testfile', 'r+');
 
         $this->loop->addReadStream($input, $this->expectCallableNever());
         $this->loop->addWriteStream($input, $this->expectCallableNever());
@@ -103,7 +104,7 @@ abstract class AbstractLoopTest extends TestCase
 
     public function testRemoveStream()
     {
-        $input = fopen('php://temp', 'r+');
+        $input = fopen('testfile', 'r+');
 
         $this->loop->addReadStream($input, $this->expectCallableOnce());
         $this->loop->addWriteStream($input, $this->expectCallableOnce());
@@ -138,7 +139,7 @@ abstract class AbstractLoopTest extends TestCase
     /** @test */
     public function runShouldReturnWhenNoMoreFds()
     {
-        $input = fopen('php://temp', 'r+');
+        $input = fopen('testfile', 'r+');
 
         $loop = $this->loop;
         $this->loop->addReadStream($input, function ($stream) use ($loop) {
@@ -154,7 +155,7 @@ abstract class AbstractLoopTest extends TestCase
     /** @test */
     public function stopShouldStopRunningLoop()
     {
-        $input = fopen('php://temp', 'r+');
+        $input = fopen('testfile', 'r+');
 
         $loop = $this->loop;
         $this->loop->addReadStream($input, function ($stream) use ($loop) {
