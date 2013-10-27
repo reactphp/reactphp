@@ -7,7 +7,9 @@ use Guzzle\Parser\Message\MessageParser;
 use React\EventLoop\LoopInterface;
 use React\HttpClient\Response;
 use React\HttpClient\ResponseHeaderParser;
+use React\Promise\Deferred;
 use React\SocketClient\ConnectorInterface;
+use React\Stream\BufferedSink;
 use React\Stream\Stream;
 use React\Stream\WritableStreamInterface;
 
@@ -246,6 +248,34 @@ class Request extends EventEmitter implements WritableStreamInterface
         }
 
         return $factory;
+    }
+
+    public function getResponseBody()
+    {
+        $deferred = new Deferred;
+        $resolver = $deferred->resolver();
+        $hasResponse = false;
+
+        $this->on('response', function ($response) use ($deferred, &$hasResponse) {
+            $hasResponse = true;
+            BufferedSink::createPromise($response)->then(
+                function($data) use ($deferred) {
+                    $deferred->resolve($data);
+                },
+                function($err) use ($deferred) {
+                    $deferred->reject($err);
+                }
+            );
+        });
+        $this->on('end', function($err) use ($resolver, &$hasResponse) {
+            if (!$hasResponse) {
+                $resolver->reject($err ?: new \RuntimeException("No data received"));
+            }
+        });
+
+        $this->end(); // send the request now
+
+        return $deferred->promise();
     }
 }
 
