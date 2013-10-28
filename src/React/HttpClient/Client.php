@@ -24,7 +24,11 @@ class Client
         $requestData = new RequestData($method, $url, $headers);
         $connectionManager = $this->getConnectorForScheme($requestData->getScheme());
         return new Request($this->loop, $connectionManager, $requestData);
+    }
 
+    public function get($url, array $headers = array())
+    {
+        return $this->request('GET', $url, $headers)->getResponseBody();
     }
 
     private function getConnectorForScheme($scheme)
