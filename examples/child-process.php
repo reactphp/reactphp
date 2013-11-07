@@ -5,14 +5,13 @@
     $loop = React\EventLoop\Factory::create();
 
     $process = new React\ChildProcess\Process('php child-child-bitch.php');
+    $process->start($loop);
 
     $process->on('exit', function($exitCode, $termSignal) {
         echo "Child exit()\n";
     });
 
-    $loop->addTimer(0.001, function($timer) use ($process) {
-        $process->start($timer->getLoop());
-
+    $loop->addTimer(0.001, function(React\EventLoop\Timer\Timer $timer) use ($process) {
         $process->stdout->on('data', function($output) {
             echo "child bitch says what?: {$output}";
         });
