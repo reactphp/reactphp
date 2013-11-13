@@ -34,7 +34,7 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
     {
         $key = (int) $stream;
 
-        if (!array_key_exists($key, $this->readStreams)) {
+        if (!isset($this->readStreams[$key])) {
             $this->readStreams[$key] = $stream;
             $this->readListeners[$key] = $listener;
         }
@@ -50,7 +50,7 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
     {
         $key = (int) $stream;
 
-        if (!array_key_exists($key, $this->writeStreams)) {
+        if (!isset($this->writeStreams[$key])) {
             $this->writeStreams[$key] = $stream;
             $this->writeListeners[$key] = $listener;
         }
@@ -209,7 +209,7 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
         foreach ($read as $stream) {
             $key = (int) $stream;
 
-            if (array_key_exists($key, $this->readListeners)) {
+            if (isset($this->readListeners[$key])) {
                 call_user_func($this->readListeners[$key], $stream, $this);
             }
         }
@@ -218,7 +218,7 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
         foreach ($write as $stream) {
             $key = (int) $stream;
 
-            if (array_key_exists($key, $this->writeListeners)) {
+            if (isset($this->writeListeners[$key])) {
                 call_user_func($this->writeListeners[$key], $stream, $this);
             }
         }

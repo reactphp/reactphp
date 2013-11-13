@@ -92,7 +92,7 @@ class ExtEventLoop extends AbstractNextTickLoop
     {
         $key = (int) $stream;
 
-        if (!array_key_exists($key, $this->streamEvents)) {
+        if (!isset($this->streamEvents[$key])) {
             return;
         }
 
@@ -250,7 +250,7 @@ class ExtEventLoop extends AbstractNextTickLoop
     {
         $key = (int) $stream;
 
-        if (array_key_exists($key, $this->streamEvents)) {
+        if (isset($this->streamEvents[$key])) {
             $entry = $this->streamEvents[$key];
         } else {
             $entry = new stdClass;
@@ -298,7 +298,7 @@ class ExtEventLoop extends AbstractNextTickLoop
     {
         $key = (int) $stream;
 
-        if (!array_key_exists($key, $this->streamEvents)) {
+        if (!isset($this->streamEvents[$key])) {
             return;
         }
 
