@@ -3,7 +3,6 @@
 namespace React\EventLoop;
 
 use React\EventLoop\Timer\Timer;
-use React\EventLoop\Timer\TimerInterface;
 use SplQueue;
 
 /**
@@ -18,46 +17,6 @@ abstract class AbstractNextTickLoop implements NextTickLoopInterface
     {
         $this->nextTickQueue = new SplQueue;
         $this->explicitlyStopped = false;
-    }
-
-    /**
-     * Enqueue a callback to be invoked once after the given interval.
-     *
-     * The execution order of timers scheduled to execute at the same time is
-     * not guaranteed.
-     *
-     * @param numeric  $interval The number of seconds to wait before execution.
-     * @param callable $callback The callback to invoke.
-     *
-     * @return TimerInterface
-     */
-    public function addTimer($interval, $callback)
-    {
-        $timer = new Timer($this, $interval, $callback, false);
-
-        $this->scheduleTimer($timer);
-
-        return $timer;
-    }
-
-    /**
-     * Enqueue a callback to be invoked repeatedly after the given interval.
-     *
-     * The execution order of timers scheduled to execute at the same time is
-     * not guaranteed.
-     *
-     * @param numeric  $interval The number of seconds to wait before execution.
-     * @param callable $callback The callback to invoke.
-     *
-     * @return TimerInterface
-     */
-    public function addPeriodicTimer($interval, $callback)
-    {
-        $timer = new Timer($this, $interval, $callback, true);
-
-        $this->scheduleTimer($timer);
-
-        return $timer;
     }
 
     /**
@@ -156,13 +115,6 @@ abstract class AbstractNextTickLoop implements NextTickLoopInterface
     {
         return (int) $stream;
     }
-
-    /**
-     * Schedule a timer for execution.
-     *
-     * @param TimerInterface $timer
-     */
-    abstract protected function scheduleTimer(TimerInterface $timer);
 
     /**
      * Flush any timer and IO events.

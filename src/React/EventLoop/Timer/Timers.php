@@ -56,13 +56,17 @@ class Timers
 
     public function getFirst()
     {
-        if ($this->scheduler->isEmpty()) {
-            return null;
+        while ($this->scheduler->count()) {
+            $timer = $this->scheduler->top();
+
+            if ($this->timers->contains($timer)) {
+                return $this->timers[$timer];
+            }
+
+            $this->scheduler->extract();
         }
 
-        $scheduledAt = $this->timers[$this->scheduler->top()];
-
-        return $scheduledAt;
+        return null;
     }
 
     public function isEmpty()

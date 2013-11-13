@@ -2,12 +2,9 @@
 
 namespace React\EventLoop;
 
-use Exception;
 use React\EventLoop\Timer\Timer;
 use React\EventLoop\Timer\TimerInterface;
-use SplObjectStorage;
-use SplPriorityQueue;
-use SplQueue;
+use React\EventLoop\Timer\Timers;
 
 /**
  * A stream_select() based event-loop with support for nextTick().
@@ -18,13 +15,11 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
     private $readListeners = [];
     private $writeStreams = [];
     private $writeListeners = [];
-    private $timerQueue;
-    private $timerTimestamps;
+    private $timers;
 
     public function __construct()
     {
-        $this->timerQueue = new SplPriorityQueue;
-        $this->timerTimestamps = new SplObjectStorage;
+        $this->timers = new Timers;
 
         parent::__construct();
     }
@@ -103,13 +98,51 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
     }
 
     /**
+     * Enqueue a callback to be invoked once after the given interval.
+     *
+     * The execution order of timers scheduled to execute at the same time is
+     * not guaranteed.
+     *
+     * @param numeric  $interval The number of seconds to wait before execution.
+     * @param callable $callback The callback to invoke.
+     *
+     * @return TimerInterface
+     */
+    public function addTimer($interval, $callback)
+    {
+        $timer = new Timer($this, $interval, $callback, false);
+        $this->timers->add($timer);
+
+        return $timer;
+    }
+
+    /**
+     * Enqueue a callback to be invoked repeatedly after the given interval.
+     *
+     * The execution order of timers scheduled to execute at the same time is
+     * not guaranteed.
+     *
+     * @param numeric  $interval The number of seconds to wait before execution.
+     * @param callable $callback The callback to invoke.
+     *
+     * @return TimerInterface
+     */
+    public function addPeriodicTimer($interval, $callback)
+    {
+        $timer = new Timer($this, $interval, $callback, true);
+        $this->timers->add($timer);
+
+        return $timer;
+    }
+
+    /**
      * Cancel a pending timer.
      *
      * @param TimerInterface $timer The timer to cancel.
      */
     public function cancelTimer(TimerInterface $timer)
     {
-        $this->timerTimestamps->detach($timer);
+        $this->timers->cancel($timer);
     }
 
     /**
@@ -121,7 +154,7 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
      */
     public function isTimerActive(TimerInterface $timer)
     {
-        return $this->timerTimestamps->contains($timer);
+        return $this->timers->contains($timer);
     }
 
     /**
@@ -131,7 +164,7 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
      */
     protected function flushEvents($blocking)
     {
-        $this->flushTimerQueue();
+        $this->timers->tick();
         $this->waitForStreamActivity($blocking);
     }
 
@@ -142,7 +175,7 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
      */
     protected function isEmpty()
     {
-        return 0 === count($this->timerTimestamps)
+        return $this->timers->isEmpty()
             && 0 === count($this->readStreams)
             && 0 === count($this->writeStreams);
     }
@@ -175,8 +208,8 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
      * Emulate a stream_select() implementation that does not break when passed
      * empty stream arrays.
      *
-     * @param array &$read An array of read streams to select upon.
-     * @param array &$write An array of write streams to select upon.
+     * @param array        &$read   An array of read streams to select upon.
+     * @param array        &$write  An array of write streams to select upon.
      * @param integer|null $timeout Activity timeout in microseconds, or null to wait forever.
      */
     protected function streamSelect(array &$read, array &$write, $timeout)
@@ -198,74 +231,6 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
         return 0;
     }
 
-    /**
-     * Schedule a timer for execution.
-     *
-     * @param TimerInterface $timer
-     */
-    protected function scheduleTimer(TimerInterface $timer)
-    {
-        $executeAt = $this->now() + $this->toMicroSeconds(
-            $timer->getInterval()
-        );
-
-        $this->timerQueue->insert($timer, -$executeAt);
-        $this->timerTimestamps->attach($timer, $executeAt);
-    }
-
-    /**
-     * Get the timer next schedule to tick, if any.
-     *
-     * @return TimerInterface|null
-     */
-    protected function nextActiveTimer()
-    {
-        while ($this->timerQueue->count()) {
-            $timer = $this->timerQueue->top();
-
-            if ($this->isTimerActive($timer)) {
-                return $timer;
-            } else {
-                $this->timerQueue->extract();
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Push callbacks for timers that are ready into the next-tick queue.
-     */
-    protected function flushTimerQueue()
-    {
-        $now = $this->now();
-
-        while ($timer = $this->nextActiveTimer()) {
-
-            $executeAt = $this->timerTimestamps[$timer];
-
-            // The next time is in the future, exit the loop ...
-            if ($executeAt > $now) {
-                break;
-            }
-
-            $this->timerQueue->extract();
-
-            call_user_func($timer->getCallback(), $timer);
-
-            // Timer cancelled itself ...
-            if (!$this->isTimerActive($timer)) {
-                return;
-            // Reschedule periodic timers ...
-            } elseif ($timer->isPeriodic()) {
-                $this->scheduleTimer($timer);
-            // Cancel one-shot timers ...
-            } else {
-                $this->cancelTimer($timer);
-            }
-        }
-    }
-
     protected function waitForStreamActivity($blocking)
     {
         // The $blocking flag takes precedence ...
@@ -273,10 +238,10 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
             $timeout = 0;
 
         // There is a pending timer, only block until it is due ...
-        } elseif ($timer = $this->nextActiveTimer()) {
+        } elseif ($scheduledAt = $this->timers->getFirst()) {
             $timeout = max(
                 0,
-                $this->timerTimestamps[$timer] - $this->now()
+                $scheduledAt - $this->timers->getTime()
             );
 
         // The only possible event is stream activity, so wait forever ...

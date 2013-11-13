@@ -4,6 +4,7 @@ namespace React\EventLoop;
 
 use Event;
 use EventBase;
+use React\EventLoop\Timer\Timer;
 use React\EventLoop\Timer\TimerInterface;
 use SplObjectStorage;
 use stdClass;
@@ -105,6 +106,46 @@ class ExtEventLoop extends AbstractNextTickLoop
     }
 
     /**
+     * Enqueue a callback to be invoked once after the given interval.
+     *
+     * The execution order of timers scheduled to execute at the same time is
+     * not guaranteed.
+     *
+     * @param numeric  $interval The number of seconds to wait before execution.
+     * @param callable $callback The callback to invoke.
+     *
+     * @return TimerInterface
+     */
+    public function addTimer($interval, $callback)
+    {
+        $timer = new Timer($this, $interval, $callback, false);
+
+        $this->scheduleTimer($timer);
+
+        return $timer;
+    }
+
+    /**
+     * Enqueue a callback to be invoked repeatedly after the given interval.
+     *
+     * The execution order of timers scheduled to execute at the same time is
+     * not guaranteed.
+     *
+     * @param numeric  $interval The number of seconds to wait before execution.
+     * @param callable $callback The callback to invoke.
+     *
+     * @return TimerInterface
+     */
+    public function addPeriodicTimer($interval, $callback)
+    {
+        $timer = new Timer($this, $interval, $callback, true);
+
+        $this->scheduleTimer($timer);
+
+        return $timer;
+    }
+
+    /**
      * Cancel a pending timer.
      *
      * @param TimerInterface $timer The timer to cancel.
@@ -178,9 +219,9 @@ class ExtEventLoop extends AbstractNextTickLoop
     /**
      * Dispatch a stream event.
      *
-     * @param stdClass $entry The entry from $this->streamEvents
-     * @param stream $stream
-     * @param integer $flags Bitwise flags indicating event type (Event::READ/Event::WRITE)
+     * @param stdClass $entry  The entry from $this->streamEvents
+     * @param stream   $stream
+     * @param integer  $flags  Bitwise flags indicating event type (Event::READ/Event::WRITE)
      */
     protected function onStreamEvent($entry, $stream, $flags)
     {
@@ -231,8 +272,8 @@ class ExtEventLoop extends AbstractNextTickLoop
     /**
      * Create a new ext-event Event object, or update the existing one.
      *
-     * @param stream $stream
-     * @param integer $flag Event::READ or Event::WRITE
+     * @param stream   $stream
+     * @param integer  $flag     Event::READ or Event::WRITE
      * @param callable $listener
      */
     protected function addStreamEvent($stream, $flag, $listener)
@@ -268,8 +309,8 @@ class ExtEventLoop extends AbstractNextTickLoop
      * Update the ext-event Event object for this stream to stop listening to
      * the given event type, or remove it entirely if it's no longer needed.
      *
-     * @param stream $stream
-     * @param integer $flag Event::READ or Event::WRITE
+     * @param stream  $stream
+     * @param integer $flag   Event::READ or Event::WRITE
      */
     protected function removeStreamEvent($stream, $flag)
     {
