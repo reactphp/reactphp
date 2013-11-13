@@ -32,7 +32,7 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
      */
     public function addReadStream($stream, $listener)
     {
-        $key = $this->streamKey($stream);
+        $key = (int) $stream;
 
         if (!array_key_exists($key, $this->readStreams)) {
             $this->readStreams[$key] = $stream;
@@ -48,7 +48,7 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
      */
     public function addWriteStream($stream, $listener)
     {
-        $key = $this->streamKey($stream);
+        $key = (int) $stream;
 
         if (!array_key_exists($key, $this->writeStreams)) {
             $this->writeStreams[$key] = $stream;
@@ -63,7 +63,7 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
      */
     public function removeReadStream($stream)
     {
-        $key = $this->streamKey($stream);
+        $key = (int) $stream;
 
         unset(
             $this->readStreams[$key],
@@ -78,7 +78,7 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
      */
     public function removeWriteStream($stream)
     {
-        $key = $this->streamKey($stream);
+        $key = (int) $stream;
 
         unset(
             $this->writeStreams[$key],
@@ -265,7 +265,7 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
     protected function flushStreamEvents(array $streams, array &$listeners)
     {
         foreach ($streams as $stream) {
-            $key = $this->streamKey($stream);
+            $key = (int) $stream;
 
             if (!array_key_exists($key, $listeners)) {
                 continue;

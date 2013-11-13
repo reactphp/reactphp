@@ -90,7 +90,7 @@ class ExtEventLoop extends AbstractNextTickLoop
      */
     public function removeStream($stream)
     {
-        $key = $this->streamKey($stream);
+        $key = (int) $stream;
 
         if (!array_key_exists($key, $this->streamEvents)) {
             return;
@@ -278,7 +278,7 @@ class ExtEventLoop extends AbstractNextTickLoop
      */
     protected function addStreamEvent($stream, $flag, $listener)
     {
-        $key = $this->streamKey($stream);
+        $key = (int) $stream;
 
         if (array_key_exists($key, $this->streamEvents)) {
             $entry = $this->streamEvents[$key];
@@ -314,7 +314,7 @@ class ExtEventLoop extends AbstractNextTickLoop
      */
     protected function removeStreamEvent($stream, $flag)
     {
-        $key = $this->streamKey($stream);
+        $key = (int) $stream;
 
         if (!array_key_exists($key, $this->streamEvents)) {
             return;

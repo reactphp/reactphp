@@ -105,18 +105,6 @@ abstract class AbstractNextTickLoop implements NextTickLoopInterface
     }
 
     /**
-     * Get a key that can be used to identify a stream resource.
-     *
-     * @param string $stream
-     *
-     * @return integer|string
-     */
-    protected function streamKey($stream)
-    {
-        return (int) $stream;
-    }
-
-    /**
      * Flush any timer and IO events.
      *
      * @param boolean $blocking True if loop should block waiting for next event.
