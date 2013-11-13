@@ -2,6 +2,7 @@
 
 namespace React\EventLoop;
 
+use React\EventLoop\NextTick\NextTickQueue;
 use React\EventLoop\Timer\Timer;
 use SplQueue;
 
@@ -15,7 +16,7 @@ abstract class AbstractNextTickLoop implements NextTickLoopInterface
 
     public function __construct()
     {
-        $this->nextTickQueue = new SplQueue;
+        $this->nextTickQueue = new NextTickQueue($this);
         $this->explicitlyStopped = false;
     }
 
@@ -25,11 +26,11 @@ abstract class AbstractNextTickLoop implements NextTickLoopInterface
      * Callbacks are guaranteed to be executed in the order they are enqueued,
      * before any timer or stream events.
      *
-     * @param callable $listner The callback to invoke.
+     * @param callable $listener The callback to invoke.
      */
     public function nextTick(callable $listener)
     {
-        $this->nextTickQueue->enqueue($listener);
+        $this->nextTickQueue->add($listener);
     }
 
     /**
@@ -61,19 +62,6 @@ abstract class AbstractNextTickLoop implements NextTickLoopInterface
     }
 
     /**
-     * Invoke all callbacks in the next-tick queue.
-     */
-    protected function flushNextTickQueue()
-    {
-        while ($this->nextTickQueue->count()) {
-            call_user_func(
-                $this->nextTickQueue->dequeue(),
-                $this
-            );
-        }
-    }
-
-    /**
      * Check if there is any pending work to do.
      *
      * @return boolean
@@ -85,7 +73,7 @@ abstract class AbstractNextTickLoop implements NextTickLoopInterface
             return false;
 
         // The next tick queue has items on it ...
-        } elseif ($this->nextTickQueue->count() > 0) {
+        } elseif (!$this->nextTickQueue->isEmpty()) {
             return true;
         }
 
@@ -97,10 +85,10 @@ abstract class AbstractNextTickLoop implements NextTickLoopInterface
      */
     protected function tickLogic($blocking)
     {
-        $this->flushNextTickQueue();
+        $this->nextTickQueue->tick();
 
         $this->flushEvents(
-            $blocking && 0 === $this->nextTickQueue->count()
+            $blocking && $this->nextTickQueue->isEmpty()
         );
     }
 
