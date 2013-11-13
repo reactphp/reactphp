@@ -38,6 +38,8 @@ abstract class AbstractNextTickLoop implements NextTickLoopInterface
      */
     public function tick()
     {
+        $this->nextTickQueue->tick();
+
         $this->tickLogic(false);
     }
 
@@ -49,7 +51,11 @@ abstract class AbstractNextTickLoop implements NextTickLoopInterface
         $this->explicitlyStopped = false;
 
         while ($this->isRunning()) {
-            $this->tickLogic(true);
+            $this->nextTickQueue->tick();
+
+            $this->tickLogic(
+                $this->nextTickQueue->isEmpty()
+            );
         }
     }
 
@@ -81,23 +87,11 @@ abstract class AbstractNextTickLoop implements NextTickLoopInterface
     }
 
     /**
-     * Perform the low-level tick logic.
-     */
-    protected function tickLogic($blocking)
-    {
-        $this->nextTickQueue->tick();
-
-        $this->flushEvents(
-            $blocking && $this->nextTickQueue->isEmpty()
-        );
-    }
-
-    /**
      * Flush any timer and IO events.
      *
      * @param boolean $blocking True if loop should block waiting for next event.
      */
-    abstract protected function flushEvents($blocking);
+    abstract protected function tickLogic($blocking);
 
     /**
      * Check if the loop has any pending timers or streams.

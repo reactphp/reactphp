@@ -154,8 +154,11 @@ class ExtEventLoop extends AbstractNextTickLoop
     {
         if ($this->isTimerActive($timer)) {
             $entry = $this->timerEvents[$timer];
+
             $this->timerEvents->detach($timer);
+
             $entry->event->free();
+
             $this->keepAlive[] = $entry->callback;
         }
     }
@@ -177,7 +180,7 @@ class ExtEventLoop extends AbstractNextTickLoop
      *
      * @param boolean $blocking True if loop should block waiting for next event.
      */
-    protected function flushEvents($blocking)
+    protected function tickLogic($blocking)
     {
         $flags = EventBase::LOOP_ONCE;
 
@@ -202,44 +205,6 @@ class ExtEventLoop extends AbstractNextTickLoop
     }
 
     /**
-     * Dispatch a timer event.
-     *
-     * @param TimerInterface $timer
-     */
-    protected function onTimerTick(TimerInterface $timer)
-    {
-        call_user_func($timer->getCallback(), $timer);
-
-        // Clean-up one shot timers ...
-        if ($this->isTimerActive($timer) && !$timer->isPeriodic()) {
-            $this->cancelTimer($timer);
-        }
-    }
-
-    /**
-     * Dispatch a stream event.
-     *
-     * @param stdClass $entry  The entry from $this->streamEvents
-     * @param stream   $stream
-     * @param integer  $flags  Bitwise flags indicating event type (Event::READ/Event::WRITE)
-     */
-    protected function onStreamEvent($entry, $stream, $flags)
-    {
-        foreach ([Event::READ, Event::WRITE] as $flag) {
-            if (
-                $flag === ($flags & $flag) &&
-                is_callable($entry->listeners[$flag])
-            ) {
-                call_user_func(
-                    $entry->listeners[$flag],
-                    $stream,
-                    $this
-                );
-            }
-        }
-    }
-
-    /**
      * Schedule a timer for execution.
      *
      * @param TimerInterface $timer
@@ -254,7 +219,12 @@ class ExtEventLoop extends AbstractNextTickLoop
 
         $entry = new stdClass;
         $entry->callback = function () use ($timer) {
-            $this->onTimerTick($timer);
+            call_user_func($timer->getCallback(), $timer);
+
+            // Clean-up one shot timers ...
+            if ($this->isTimerActive($timer) && !$timer->isPeriodic()) {
+                $this->cancelTimer($timer);
+            }
         };
 
         $entry->event = new Event(
@@ -284,15 +254,27 @@ class ExtEventLoop extends AbstractNextTickLoop
             $entry = $this->streamEvents[$key];
         } else {
             $entry = new stdClass;
-            $entry->callback = function ($stream, $flags, $loop) use ($entry) {
-                $this->onStreamEvent($entry, $stream, $flags);
-            };
             $entry->event = null;
             $entry->flags = 0;
             $entry->listeners = [
                 Event::READ => null,
                 Event::WRITE => null,
             ];
+
+            $entry->callback = function ($stream, $flags, $loop) use ($entry) {
+                foreach ([Event::READ, Event::WRITE] as $flag) {
+                    if (
+                        $flag === ($flags & $flag) &&
+                        is_callable($entry->listeners[$flag])
+                    ) {
+                        call_user_func(
+                            $entry->listeners[$flag],
+                            $stream,
+                            $this
+                        );
+                    }
+                }
+            };
 
             $this->streamEvents[$key] = $entry;
         }

@@ -162,9 +162,10 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
      *
      * @param boolean $blocking True if loop should block waiting for next event.
      */
-    protected function flushEvents($blocking)
+    protected function tickLogic($blocking)
     {
         $this->timers->tick();
+
         $this->waitForStreamActivity($blocking);
     }
 
@@ -180,28 +181,47 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
             && 0 === count($this->writeStreams);
     }
 
-    /**
-     * Get the current time in microseconds.
-     *
-     * @return integer
-     */
-    protected function now()
+    protected function waitForStreamActivity($blocking)
     {
-        return $this->toMicroSeconds(
-            microtime(true)
-        );
-    }
+        // The $blocking flag takes precedence ...
+        if (!$blocking) {
+            $timeout = 0;
 
-    /**
-     * Convert the given time to microseconds.
-     *
-     * @param integer|float $seconds
-     *
-     * @return integer
-     */
-    protected function toMicroSeconds($seconds)
-    {
-        return intval($seconds * 1000000);
+        // There is a pending timer, only block until it is due ...
+        } elseif ($scheduledAt = $this->timers->getFirst()) {
+            $timeout = max(0, $scheduledAt - $this->timers->getTime());
+
+        // The only possible event is stream activity, so wait forever ...
+        } elseif ($this->readStreams || $this->writeStreams) {
+            $timeout = null;
+
+        // There's nothing left to do ...
+        } else {
+            return;
+        }
+
+        $read  = $this->readStreams;
+        $write = $this->writeStreams;
+
+        $this->streamSelect($read, $write, $timeout);
+
+        // Invoke callbacks for read-ready streams ...
+        foreach ($read as $stream) {
+            $key = (int) $stream;
+
+            if (array_key_exists($key, $this->readListeners)) {
+                call_user_func($this->readListeners[$key], $stream, $this);
+            }
+        }
+
+        // Invoke callbacks for write-ready streams ...
+        foreach ($write as $stream) {
+            $key = (int) $stream;
+
+            if (array_key_exists($key, $this->writeListeners)) {
+                call_user_func($this->writeListeners[$key], $stream, $this);
+            }
+        }
     }
 
     /**
@@ -229,49 +249,5 @@ class StreamSelectNextTickLoop extends AbstractNextTickLoop
         usleep($timeout);
 
         return 0;
-    }
-
-    protected function waitForStreamActivity($blocking)
-    {
-        // The $blocking flag takes precedence ...
-        if (!$blocking) {
-            $timeout = 0;
-
-        // There is a pending timer, only block until it is due ...
-        } elseif ($scheduledAt = $this->timers->getFirst()) {
-            $timeout = max(
-                0,
-                $scheduledAt - $this->timers->getTime()
-            );
-
-        // The only possible event is stream activity, so wait forever ...
-        } elseif ($this->readStreams || $this->writeStreams) {
-            $timeout = null;
-
-        // THere's nothing left to do ...
-        } else {
-            return;
-        }
-
-        $read = $this->readStreams;
-        $write = $this->writeStreams;
-
-        $this->streamSelect($read, $write, $timeout);
-
-        $this->flushStreamEvents($read, $this->readListeners);
-        $this->flushStreamEvents($write, $this->writeListeners);
-    }
-
-    protected function flushStreamEvents(array $streams, array &$listeners)
-    {
-        foreach ($streams as $stream) {
-            $key = (int) $stream;
-
-            if (!array_key_exists($key, $listeners)) {
-                continue;
-            }
-
-            call_user_func($listeners[$key], $stream, $this);
-        }
     }
 }
