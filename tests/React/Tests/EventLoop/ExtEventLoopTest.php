@@ -6,8 +6,6 @@ use React\EventLoop\ExtEventLoop;
 
 class ExtEventLoopTest extends AbstractLoopTest
 {
-    use NextTickTestTrait;
-
     public function createLoop()
     {
         if ('Linux' === PHP_OS) {

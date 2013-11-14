@@ -101,6 +101,19 @@ class LibEventLoop implements LoopInterface
         $this->removeStreamEvent($stream, EV_WRITE, 'write');
     }
 
+    /**
+     * Schedule a callback to be invoked on the next tick of the event loop.
+     *
+     * Callbacks are guaranteed to be executed in the order they are enqueued,
+     * before any timer or stream events.
+     *
+     * @param callable $listner The callback to invoke.
+     */
+    public function nextTick(callable $listener)
+    {
+        throw new \Exception('Not yet implemented.');
+    }
+
     protected function removeStreamEvent($stream, $eventClass, $type)
     {
         $id = (int) $stream;

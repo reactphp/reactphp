@@ -55,6 +55,19 @@ class LibEvLoop implements LoopInterface
         $this->removeWriteStream($stream);
     }
 
+    /**
+     * Schedule a callback to be invoked on the next tick of the event loop.
+     *
+     * Callbacks are guaranteed to be executed in the order they are enqueued,
+     * before any timer or stream events.
+     *
+     * @param callable $listner The callback to invoke.
+     */
+    public function nextTick(callable $listener)
+    {
+        throw new \Exception('Not yet implemented.');
+    }
+
     private function addStream($stream, $listener, $flags)
     {
         $listener = $this->wrapStreamListener($stream, $listener, $flags);

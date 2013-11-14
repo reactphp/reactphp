@@ -4,19 +4,22 @@ namespace React\EventLoop;
 
 use Event;
 use EventBase;
+use React\EventLoop\NextTick\NextTickQueue;
 use React\EventLoop\Timer\Timer;
 use React\EventLoop\Timer\TimerInterface;
 use SplObjectStorage;
 use stdClass;
 
 /**
- * An ext-event based event-loop with support for nextTick().
+ * An ext-event based event-loop.
  */
-class ExtEventLoop extends AbstractNextTickLoop
+class ExtEventLoop implements LoopInterface
 {
     private $eventBase;
+    private $nextTickQueue;
     private $timerEvents;
     private $streamEvents;
+    private $running;
     private $keepAlive;
 
     /**
@@ -29,6 +32,7 @@ class ExtEventLoop extends AbstractNextTickLoop
         }
 
         $this->eventBase = $eventBase;
+        $this->nextTickQueue = new NextTickQueue($this);
         $this->timerEvents = new SplObjectStorage;
         $this->streamEvents = [];
 
@@ -37,8 +41,6 @@ class ExtEventLoop extends AbstractNextTickLoop
         // to prevent the PHP fatal error caused by ext-event:
         // "Cannot destroy active lambda function"
         $this->keepAlive = [];
-
-        parent::__construct();
     }
 
     /**
@@ -176,32 +178,64 @@ class ExtEventLoop extends AbstractNextTickLoop
     }
 
     /**
-     * Flush any timer and IO events.
+     * Schedule a callback to be invoked on the next tick of the event loop.
+     *
+     * Callbacks are guaranteed to be executed in the order they are enqueued,
+     * before any timer or stream events.
+     *
+     * @param callable $listener The callback to invoke.
+     */
+    public function nextTick(callable $listener)
+    {
+        $this->nextTickQueue->add($listener);
+    }
+
+    /**
+     * Perform a single iteration of the event loop.
      *
      * @param boolean $blocking True if loop should block waiting for next event.
      */
-    protected function tickLogic($blocking)
+    public function tick()
     {
-        $flags = EventBase::LOOP_ONCE;
+        $this->nextTickQueue->tick();
 
-        if (!$blocking) {
-            $flags |= EventBase::LOOP_NONBLOCK;
-        }
-
-        $this->eventBase->loop($flags);
+        $this->eventBase->loop(EventBase::LOOP_ONCE | EventBase::LOOP_NONBLOCK);
 
         $this->keepAlive = [];
     }
 
     /**
-     * Check if the loop has any pending timers or streams.
-     *
-     * @return boolean
+     * Run the event loop until there are no more tasks to perform.
      */
-    protected function isEmpty()
+    public function run()
     {
-        return 0 === count($this->timerEvents)
-            && 0 === count($this->streamEvents);
+        $this->running = true;
+
+        while ($this->running) {
+
+            if (
+                !$this->streamEvents
+                && !$this->timerEvents->count()
+                && $this->nextTickQueue->isEmpty()
+            ) {
+                break;
+            }
+
+            $this->nextTickQueue->tick();
+
+            $this->eventBase->loop(EventBase::LOOP_ONCE);
+
+            $this->keepAlive = [];
+
+        }
+    }
+
+    /**
+     * Instruct a running event loop to stop.
+     */
+    public function stop()
+    {
+        $this->running = false;
     }
 
     /**
