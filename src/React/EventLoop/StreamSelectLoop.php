@@ -199,8 +199,12 @@ class StreamSelectLoop implements LoopInterface
 
             $this->timers->tick();
 
+            // Timers have placed more items on the next-tick queue ...
+            if (!$this->nextTickQueue->isEmpty()) {
+                $timeout = 0;
+
             // There is a pending timer, only block until it is due ...
-            if ($scheduledAt = $this->timers->getFirst()) {
+            } elseif ($scheduledAt = $this->timers->getFirst()) {
 
                 if (0 > $timeout = $scheduledAt - $this->timers->getTime()) {
                     $timeout = 0;

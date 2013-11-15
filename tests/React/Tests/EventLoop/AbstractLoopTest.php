@@ -307,6 +307,24 @@ abstract class AbstractLoopTest extends TestCase
         $this->loop->run();
     }
 
+    public function testNextTickEventGeneratedByTimer()
+    {
+        $this->loop->addTimer(
+            0.001,
+            function () {
+                $this->loop->nextTick(
+                    function () {
+                        echo 'next-tick' . PHP_EOL;
+                    }
+                );
+            }
+        );
+
+        $this->expectOutputString('next-tick' . PHP_EOL);
+
+        $this->loop->run();
+    }
+
     private function assertRunFasterThan($maxInterval)
     {
         $start = microtime(true);
