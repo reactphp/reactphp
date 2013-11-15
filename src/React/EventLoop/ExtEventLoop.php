@@ -8,7 +8,6 @@ use React\EventLoop\NextTick\NextTickQueue;
 use React\EventLoop\Timer\Timer;
 use React\EventLoop\Timer\TimerInterface;
 use SplObjectStorage;
-use stdClass;
 
 /**
  * An ext-event based event-loop.
@@ -17,10 +16,14 @@ class ExtEventLoop implements LoopInterface
 {
     private $eventBase;
     private $nextTickQueue;
+    private $timerCallback;
     private $timerEvents;
-    private $streamEvents;
+    private $streamCallback;
+    private $streamEvents = [];
+    private $streamFlags = [];
+    private $readListeners = [];
+    private $writeListeners = [];
     private $running;
-    private $keepAlive;
 
     /**
      * @param EventBase|null $eventBase The libevent event base object.
@@ -34,13 +37,9 @@ class ExtEventLoop implements LoopInterface
         $this->eventBase = $eventBase;
         $this->nextTickQueue = new NextTickQueue($this);
         $this->timerEvents = new SplObjectStorage;
-        $this->streamEvents = [];
 
-        // Closures for cancelled timers and removed stream listeners are
-        // kept in the keepAlive array until the flushEvents() is complete
-        // to prevent the PHP fatal error caused by ext-event:
-        // "Cannot destroy active lambda function"
-        $this->keepAlive = [];
+        $this->createTimerCallback();
+        $this->createStreamCallback();
     }
 
     /**
@@ -51,7 +50,12 @@ class ExtEventLoop implements LoopInterface
      */
     public function addReadStream($stream, $listener)
     {
-        $this->addStreamEvent($stream, Event::READ, $listener);
+        $key = (int) $stream;
+
+        if (!isset($this->readListeners[$key])) {
+            $this->readListeners[$key] = $listener;
+            $this->subscribeStreamEvent($stream, Event::READ);
+        }
     }
 
     /**
@@ -62,7 +66,12 @@ class ExtEventLoop implements LoopInterface
      */
     public function addWriteStream($stream, $listener)
     {
-        $this->addStreamEvent($stream, Event::WRITE, $listener);
+        $key = (int) $stream;
+
+        if (!isset($this->writeListeners[$key])) {
+            $this->writeListeners[$key] = $listener;
+            $this->subscribeStreamEvent($stream, Event::WRITE, $listener);
+        }
     }
 
     /**
@@ -72,7 +81,12 @@ class ExtEventLoop implements LoopInterface
      */
     public function removeReadStream($stream)
     {
-        $this->removeStreamEvent($stream, Event::READ);
+        $key = (int) $stream;
+
+        if (isset($this->readListeners[$key])) {
+            unset($this->readListeners[$key]);
+            $this->unsubscribeStreamEvent($stream, Event::READ);
+        }
     }
 
     /**
@@ -82,7 +96,12 @@ class ExtEventLoop implements LoopInterface
      */
     public function removeWriteStream($stream)
     {
-        $this->removeStreamEvent($stream, Event::WRITE);
+        $key = (int) $stream;
+
+        if (isset($this->writeListeners[$key])) {
+            unset($this->writeListeners[$key]);
+            $this->unsubscribeStreamEvent($stream, Event::WRITE);
+        }
     }
 
     /**
@@ -94,17 +113,16 @@ class ExtEventLoop implements LoopInterface
     {
         $key = (int) $stream;
 
-        if (!isset($this->streamEvents[$key])) {
-            return;
+        if (isset($this->streamEvents[$key])) {
+            $this->streamEvents[$key]->free();
+
+            unset(
+                $this->streamFlags[$key],
+                $this->streamEvents[$key],
+                $this->readListeners[$key],
+                $this->writeListeners[$key]
+            );
         }
-
-        $entry = $this->streamEvents[$key];
-
-        $entry->event->free();
-
-        unset($this->streamEvents[$key]);
-
-        $this->keepAlive[] = $entry->callback;
     }
 
     /**
@@ -155,13 +173,8 @@ class ExtEventLoop implements LoopInterface
     public function cancelTimer(TimerInterface $timer)
     {
         if ($this->isTimerActive($timer)) {
-            $entry = $this->timerEvents[$timer];
-
+            $this->timerEvents[$timer]->free();
             $this->timerEvents->detach($timer);
-
-            $entry->event->free();
-
-            $this->keepAlive[] = $entry->callback;
         }
     }
 
@@ -200,8 +213,6 @@ class ExtEventLoop implements LoopInterface
         $this->nextTickQueue->tick();
 
         $this->eventBase->loop(EventBase::LOOP_ONCE | EventBase::LOOP_NONBLOCK);
-
-        $this->keepAlive = [];
     }
 
     /**
@@ -213,20 +224,13 @@ class ExtEventLoop implements LoopInterface
 
         while ($this->running) {
 
-            if (
-                !$this->streamEvents
-                && !$this->timerEvents->count()
-                && $this->nextTickQueue->isEmpty()
-            ) {
+            $this->nextTickQueue->tick();
+
+            if (!$this->streamEvents && !$this->timerEvents->count()) {
                 break;
             }
 
-            $this->nextTickQueue->tick();
-
             $this->eventBase->loop(EventBase::LOOP_ONCE);
-
-            $this->keepAlive = [];
-
         }
     }
 
@@ -251,74 +255,48 @@ class ExtEventLoop implements LoopInterface
             $flags |= Event::PERSIST;
         }
 
-        $entry = new stdClass;
-        $entry->callback = function () use ($timer) {
-            call_user_func($timer->getCallback(), $timer);
-
-            // Clean-up one shot timers ...
-            if ($this->isTimerActive($timer) && !$timer->isPeriodic()) {
-                $this->cancelTimer($timer);
-            }
-        };
-
-        $entry->event = new Event(
+        $this->timerEvents[$timer] = $event = new Event(
             $this->eventBase,
             -1,
             $flags,
-            $entry->callback
+            $this->timerCallback,
+            $timer
         );
 
-        $this->timerEvents->attach($timer, $entry);
-
-        $entry->event->add($timer->getInterval());
+        $event->add($timer->getInterval());
     }
 
     /**
      * Create a new ext-event Event object, or update the existing one.
      *
-     * @param stream   $stream
-     * @param integer  $flag     Event::READ or Event::WRITE
-     * @param callable $listener
+     * @param stream  $stream
+     * @param integer $flag   Event::READ or Event::WRITE
      */
-    protected function addStreamEvent($stream, $flag, $listener)
+    protected function subscribeStreamEvent($stream, $flag)
     {
         $key = (int) $stream;
 
         if (isset($this->streamEvents[$key])) {
-            $entry = $this->streamEvents[$key];
+            $event = $this->streamEvents[$key];
+
+            $event->del();
+
+            $event->set(
+                $this->eventBase,
+                $stream,
+                Event::PERSIST | ($this->streamFlags[$key] |= $flag),
+                $this->streamCallback
+            );
         } else {
-            $entry = new stdClass;
-            $entry->event = null;
-            $entry->flags = 0;
-            $entry->listeners = [
-                Event::READ => null,
-                Event::WRITE => null,
-            ];
-
-            $entry->callback = function ($stream, $flags, $loop) use ($entry) {
-                foreach ([Event::READ, Event::WRITE] as $flag) {
-                    if (
-                        $flag === ($flags & $flag) &&
-                        is_callable($entry->listeners[$flag])
-                    ) {
-                        call_user_func(
-                            $entry->listeners[$flag],
-                            $stream,
-                            $this
-                        );
-                    }
-                }
-            };
-
-            $this->streamEvents[$key] = $entry;
+            $this->streamEvents[$key] = $event = new Event(
+                $this->eventBase,
+                $stream,
+                Event::PERSIST | ($this->streamFlags[$key] = $flag),
+                $this->streamCallback
+            );
         }
 
-        $entry->listeners[$flag] = $listener;
-        $entry->flags |= $flag;
-
-        $this->configureStreamEvent($entry, $stream);
-
-        $entry->event->add();
+        $event->add();
     }
 
     /**
@@ -328,42 +306,80 @@ class ExtEventLoop implements LoopInterface
      * @param stream  $stream
      * @param integer $flag   Event::READ or Event::WRITE
      */
-    protected function removeStreamEvent($stream, $flag)
+    protected function unsubscribeStreamEvent($stream, $flag)
     {
         $key = (int) $stream;
 
-        if (!isset($this->streamEvents[$key])) {
+        $flags = $this->streamFlags[$key] &= ~$flag;
+
+        if (0 === $flags) {
+            $this->removeStream($stream);
+
             return;
         }
 
-        $entry = $this->streamEvents[$key];
-        $entry->flags &= ~$flag;
-        $entry->listeners[$flag] = null;
+        $event = $this->streamEvents[$key];
 
-        if (0 === $entry->flags) {
-            $this->removeStream($stream);
-        } else {
-            $this->configureStreamEvent($entry, $stream);
-        }
+        $event->del();
+
+        $event->set(
+            $this->eventBase,
+            $stream,
+            Event::PERSIST | $flags,
+            $this->streamCallback
+        );
+
+        $event->add();
     }
 
     /**
-     * Create or update an ext-event Event object for the stream.
+     * Create a callback used as the target of timer events.
+     *
+     * A reference is kept to the callback for the lifetime of the loop
+     * to prevent "Cannot destroy active lambda function" fatal error from
+     * the event extension.
      */
-    protected function configureStreamEvent($entry, $stream)
+    protected function createTimerCallback()
     {
-        $flags = $entry->flags | Event::PERSIST;
+        $this->timerCallback = function ($streamIgnored, $flagsIgnored, $timer) {
 
-        if ($entry->event) {
-            $entry->event->del();
-            $entry->event->set(
-                $this->eventBase, $stream, $flags, $entry->callback
-            );
-            $entry->event->add();
-        } else {
-            $entry->event = new Event(
-                $this->eventBase, $stream, $flags, $entry->callback
-            );
-        }
+            call_user_func($timer->getCallback(), $timer);
+
+            // Clean-up one shot timers ...
+            if (!$timer->isPeriodic() && $this->isTimerActive($timer)) {
+                $this->cancelTimer($timer);
+            }
+
+        };
+    }
+
+    /**
+     * Create a callback used as the target of stream events.
+     *
+     * A reference is kept to the callback for the lifetime of the loop
+     * to prevent "Cannot destroy active lambda function" fatal error from
+     * the event extension.
+     */
+    protected function createStreamCallback()
+    {
+        $this->streamCallback = function ($stream, $flags) {
+
+            $key = (int) $stream;
+
+            if (
+                Event::READ === (Event::READ & $flags)
+                && isset($this->readListeners[$key])
+            ) {
+                call_user_func($this->readListeners[$key], $stream, $this);
+            }
+
+            if (
+                Event::WRITE === (Event::WRITE & $flags)
+                && isset($this->writeListeners[$key])
+            ) {
+                call_user_func($this->writeListeners[$key], $stream, $this);
+            }
+
+        };
     }
 }
