@@ -334,7 +334,7 @@ class ExtEventLoop implements LoopInterface
      */
     protected function createTimerCallback()
     {
-        $this->timerCallback = function ($streamIgnored, $flagsIgnored, $timer) {
+        $this->timerCallback = function ($_, $_, $timer) {
 
             call_user_func($timer->getCallback(), $timer);
 
