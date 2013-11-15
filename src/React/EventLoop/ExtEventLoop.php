@@ -25,16 +25,9 @@ class ExtEventLoop implements LoopInterface
     private $writeListeners = [];
     private $running;
 
-    /**
-     * @param EventBase|null $eventBase The libevent event base object.
-     */
-    public function __construct(EventBase $eventBase = null)
+    public function __construct()
     {
-        if (null === $eventBase) {
-            $eventBase = new EventBase;
-        }
-
-        $this->eventBase = $eventBase;
+        $this->eventBase = new EventBase;
         $this->nextTickQueue = new NextTickQueue($this);
         $this->timerEvents = new SplObjectStorage;
 

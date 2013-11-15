@@ -258,8 +258,6 @@ class StreamSelectLoop implements LoopInterface
                 call_user_func($this->writeListeners[$key], $stream, $this);
             }
         }
-
-        return true;
     }
 
     /**
