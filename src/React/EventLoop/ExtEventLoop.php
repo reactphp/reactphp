@@ -4,7 +4,7 @@ namespace React\EventLoop;
 
 use Event;
 use EventBase;
-use React\EventLoop\NextTick\NextTickQueue;
+use React\EventLoop\Tick\NextTickQueue;
 use React\EventLoop\Timer\Timer;
 use React\EventLoop\Timer\TimerInterface;
 use SplObjectStorage;
@@ -63,7 +63,7 @@ class ExtEventLoop implements LoopInterface
 
         if (!isset($this->writeListeners[$key])) {
             $this->writeListeners[$key] = $listener;
-            $this->subscribeStreamEvent($stream, Event::WRITE, $listener);
+            $this->subscribeStreamEvent($stream, Event::WRITE);
         }
     }
 

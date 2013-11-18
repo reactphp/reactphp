@@ -50,7 +50,7 @@ class LibEventLoopTest extends AbstractLoopTest
     public function writeToStream($stream, $content)
     {
         if ('Linux' !== PHP_OS) {
-            return parent::setStreamContent($stream, $content);
+            return parent::writeToStream($stream, $content);
         }
 
         fwrite($stream, $content);

@@ -1,6 +1,6 @@
 <?php
 
-namespace React\EventLoop\NextTick;
+namespace React\EventLoop\Tick;
 
 use React\EventLoop\LoopInterface;
 use SplQueue;

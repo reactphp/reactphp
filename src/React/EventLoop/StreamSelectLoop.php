@@ -2,7 +2,7 @@
 
 namespace React\EventLoop;
 
-use React\EventLoop\NextTick\NextTickQueue;
+use React\EventLoop\Tick\NextTickQueue;
 use React\EventLoop\Timer\Timer;
 use React\EventLoop\Timer\TimerInterface;
 use React\EventLoop\Timer\Timers;
