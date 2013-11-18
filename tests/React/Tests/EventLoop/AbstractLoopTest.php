@@ -20,18 +20,22 @@ abstract class AbstractLoopTest extends TestCase
         return fopen('php://temp', 'r+');
     }
 
+    public function writeToStream($stream, $content)
+    {
+        fwrite($stream, $content);
+        rewind($stream);
+    }
+
     public function testAddReadStream()
     {
         $input = $this->createStream();
 
         $this->loop->addReadStream($input, $this->expectCallableExactly(2));
 
-        fwrite($input, "foo\n");
-        rewind($input);
+        $this->writeToStream($input, "foo\n");
         $this->loop->tick();
 
-        fwrite($input, "bar\n");
-        rewind($input);
+        $this->writeToStream($input, "bar\n");
         $this->loop->tick();
     }
 
@@ -51,8 +55,7 @@ abstract class AbstractLoopTest extends TestCase
         $this->loop->addReadStream($input, $this->expectCallableNever());
         $this->loop->removeReadStream($input);
 
-        fwrite($input, "bar\n");
-        rewind($input);
+        $this->writeToStream($input, "bar\n");
         $this->loop->tick();
     }
 
@@ -62,14 +65,12 @@ abstract class AbstractLoopTest extends TestCase
 
         $this->loop->addReadStream($input, $this->expectCallableOnce());
 
-        fwrite($input, "foo\n");
-        rewind($input);
+        $this->writeToStream($input, "foo\n");
         $this->loop->tick();
 
         $this->loop->removeReadStream($input);
 
-        fwrite($input, "bar\n");
-        rewind($input);
+        $this->writeToStream($input, "bar\n");
         $this->loop->tick();
     }
 
@@ -101,8 +102,7 @@ abstract class AbstractLoopTest extends TestCase
         $this->loop->addWriteStream($input, $this->expectCallableNever());
         $this->loop->removeStream($input);
 
-        fwrite($input, "bar\n");
-        rewind($input);
+        $this->writeToStream($input, "bar\n");
         $this->loop->tick();
     }
 
@@ -114,14 +114,15 @@ abstract class AbstractLoopTest extends TestCase
         $this->loop->addWriteStream($input, $this->expectCallableOnce());
         $this->loop->removeReadStream($input);
 
-        fwrite($input, "foo\n");
-        rewind($input);
+        $this->writeToStream($input, "foo\n");
         $this->loop->tick();
     }
 
     public function testRemoveStreamForWriteOnly()
     {
         $input = $this->createStream();
+
+        $this->writeToStream($input, "foo\n");
 
         $this->loop->addReadStream($input, $this->expectCallableOnce());
         $this->loop->addWriteStream($input, $this->expectCallableNever());
@@ -137,14 +138,12 @@ abstract class AbstractLoopTest extends TestCase
         $this->loop->addReadStream($input, $this->expectCallableOnce());
         $this->loop->addWriteStream($input, $this->expectCallableOnce());
 
-        fwrite($input, "bar\n");
-        rewind($input);
+        $this->writeToStream($input, "bar\n");
         $this->loop->tick();
 
         $this->loop->removeStream($input);
 
-        fwrite($input, "bar\n");
-        rewind($input);
+        $this->writeToStream($input, "bar\n");
         $this->loop->tick();
     }
 
@@ -174,8 +173,7 @@ abstract class AbstractLoopTest extends TestCase
             $loop->removeStream($stream);
         });
 
-        fwrite($input, "foo\n");
-        rewind($input);
+        $this->writeToStream($input, "foo\n");
 
         $this->assertRunFasterThan(0.005);
     }
@@ -190,8 +188,7 @@ abstract class AbstractLoopTest extends TestCase
             $loop->stop();
         });
 
-        fwrite($input, "foo\n");
-        rewind($input);
+        $this->writeToStream($input, "foo\n");
 
         $this->assertRunFasterThan(0.005);
     }
@@ -212,10 +209,8 @@ abstract class AbstractLoopTest extends TestCase
         // this callback would have to be called as well, but the first stream already removed us
         $loop->addReadStream($stream2, $this->expectCallableNever());
 
-        fwrite($stream1, "foo\n");
-        rewind($stream1);
-        fwrite($stream2, "foo\n");
-        rewind($stream2);
+        $this->writeToStream($stream1, "foo\n");
+        $this->writeToStream($stream2, "foo\n");
 
         $loop->run();
     }
