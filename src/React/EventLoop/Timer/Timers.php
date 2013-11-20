@@ -34,7 +34,7 @@ class Timers
     {
         $interval = $timer->getInterval();
 
-        if ($interval < self::MIN_RESOLUTION) {
+        if ($interval > 0 && $interval < self::MIN_RESOLUTION) {
             throw new InvalidArgumentException('Timer events do not support sub-millisecond timeouts.');
         }
 
