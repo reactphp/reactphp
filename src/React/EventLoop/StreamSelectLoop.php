@@ -23,7 +23,7 @@ class StreamSelectLoop implements LoopInterface
     public function __construct()
     {
         $this->nextTickQueue = new NextTickQueue($this);
-        $this->timers = new Timers;
+        $this->timers = new Timers();
     }
 
     /**
@@ -155,7 +155,6 @@ class StreamSelectLoop implements LoopInterface
         $this->running = true;
 
         while ($this->running) {
-
             $this->nextTickQueue->tick();
 
             $this->timers->tick();
@@ -166,7 +165,6 @@ class StreamSelectLoop implements LoopInterface
 
             // There is a pending timer, only block until it is due ...
             } elseif ($scheduledAt = $this->timers->getFirst()) {
-
                 if (0 > $timeout = $scheduledAt - $this->timers->getTime()) {
                     $timeout = 0;
                 }
@@ -202,7 +200,6 @@ class StreamSelectLoop implements LoopInterface
 
         $this->streamSelect($read, $write, $timeout);
 
-        // Invoke callbacks for read-ready streams ...
         foreach ($read as $stream) {
             $key = (int) $stream;
 
@@ -211,7 +208,6 @@ class StreamSelectLoop implements LoopInterface
             }
         }
 
-        // Invoke callbacks for write-ready streams ...
         foreach ($write as $stream) {
             $key = (int) $stream;
 
@@ -228,19 +224,15 @@ class StreamSelectLoop implements LoopInterface
      * @param array        &$read   An array of read streams to select upon.
      * @param array        &$write  An array of write streams to select upon.
      * @param integer|null $timeout Activity timeout in microseconds, or null to wait forever.
+     *
+     * @return integer The total number of streams that are ready for read/write.
      */
     protected function streamSelect(array &$read, array &$write, $timeout)
     {
         if ($read || $write) {
             $except = null;
 
-            return stream_select(
-                $read,
-                $write,
-                $except,
-                $timeout === null ? null : 0,
-                $timeout
-            );
+            return stream_select($read, $write, $except, $timeout === null ? null : 0, $timeout);
         }
 
         usleep($timeout);

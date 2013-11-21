@@ -27,9 +27,9 @@ class ExtEventLoop implements LoopInterface
 
     public function __construct()
     {
-        $this->eventBase = new EventBase;
+        $this->eventBase = new EventBase();
         $this->nextTickQueue = new NextTickQueue($this);
-        $this->timerEvents = new SplObjectStorage;
+        $this->timerEvents = new SplObjectStorage();
 
         $this->createTimerCallback();
         $this->createStreamCallback();
@@ -175,7 +175,6 @@ class ExtEventLoop implements LoopInterface
         $this->running = true;
 
         while ($this->running) {
-
             $this->nextTickQueue->tick();
 
             if (!$this->streamEvents && !$this->timerEvents->count()) {
@@ -207,13 +206,8 @@ class ExtEventLoop implements LoopInterface
             $flags |= Event::PERSIST;
         }
 
-        $this->timerEvents[$timer] = $event = new Event(
-            $this->eventBase,
-            -1,
-            $flags,
-            $this->timerCallback,
-            $timer
-        );
+        $event = new Event($this->eventBase, -1, $flags, $this->timerCallback, $timer);
+        $this->timerEvents[$timer] = $event;
 
         $event->add($timer->getInterval());
     }
@@ -230,22 +224,15 @@ class ExtEventLoop implements LoopInterface
 
         if (isset($this->streamEvents[$key])) {
             $event = $this->streamEvents[$key];
+            $flags = ($this->streamFlags[$key] |= $flag);
 
             $event->del();
-
-            $event->set(
-                $this->eventBase,
-                $stream,
-                Event::PERSIST | ($this->streamFlags[$key] |= $flag),
-                $this->streamCallback
-            );
+            $event->set($this->eventBase, $stream, Event::PERSIST | $flags, $this->streamCallback);
         } else {
-            $this->streamEvents[$key] = $event = new Event(
-                $this->eventBase,
-                $stream,
-                Event::PERSIST | ($this->streamFlags[$key] = $flag),
-                $this->streamCallback
-            );
+            $event = new Event($this->eventBase, $stream, Event::PERSIST | $flag, $this->streamCallback);
+
+            $this->streamEvents[$key] = $event;
+            $this->streamFlags[$key] = $flag;
         }
 
         $event->add();
@@ -273,14 +260,7 @@ class ExtEventLoop implements LoopInterface
         $event = $this->streamEvents[$key];
 
         $event->del();
-
-        $event->set(
-            $this->eventBase,
-            $stream,
-            Event::PERSIST | $flags,
-            $this->streamCallback
-        );
-
+        $event->set($this->eventBase, $stream, Event::PERSIST | $flags, $this->streamCallback);
         $event->add();
     }
 
@@ -294,14 +274,11 @@ class ExtEventLoop implements LoopInterface
     protected function createTimerCallback()
     {
         $this->timerCallback = function ($_, $_, $timer) {
-
             call_user_func($timer->getCallback(), $timer);
 
-            // Clean-up one shot timers ...
             if (!$timer->isPeriodic() && $this->isTimerActive($timer)) {
                 $this->cancelTimer($timer);
             }
-
         };
     }
 
@@ -315,23 +292,15 @@ class ExtEventLoop implements LoopInterface
     protected function createStreamCallback()
     {
         $this->streamCallback = function ($stream, $flags) {
-
             $key = (int) $stream;
 
-            if (
-                Event::READ === (Event::READ & $flags)
-                && isset($this->readListeners[$key])
-            ) {
+            if (Event::READ === (Event::READ & $flags) && isset($this->readListeners[$key])) {
                 call_user_func($this->readListeners[$key], $stream, $this);
             }
 
-            if (
-                Event::WRITE === (Event::WRITE & $flags)
-                && isset($this->writeListeners[$key])
-            ) {
+            if (Event::WRITE === (Event::WRITE & $flags) && isset($this->writeListeners[$key])) {
                 call_user_func($this->writeListeners[$key], $stream, $this);
             }
-
         };
     }
 }

@@ -25,9 +25,9 @@ class LibEvLoop implements LoopInterface
 
     public function __construct()
     {
-        $this->loop = new EventLoop;
+        $this->loop = new EventLoop();
         $this->nextTickQueue = new NextTickQueue($this);
-        $this->timers = new SplObjectStorage;
+        $this->timers = new SplObjectStorage();
     }
 
     /**

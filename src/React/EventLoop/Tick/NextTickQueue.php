@@ -16,7 +16,7 @@ class NextTickQueue
     public function __construct(LoopInterface $eventLoop)
     {
         $this->eventLoop = $eventLoop;
-        $this->queue = new SplQueue;
+        $this->queue = new SplQueue();
     }
 
     /**

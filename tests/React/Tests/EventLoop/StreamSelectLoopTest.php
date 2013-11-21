@@ -8,7 +8,7 @@ class StreamSelectLoopTest extends AbstractLoopTest
 {
     public function createLoop()
     {
-        return new StreamSelectLoop;
+        return new StreamSelectLoop();
     }
 
     public function testStreamSelectTimeoutEmulation()

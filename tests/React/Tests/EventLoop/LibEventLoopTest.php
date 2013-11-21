@@ -18,7 +18,7 @@ class LibEventLoopTest extends AbstractLoopTest
             $this->markTestSkipped('libevent tests skipped because ext-libevent is not installed.');
         }
 
-        return new LibEventLoop;
+        return new LibEventLoop();
     }
 
     public function tearDown()

@@ -16,7 +16,7 @@ class ExtEventLoopTest extends AbstractLoopTest
             $this->markTestSkipped('ext-event tests skipped because ext-event is not installed.');
         }
 
-        return new ExtEventLoop;
+        return new ExtEventLoop();
     }
 
     public function createStream()

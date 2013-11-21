@@ -31,7 +31,7 @@ class LibEventLoop implements LoopInterface
     {
         $this->eventBase = event_base_new();
         $this->nextTickQueue = new NextTickQueue($this);
-        $this->timerEvents = new SplObjectStorage;
+        $this->timerEvents = new SplObjectStorage();
 
         $this->createTimerCallback();
         $this->createStreamCallback();
@@ -97,8 +97,8 @@ class LibEventLoop implements LoopInterface
         $key = (int) $stream;
 
         if (isset($this->streamEvents[$key])) {
-
             $event = $this->streamEvents[$key];
+
             event_del($event);
             event_free($event);
 
@@ -184,7 +184,6 @@ class LibEventLoop implements LoopInterface
         $this->running = true;
 
         while ($this->running) {
-
             $this->nextTickQueue->tick();
 
             if (!$this->streamEvents && !$this->timerEvents->count()) {
@@ -213,13 +212,8 @@ class LibEventLoop implements LoopInterface
         $this->timerEvents[$timer] = $event = event_timer_new();
 
         event_timer_set($event, $this->timerCallback, $timer);
-
         event_base_set($event, $this->eventBase);
-
-        event_add(
-            $event,
-            $timer->getInterval() * self::MICROSECONDS_PER_SECOND
-        );
+        event_add($event, $timer->getInterval() * self::MICROSECONDS_PER_SECOND);
     }
 
     /**
@@ -234,26 +228,18 @@ class LibEventLoop implements LoopInterface
 
         if (isset($this->streamEvents[$key])) {
             $event = $this->streamEvents[$key];
+            $flags = $this->streamFlags[$key] |= $flag;
 
             event_del($event);
-
-            event_set(
-                $event,
-                $stream,
-                EV_PERSIST | ($this->streamFlags[$key] |= $flag),
-                $this->streamCallback
-            );
+            event_set($event, $stream, EV_PERSIST | $flags, $this->streamCallback);
         } else {
-            $this->streamEvents[$key] = $event = event_new();
+            $event = event_new();
 
-            event_set(
-                $event,
-                $stream,
-                EV_PERSIST | ($this->streamFlags[$key] = $flag),
-                $this->streamCallback
-            );
-
+            event_set($event, $stream, EV_PERSIST | $flag, $this->streamCallback);
             event_base_set($event, $this->eventBase);
+
+            $this->streamEvents[$key] = $event;
+            $this->streamFlags[$key] = $flag;
         }
 
         event_add($event);
@@ -281,9 +267,7 @@ class LibEventLoop implements LoopInterface
         $event = $this->streamEvents[$key];
 
         event_del($event);
-
         event_set($event, $stream, EV_PERSIST | $flags, $this->streamCallback);
-
         event_add($event);
     }
 
@@ -297,7 +281,6 @@ class LibEventLoop implements LoopInterface
     protected function createTimerCallback()
     {
         $this->timerCallback = function ($_, $_, $timer) {
-
             call_user_func($timer->getCallback(), $timer);
 
             // Timer already cancelled ...
@@ -315,7 +298,6 @@ class LibEventLoop implements LoopInterface
             } else {
                 $this->cancelTimer($timer);
             }
-
         };
     }
 
@@ -329,23 +311,15 @@ class LibEventLoop implements LoopInterface
     protected function createStreamCallback()
     {
         $this->streamCallback = function ($stream, $flags) {
-
             $key = (int) $stream;
 
-            if (
-                EV_READ === (EV_READ & $flags)
-                && isset($this->readListeners[$key])
-            ) {
+            if (EV_READ === (EV_READ & $flags) && isset($this->readListeners[$key])) {
                 call_user_func($this->readListeners[$key], $stream, $this);
             }
 
-            if (
-                EV_WRITE === (EV_WRITE & $flags)
-                && isset($this->writeListeners[$key])
-            ) {
+            if (EV_WRITE === (EV_WRITE & $flags) && isset($this->writeListeners[$key])) {
                 call_user_func($this->writeListeners[$key], $stream, $this);
             }
-
         };
     }
 }
