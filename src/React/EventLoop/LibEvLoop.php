@@ -33,7 +33,7 @@ class LibEvLoop implements LoopInterface
     /**
      * {@inheritdoc}
      */
-    public function addReadStream($stream, $listener)
+    public function addReadStream($stream, callable $listener)
     {
         $this->addStream($stream, $listener, IOEvent::READ);
     }
@@ -41,7 +41,7 @@ class LibEvLoop implements LoopInterface
     /**
      * {@inheritdoc}
      */
-    public function addWriteStream($stream, $listener)
+    public function addWriteStream($stream, callable $listener)
     {
         $this->addStream($stream, $listener, IOEvent::WRITE);
     }
@@ -80,7 +80,7 @@ class LibEvLoop implements LoopInterface
     /**
      * {@inheritdoc}
      */
-    public function addTimer($interval, $callback)
+    public function addTimer($interval, callable $callback)
     {
         $timer = new Timer($this, $interval, $callback, false);
         $this->setupTimer($timer);
@@ -91,7 +91,7 @@ class LibEvLoop implements LoopInterface
     /**
      * {@inheritdoc}
      */
-    public function addPeriodicTimer($interval, $callback)
+    public function addPeriodicTimer($interval, callable $callback)
     {
         $timer = new Timer($this, $interval, $callback, true);
         $this->setupTimer($timer);

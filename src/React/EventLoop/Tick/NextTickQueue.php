@@ -37,7 +37,7 @@ class NextTickQueue
      */
     public function tick()
     {
-        while ($this->queue->count()) {
+        while (!$this->queue->isEmpty()) {
             call_user_func(
                 $this->queue->dequeue(),
                 $this->eventLoop
@@ -52,6 +52,6 @@ class NextTickQueue
      */
     public function isEmpty()
     {
-        return 0 === $this->queue->count();
+        return $this->queue->isEmpty();
     }
 }

@@ -12,7 +12,7 @@ interface LoopInterface
      * @param stream   $stream   The PHP stream resource to check.
      * @param callable $listener Invoked when the stream is ready.
      */
-    public function addReadStream($stream, $listener);
+    public function addReadStream($stream, callable $listener);
 
     /**
      * Register a listener to be notified when a stream is ready to write.
@@ -20,7 +20,7 @@ interface LoopInterface
      * @param stream   $stream   The PHP stream resource to check.
      * @param callable $listener Invoked when the stream is ready.
      */
-    public function addWriteStream($stream, $listener);
+    public function addWriteStream($stream, callable $listener);
 
     /**
      * Remove the read event listener for the given stream.
@@ -54,7 +54,7 @@ interface LoopInterface
      *
      * @return TimerInterface
      */
-    public function addTimer($interval, $callback);
+    public function addTimer($interval, callable $callback);
 
     /**
      * Enqueue a callback to be invoked repeatedly after the given interval.
@@ -67,7 +67,7 @@ interface LoopInterface
      *
      * @return TimerInterface
      */
-    public function addPeriodicTimer($interval, $callback);
+    public function addPeriodicTimer($interval, callable $callback);
 
     /**
      * Cancel a pending timer.

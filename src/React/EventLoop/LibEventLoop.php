@@ -40,7 +40,7 @@ class LibEventLoop implements LoopInterface
     /**
      * {@inheritdoc}
      */
-    public function addReadStream($stream, $listener)
+    public function addReadStream($stream, callable $listener)
     {
         $key = (int) $stream;
 
@@ -53,7 +53,7 @@ class LibEventLoop implements LoopInterface
     /**
      * {@inheritdoc}
      */
-    public function addWriteStream($stream, $listener)
+    public function addWriteStream($stream, callable $listener)
     {
         $key = (int) $stream;
 
@@ -114,7 +114,7 @@ class LibEventLoop implements LoopInterface
     /**
      * {@inheritdoc}
      */
-    public function addTimer($interval, $callback)
+    public function addTimer($interval, callable $callback)
     {
         $timer = new Timer($this, $interval, $callback, false);
 
@@ -126,7 +126,7 @@ class LibEventLoop implements LoopInterface
     /**
      * {@inheritdoc}
      */
-    public function addPeriodicTimer($interval, $callback)
+    public function addPeriodicTimer($interval, callable $callback)
     {
         $timer = new Timer($this, $interval, $callback, true);
 
