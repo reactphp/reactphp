@@ -38,10 +38,7 @@ class LibEventLoop implements LoopInterface
     }
 
     /**
-     * Register a listener to be notified when a stream is ready to read.
-     *
-     * @param stream   $stream   The PHP stream resource to check.
-     * @param callable $listener Invoked when the stream is ready.
+     * {@inheritdoc}
      */
     public function addReadStream($stream, $listener)
     {
@@ -54,10 +51,7 @@ class LibEventLoop implements LoopInterface
     }
 
     /**
-     * Register a listener to be notified when a stream is ready to write.
-     *
-     * @param stream   $stream   The PHP stream resource to check.
-     * @param callable $listener Invoked when the stream is ready.
+     * {@inheritdoc}
      */
     public function addWriteStream($stream, $listener)
     {
@@ -70,9 +64,7 @@ class LibEventLoop implements LoopInterface
     }
 
     /**
-     * Remove the read event listener for the given stream.
-     *
-     * @param stream $stream The PHP stream resource.
+     * {@inheritdoc}
      */
     public function removeReadStream($stream)
     {
@@ -85,9 +77,7 @@ class LibEventLoop implements LoopInterface
     }
 
     /**
-     * Remove the write event listener for the given stream.
-     *
-     * @param stream $stream The PHP stream resource.
+     * {@inheritdoc}
      */
     public function removeWriteStream($stream)
     {
@@ -100,9 +90,7 @@ class LibEventLoop implements LoopInterface
     }
 
     /**
-     * Remove all listeners for the given stream.
-     *
-     * @param stream $stream The PHP stream resource.
+     * {@inheritdoc}
      */
     public function removeStream($stream)
     {
@@ -124,15 +112,7 @@ class LibEventLoop implements LoopInterface
     }
 
     /**
-     * Enqueue a callback to be invoked once after the given interval.
-     *
-     * The execution order of timers scheduled to execute at the same time is
-     * not guaranteed.
-     *
-     * @param numeric  $interval The number of seconds to wait before execution.
-     * @param callable $callback The callback to invoke.
-     *
-     * @return TimerInterface
+     * {@inheritdoc}
      */
     public function addTimer($interval, $callback)
     {
@@ -144,15 +124,7 @@ class LibEventLoop implements LoopInterface
     }
 
     /**
-     * Enqueue a callback to be invoked repeatedly after the given interval.
-     *
-     * The execution order of timers scheduled to execute at the same time is
-     * not guaranteed.
-     *
-     * @param numeric  $interval The number of seconds to wait before execution.
-     * @param callable $callback The callback to invoke.
-     *
-     * @return TimerInterface
+     * {@inheritdoc}
      */
     public function addPeriodicTimer($interval, $callback)
     {
@@ -164,9 +136,7 @@ class LibEventLoop implements LoopInterface
     }
 
     /**
-     * Cancel a pending timer.
-     *
-     * @param TimerInterface $timer The timer to cancel.
+     * {@inheritdoc}
      */
     public function cancelTimer(TimerInterface $timer)
     {
@@ -181,11 +151,7 @@ class LibEventLoop implements LoopInterface
     }
 
     /**
-     * Check if a given timer is active.
-     *
-     * @param TimerInterface $timer The timer to check.
-     *
-     * @return boolean True if the timer is still enqueued for execution.
+     * {@inheritdoc}
      */
     public function isTimerActive(TimerInterface $timer)
     {
@@ -193,12 +159,7 @@ class LibEventLoop implements LoopInterface
     }
 
     /**
-     * Schedule a callback to be invoked on the next tick of the event loop.
-     *
-     * Callbacks are guaranteed to be executed in the order they are enqueued,
-     * before any timer or stream events.
-     *
-     * @param callable $listener The callback to invoke.
+     * {@inheritdoc}
      */
     public function nextTick(callable $listener)
     {
@@ -206,9 +167,7 @@ class LibEventLoop implements LoopInterface
     }
 
     /**
-     * Perform a single iteration of the event loop.
-     *
-     * @param boolean $blocking True if loop should block waiting for next event.
+     * {@inheritdoc}
      */
     public function tick()
     {
@@ -218,7 +177,7 @@ class LibEventLoop implements LoopInterface
     }
 
     /**
-     * Run the event loop until there are no more tasks to perform.
+     * {@inheritdoc}
      */
     public function run()
     {
@@ -237,7 +196,7 @@ class LibEventLoop implements LoopInterface
     }
 
     /**
-     * Instruct a running event loop to stop.
+     * {@inheritdoc}
      */
     public function stop()
     {
@@ -296,7 +255,6 @@ class LibEventLoop implements LoopInterface
 
             event_base_set($event, $this->eventBase);
         }
-
 
         event_add($event);
     }
