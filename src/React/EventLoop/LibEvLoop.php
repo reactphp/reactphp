@@ -180,7 +180,6 @@ class LibEvLoop implements LoopInterface
         $this->running = true;
 
         while ($this->running) {
-
             $this->nextTickQueue->tick();
 
             if (!$this->readEvents && !$this->writeEvents && !$this->timerEvents->count()) {
