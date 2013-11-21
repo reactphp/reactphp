@@ -18,16 +18,16 @@ class LibEvLoop implements LoopInterface
 {
     private $loop;
     private $nextTickQueue;
-    private $timers;
-    private $readEvents = array();
-    private $writeEvents = array();
+    private $timerEvents;
+    private $readEvents = [];
+    private $writeEvents = [];
     private $running;
 
     public function __construct()
     {
         $this->loop = new EventLoop();
         $this->nextTickQueue = new NextTickQueue($this);
-        $this->timers = new SplObjectStorage();
+        $this->timerEvents = new SplObjectStorage();
     }
 
     /**
@@ -35,7 +35,14 @@ class LibEvLoop implements LoopInterface
      */
     public function addReadStream($stream, callable $listener)
     {
-        $this->addStream($stream, $listener, IOEvent::READ);
+        $callback = function () use ($stream, $listener) {
+            call_user_func($listener, $stream, $this);
+        };
+
+        $event = new IOEvent($callback, $stream, IOEvent::READ);
+        $this->loop->add($event);
+
+        $this->readEvents[(int) $stream] = $event;
     }
 
     /**
@@ -43,7 +50,14 @@ class LibEvLoop implements LoopInterface
      */
     public function addWriteStream($stream, callable $listener)
     {
-        $this->addStream($stream, $listener, IOEvent::WRITE);
+        $callback = function () use ($stream, $listener) {
+            call_user_func($listener, $stream, $this);
+        };
+
+        $event = new IOEvent($callback, $stream, IOEvent::WRITE);
+        $this->loop->add($event);
+
+        $this->writeEvents[(int) $stream] = $event;
     }
 
     /**
@@ -51,9 +65,11 @@ class LibEvLoop implements LoopInterface
      */
     public function removeReadStream($stream)
     {
-        if (isset($this->readEvents[(int) $stream])) {
-            $this->readEvents[(int) $stream]->stop();
-            unset($this->readEvents[(int) $stream]);
+        $key = (int) $stream;
+
+        if (isset($this->readEvents[$key])) {
+            $this->readEvents[$key]->stop();
+            unset($this->readEvents[$key]);
         }
     }
 
@@ -62,9 +78,11 @@ class LibEvLoop implements LoopInterface
      */
     public function removeWriteStream($stream)
     {
-        if (isset($this->writeEvents[(int) $stream])) {
-            $this->writeEvents[(int) $stream]->stop();
-            unset($this->writeEvents[(int) $stream]);
+        $key = (int) $stream;
+
+        if (isset($this->writeEvents[$key])) {
+            $this->writeEvents[$key]->stop();
+            unset($this->writeEvents[$key]);
         }
     }
 
@@ -83,7 +101,18 @@ class LibEvLoop implements LoopInterface
     public function addTimer($interval, callable $callback)
     {
         $timer = new Timer($this, $interval, $callback, false);
-        $this->setupTimer($timer);
+
+        $callback = function () use ($timer) {
+            call_user_func($timer->getCallback(), $timer);
+
+            if ($this->isTimerActive($timer)) {
+                $this->cancelTimer($timer);
+            }
+        };
+
+        $event = new TimerEvent($callback, $timer->getInterval());
+        $this->timerEvents->attach($timer, $event);
+        $this->loop->add($event);
 
         return $timer;
     }
@@ -94,7 +123,14 @@ class LibEvLoop implements LoopInterface
     public function addPeriodicTimer($interval, callable $callback)
     {
         $timer = new Timer($this, $interval, $callback, true);
-        $this->setupTimer($timer);
+
+        $callback = function () use ($timer) {
+            call_user_func($timer->getCallback(), $timer);
+        };
+
+        $event = new TimerEvent($callback, $interval, $interval);
+        $this->timerEvents->attach($timer, $event);
+        $this->loop->add($event);
 
         return $timer;
     }
@@ -104,9 +140,9 @@ class LibEvLoop implements LoopInterface
      */
     public function cancelTimer(TimerInterface $timer)
     {
-        if (isset($this->timers[$timer])) {
-            $this->loop->remove($this->timers[$timer]);
-            $this->timers->detach($timer);
+        if (isset($this->timerEvents[$timer])) {
+            $this->loop->remove($this->timerEvents[$timer]);
+            $this->timerEvents->detach($timer);
         }
     }
 
@@ -115,7 +151,7 @@ class LibEvLoop implements LoopInterface
      */
     public function isTimerActive(TimerInterface $timer)
     {
-        return $this->timers->contains($timer);
+        return $this->timerEvents->contains($timer);
     }
 
     /**
@@ -147,11 +183,7 @@ class LibEvLoop implements LoopInterface
 
             $this->nextTickQueue->tick();
 
-            if (
-                !$this->readEvents
-                && !$this->writeEvents
-                && !$this->timers->count()
-            ) {
+            if (!$this->readEvents && !$this->writeEvents && !$this->timerEvents->count()) {
                 break;
             }
 
@@ -165,56 +197,5 @@ class LibEvLoop implements LoopInterface
     public function stop()
     {
         $this->running = false;
-    }
-
-    private function addStream($stream, $listener, $flags)
-    {
-        $listener = $this->wrapStreamListener($stream, $listener, $flags);
-        $event = new IOEvent($listener, $stream, $flags);
-        $this->loop->add($event);
-
-        if (($flags & IOEvent::READ) === $flags) {
-            $this->readEvents[(int) $stream] = $event;
-        } elseif (($flags & IOEvent::WRITE) === $flags) {
-            $this->writeEvents[(int) $stream] = $event;
-        }
-    }
-
-    private function wrapStreamListener($stream, $listener, $flags)
-    {
-        if (($flags & IOEvent::READ) === $flags) {
-            $removeCallback = array($this, 'removeReadStream');
-        } elseif (($flags & IOEvent::WRITE) === $flags) {
-            $removeCallback = array($this, 'removeWriteStream');
-        }
-
-        return function ($event) use ($stream, $listener, $removeCallback) {
-            call_user_func($listener, $stream);
-        };
-    }
-
-    private function setupTimer(TimerInterface $timer)
-    {
-        $dummyCallback = function () {};
-        $interval = $timer->getInterval();
-
-        if ($timer->isPeriodic()) {
-            $libevTimer = new TimerEvent($dummyCallback, $interval, $interval);
-        } else {
-            $libevTimer = new TimerEvent($dummyCallback, $interval);
-        }
-
-        $libevTimer->setCallback(function () use ($timer) {
-            call_user_func($timer->getCallback(), $timer);
-
-            if (!$timer->isPeriodic()) {
-                $timer->cancel();
-            }
-        });
-
-        $this->timers->attach($timer, $libevTimer);
-        $this->loop->add($libevTimer);
-
-        return $timer;
     }
 }
