@@ -164,7 +164,8 @@ class ExtEventLoop implements LoopInterface
     {
         $this->nextTickQueue->tick();
 
-        $this->eventBase->loop(EventBase::LOOP_ONCE | EventBase::LOOP_NONBLOCK);
+        // @-suppression: https://github.com/reactphp/react/pull/234#discussion-diff-7759616R226
+        @$this->eventBase->loop(EventBase::LOOP_ONCE | EventBase::LOOP_NONBLOCK);
     }
 
     /**
@@ -181,7 +182,8 @@ class ExtEventLoop implements LoopInterface
                 break;
             }
 
-            $this->eventBase->loop(EventBase::LOOP_ONCE);
+            // @-suppression: https://github.com/reactphp/react/pull/234#discussion-diff-7759616R226
+            @$this->eventBase->loop(EventBase::LOOP_ONCE);
         }
     }
 

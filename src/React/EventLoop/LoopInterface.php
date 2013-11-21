@@ -91,7 +91,7 @@ interface LoopInterface
      * Callbacks are guaranteed to be executed in the order they are enqueued,
      * before any timer or stream events.
      *
-     * @param callable $listner The callback to invoke.
+     * @param callable $listener The callback to invoke.
      */
     public function nextTick(callable $listener);
 
