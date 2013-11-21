@@ -19,20 +19,26 @@ class Connector implements ConnectorInterface
         $this->resolver = $resolver;
     }
 
-    public function create($host, $port)
+    public function create($host, $port, $persistent = false)
     {
         return $this
             ->resolveHostname($host)
-            ->then(function ($address) use ($port) {
-                return $this->createSocketForAddress($address, $port);
+            ->then(function ($address) use ($port, $persistent) {
+                return $this->createSocketForAddress($address, $port, $persistent);
             });
     }
 
-    public function createSocketForAddress($address, $port)
+    public function createSocketForAddress($address, $port, $persistent = false)
     {
         $url = $this->getSocketUrl($address, $port);
 
-        $socket = stream_socket_client($url, $errno, $errstr, 0, STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
+        $flags = STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT;
+
+        if ($persistent) {
+            $flags |= STREAM_CLIENT_PERSISTENT;
+        }
+
+        $socket = stream_socket_client($url, $errno, $errstr, 0, $flags);
 
         if (!$socket) {
             return When::reject(new \RuntimeException(
