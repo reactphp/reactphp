@@ -86,4 +86,13 @@ abstract class AbstractTimerTest extends TestCase
 
         $this->assertFalse($loop->isTimerActive($timer));
     }
+
+    public function testMinimumIntervalOneMicrosecond()
+    {
+        $loop = $this->createLoop();
+
+        $timer = $loop->addTimer(0, function () {});
+
+        $this->assertEquals(0.000001, $timer->getInterval());
+    }
 }
