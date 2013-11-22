@@ -28,12 +28,22 @@ class Connector implements ConnectorInterface
             });
     }
 
+    public function createFrom($socket)
+    {
+        return $this->processSocket($socket);
+    }
+
     public function createSocketForAddress($address, $port)
     {
         $url = $this->getSocketUrl($address, $port);
 
         $socket = stream_socket_client($url, $errno, $errstr, 0, STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
 
+        return $this->processSocket($socket);
+    }
+
+    protected function processSocket($socket)
+    {
         if (!$socket) {
             return When::reject(new \RuntimeException(
                 sprintf("connection to %s:%d failed: %s", $address, $port, $errstr),
