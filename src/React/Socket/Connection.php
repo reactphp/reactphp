@@ -2,19 +2,14 @@
 
 namespace React\Socket;
 
-use Evenement\EventEmitter;
-use React\EventLoop\LoopInterface;
-use React\Stream\WritableStreamInterface;
-use React\Stream\Buffer;
 use React\Stream\Stream;
-use React\Stream\Util;
 
 class Connection extends Stream implements ConnectionInterface
 {
     public function handleData($stream)
     {
-        $data = fread($stream, $this->bufferSize);
-        if ('' === $data || false === $data) {
+        $data = stream_socket_recvfrom($stream, $this->bufferSize);
+        if ('' === $data || false === $data || feof($stream)) {
             $this->end();
         } else {
             $this->emit('data', array($data, $this));
