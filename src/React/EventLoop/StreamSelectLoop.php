@@ -193,7 +193,7 @@ class StreamSelectLoop implements LoopInterface
     /**
      * Wait/check for stream activity, or until the next timer is due.
      */
-    protected function waitForStreamActivity($timeout)
+    private function waitForStreamActivity($timeout)
     {
         $read  = $this->readStreams;
         $write = $this->writeStreams;

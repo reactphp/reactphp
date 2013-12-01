@@ -200,7 +200,7 @@ class ExtEventLoop implements LoopInterface
      *
      * @param TimerInterface $timer
      */
-    protected function scheduleTimer(TimerInterface $timer)
+    private function scheduleTimer(TimerInterface $timer)
     {
         $flags = Event::TIMEOUT;
 
@@ -220,7 +220,7 @@ class ExtEventLoop implements LoopInterface
      * @param stream  $stream
      * @param integer $flag   Event::READ or Event::WRITE
      */
-    protected function subscribeStreamEvent($stream, $flag)
+    private function subscribeStreamEvent($stream, $flag)
     {
         $key = (int) $stream;
 
@@ -247,7 +247,7 @@ class ExtEventLoop implements LoopInterface
      * @param stream  $stream
      * @param integer $flag   Event::READ or Event::WRITE
      */
-    protected function unsubscribeStreamEvent($stream, $flag)
+    private function unsubscribeStreamEvent($stream, $flag)
     {
         $key = (int) $stream;
 
@@ -273,7 +273,7 @@ class ExtEventLoop implements LoopInterface
      * to prevent "Cannot destroy active lambda function" fatal error from
      * the event extension.
      */
-    protected function createTimerCallback()
+    private function createTimerCallback()
     {
         $this->timerCallback = function ($_, $_, $timer) {
             call_user_func($timer->getCallback(), $timer);
@@ -291,7 +291,7 @@ class ExtEventLoop implements LoopInterface
      * to prevent "Cannot destroy active lambda function" fatal error from
      * the event extension.
      */
-    protected function createStreamCallback()
+    private function createStreamCallback()
     {
         $this->streamCallback = function ($stream, $flags) {
             $key = (int) $stream;
