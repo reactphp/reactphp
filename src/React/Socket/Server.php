@@ -30,7 +30,7 @@ class Server extends EventEmitter implements ServerInterface
         }
         stream_set_blocking($this->master, 0);
 
-        $this->loop->addReadStream($this->master, function ($master) {
+        $this->loop->onReadable($this->master, function ($master) {
             $newSocket = stream_socket_accept($master);
             if (false === $newSocket) {
                 $this->emit('error', array(new \RuntimeException('Error accepting new connection')));
@@ -39,6 +39,8 @@ class Server extends EventEmitter implements ServerInterface
             }
             $this->handleConnection($newSocket);
         });
+
+        $this->loop->enableRead($this->master);
     }
 
     public function handleConnection($socket)
@@ -59,7 +61,7 @@ class Server extends EventEmitter implements ServerInterface
 
     public function shutdown()
     {
-        $this->loop->removeStream($this->master);
+        $this->loop->remove($this->master);
         fclose($this->master);
         $this->removeAllListeners();
     }

@@ -30,6 +30,8 @@ class Stream extends EventEmitter implements ReadableStreamInterface, WritableSt
             $this->emit('drain');
         });
 
+        $this->loop->onReadable($this->stream, array($this, 'handleData'));
+
         $this->resume();
     }
 
@@ -45,12 +47,12 @@ class Stream extends EventEmitter implements ReadableStreamInterface, WritableSt
 
     public function pause()
     {
-        $this->loop->removeReadStream($this->stream);
+        $this->loop->enableWrite($this->stream);
     }
 
     public function resume()
     {
-        $this->loop->addReadStream($this->stream, array($this, 'handleData'));
+        $this->loop->enableRead($this->stream);
     }
 
     public function write($data)
@@ -75,7 +77,7 @@ class Stream extends EventEmitter implements ReadableStreamInterface, WritableSt
 
         $this->emit('end', array($this));
         $this->emit('close', array($this));
-        $this->loop->removeStream($this->stream);
+        $this->loop->remove($this->stream);
         $this->buffer->removeAllListeners();
         $this->removeAllListeners();
 

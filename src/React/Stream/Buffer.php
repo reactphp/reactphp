@@ -31,6 +31,8 @@ class Buffer extends EventEmitter implements WritableStreamInterface
         if (is_resource($stream)) {
             $this->meta = stream_get_meta_data($stream);
         }
+
+        $this->loop->onWritable($this->stream, array($this, 'handleWrite'));
     }
 
     public function isWritable()
@@ -49,7 +51,7 @@ class Buffer extends EventEmitter implements WritableStreamInterface
         if (!$this->listening) {
             $this->listening = true;
 
-            $this->loop->addWriteStream($this->stream, array($this, 'handleWrite'));
+            $this->loop->enableWrite($this->stream);
         }
 
         $belowSoftLimit = strlen($this->data) < $this->softLimit;
@@ -115,7 +117,7 @@ class Buffer extends EventEmitter implements WritableStreamInterface
         $this->data = (string) substr($this->data, $sent);
 
         if (0 === strlen($this->data)) {
-            $this->loop->removeWriteStream($this->stream);
+            $this->loop->disableWrite($this->stream);
             $this->listening = false;
 
             $this->emit('full-drain');
