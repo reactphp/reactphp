@@ -22,53 +22,65 @@ class StreamSelectLoop implements LoopInterface
         $this->timers = new Timers();
     }
 
-    public function addReadStream($stream, $listener)
+    public function onReadable($stream, callable $listener)
     {
         $id = (int) $stream;
 
-        if (!isset($this->readStreams[$id])) {
-            $this->readStreams[$id] = $stream;
-            $this->readListeners[$id] = $listener;
+        if (isset($this->readListeners[$id])) {
+            throw new \RuntimeException(sprintf('Stream %s already has a read listener.', $id));
         }
+
+        $this->readListeners[$id] = $listener;
     }
 
-    public function addWriteStream($stream, $listener)
+    public function enableRead($stream)
+    {
+        $id = (int) $stream;
+        $this->readStreams[$id] = $stream;
+    }
+
+    public function disableRead($stream)
+    {
+        $id = (int) $stream;
+        unset($this->readStreams[$id]);
+    }
+
+    public function onWritable($stream, callable $listener)
     {
         $id = (int) $stream;
 
-        if (!isset($this->writeStreams[$id])) {
-            $this->writeStreams[$id] = $stream;
-            $this->writeListeners[$id] = $listener;
+        if (isset($this->writeListeners[$id])) {
+            throw new \RuntimeException(sprintf('Stream %s already has a write listener.', $id));
         }
+
+        $this->writeListeners[$id] = $listener;
     }
 
-    public function removeReadStream($stream)
+    public function enableWrite($stream)
+    {
+        $id = (int) $stream;
+        $this->writeStreams[$id] = $stream;
+    }
+
+    public function disableWrite($stream)
+    {
+        $id = (int) $stream;
+        unset($this->writeStreams[$id]);
+    }
+
+    public function remove($stream)
     {
         $id = (int) $stream;
 
         unset(
             $this->readStreams[$id],
-            $this->readListeners[$id]
-        );
-    }
-
-    public function removeWriteStream($stream)
-    {
-        $id = (int) $stream;
-
-        unset(
+            $this->readListeners[$id],
             $this->writeStreams[$id],
             $this->writeListeners[$id]
         );
     }
 
-    public function removeStream($stream)
-    {
-        $this->removeReadStream($stream);
-        $this->removeWriteStream($stream);
-    }
-
-    public function addTimer($interval, $callback)
+    public function addTimer($interval, callable $callback)
     {
         $timer = new Timer($this, $interval, $callback, false);
         $this->timers->add($timer);
@@ -76,7 +88,7 @@ class StreamSelectLoop implements LoopInterface
         return $timer;
     }
 
-    public function addPeriodicTimer($interval, $callback)
+    public function addPeriodicTimer($interval, callable $callback)
     {
         $timer = new Timer($this, $interval, $callback, true);
         $this->timers->add($timer);
@@ -141,23 +153,27 @@ class StreamSelectLoop implements LoopInterface
         if (stream_select($read, $write, $except, 0, $timeout) > 0) {
             if ($read) {
                 foreach ($read as $stream) {
-                    if (!isset($this->readListeners[(int) $stream])) {
+                    $id = (int) $stream;
+
+                    if (!isset($this->readListeners[$id])) {
                         continue;
                     }
 
-                    $listener = $this->readListeners[(int) $stream];
-                    call_user_func($listener, $stream, $this);
+                    $listener = $this->readListeners[$id];
+                    $listener($stream, $this);
                 }
             }
 
             if ($write) {
                 foreach ($write as $stream) {
-                    if (!isset($this->writeListeners[(int) $stream])) {
+                    $id = (int) $stream;
+
+                    if (!isset($this->writeListeners[$id])) {
                         continue;
                     }
 
-                    $listener = $this->writeListeners[(int) $stream];
-                    call_user_func($listener, $stream, $this);
+                    $listener = $this->writeListeners[$id];
+                    $listener($stream, $this);
                 }
             }
         }
