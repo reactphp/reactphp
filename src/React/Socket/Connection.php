@@ -8,6 +8,8 @@ class Connection extends Stream implements ConnectionInterface
 {
     public function handleData($stream)
     {
+        // Socket is raw, not using fread is it's interceptable by filters
+        // See issues #192, #209, and #240
         $data = stream_socket_recvfrom($stream, $this->bufferSize);
         if ('' === $data || false === $data || feof($stream)) {
             $this->end();
