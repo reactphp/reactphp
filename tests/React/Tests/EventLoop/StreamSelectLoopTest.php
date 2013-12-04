@@ -11,8 +11,20 @@ class StreamSelectLoopTest extends AbstractLoopTest
         return new StreamSelectLoop();
     }
 
-    public function testStreamSelectConstructor()
+    public function testStreamSelectTimeoutEmulation()
     {
-        $loop = new StreamSelectLoop();
+        $this->loop->addTimer(
+            0.05,
+            $this->expectCallableOnce()
+        );
+
+        $start = microtime(true);
+
+        $this->loop->run();
+
+        $end = microtime(true);
+        $interval = $end - $start;
+
+        $this->assertGreaterThan(0.04, $interval);
     }
 }

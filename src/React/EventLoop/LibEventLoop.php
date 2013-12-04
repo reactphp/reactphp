@@ -2,221 +2,322 @@
 
 namespace React\EventLoop;
 
-use SplObjectStorage;
+use React\EventLoop\Tick\NextTickQueue;
 use React\EventLoop\Timer\Timer;
 use React\EventLoop\Timer\TimerInterface;
+use SplObjectStorage;
 
+/**
+ * An ext-libevent based event-loop.
+ */
 class LibEventLoop implements LoopInterface
 {
-    const MIN_TIMER_RESOLUTION = 0.001;
+    const MICROSECONDS_PER_SECOND = 1000000;
 
-    private $base;
-    private $callback;
-    private $timers;
-
-    private $events = array();
-    private $flags = array();
-    private $readCallbacks = array();
-    private $writeCallbacks = array();
+    private $eventBase;
+    private $nextTickQueue;
+    private $timerCallback;
+    private $timerEvents;
+    private $streamCallback;
+    private $streamEvents = [];
+    private $streamFlags = [];
+    private $readListeners = [];
+    private $writeListeners = [];
+    private $running;
 
     public function __construct()
     {
-        $this->base = event_base_new();
-        $this->callback = $this->createLibeventCallback();
-        $this->timers = new SplObjectStorage();
+        $this->eventBase = event_base_new();
+        $this->nextTickQueue = new NextTickQueue($this);
+        $this->timerEvents = new SplObjectStorage();
+
+        $this->createTimerCallback();
+        $this->createStreamCallback();
     }
 
-    protected function createLibeventCallback()
+    /**
+     * {@inheritdoc}
+     */
+    public function addReadStream($stream, callable $listener)
     {
-        $readCallbacks = &$this->readCallbacks;
-        $writeCallbacks = &$this->writeCallbacks;
+        $key = (int) $stream;
 
-        return function ($stream, $flags, $loop) use (&$readCallbacks, &$writeCallbacks) {
-            $id = (int) $stream;
-
-            try {
-                if (($flags & EV_READ) === EV_READ && isset($readCallbacks[$id])) {
-                    call_user_func($readCallbacks[$id], $stream, $loop);
-                }
-
-                if (($flags & EV_WRITE) === EV_WRITE && isset($writeCallbacks[$id])) {
-                    call_user_func($writeCallbacks[$id], $stream, $loop);
-                }
-            } catch (\Exception $ex) {
-                // If one of the callbacks throws an exception we must stop the loop
-                // otherwise libevent will swallow the exception and go berserk.
-                $loop->stop();
-
-                throw $ex;
-            }
-        };
-    }
-
-    public function addReadStream($stream, $listener)
-    {
-        $this->addStreamEvent($stream, EV_READ, 'read', $listener);
-    }
-
-    public function addWriteStream($stream, $listener)
-    {
-        $this->addStreamEvent($stream, EV_WRITE, 'write', $listener);
-    }
-
-    protected function addStreamEvent($stream, $eventClass, $type, $listener)
-    {
-        $id = (int) $stream;
-
-        if ($existing = isset($this->events[$id])) {
-            if (($this->flags[$id] & $eventClass) === $eventClass) {
-                return;
-            }
-            $event = $this->events[$id];
-            event_del($event);
-        } else {
-            $event = event_new();
+        if (!isset($this->readListeners[$key])) {
+            $this->readListeners[$key] = $listener;
+            $this->subscribeStreamEvent($stream, EV_READ);
         }
-
-        $flags = isset($this->flags[$id]) ? $this->flags[$id] | $eventClass : $eventClass;
-        event_set($event, $stream, $flags | EV_PERSIST, $this->callback, $this);
-
-        if (!$existing) {
-            // Set the base only if $event has been newly created or be ready for segfaults.
-            event_base_set($event, $this->base);
-        }
-
-        event_add($event);
-
-        $this->events[$id] = $event;
-        $this->flags[$id] = $flags;
-        $this->{"{$type}Callbacks"}[$id] = $listener;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function addWriteStream($stream, callable $listener)
+    {
+        $key = (int) $stream;
+
+        if (!isset($this->writeListeners[$key])) {
+            $this->writeListeners[$key] = $listener;
+            $this->subscribeStreamEvent($stream, EV_WRITE);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function removeReadStream($stream)
     {
-        $this->removeStreamEvent($stream, EV_READ, 'read');
+        $key = (int) $stream;
+
+        if (isset($this->readListeners[$key])) {
+            unset($this->readListeners[$key]);
+            $this->unsubscribeStreamEvent($stream, EV_READ);
+        }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function removeWriteStream($stream)
     {
-        $this->removeStreamEvent($stream, EV_WRITE, 'write');
-    }
+        $key = (int) $stream;
 
-    protected function removeStreamEvent($stream, $eventClass, $type)
-    {
-        $id = (int) $stream;
-
-        if (isset($this->events[$id])) {
-            $flags = $this->flags[$id] & ~$eventClass;
-
-            if ($flags === 0) {
-                // Remove if stream is not subscribed to any event at this point.
-                return $this->removeStream($stream);
-            }
-
-            $event = $this->events[$id];
-
-            event_del($event);
-            event_free($event);
-            unset($this->{"{$type}Callbacks"}[$id]);
-
-            $event = event_new();
-            event_set($event, $stream, $flags | EV_PERSIST, $this->callback, $this);
-            event_base_set($event, $this->base);
-            event_add($event);
-
-            $this->events[$id] = $event;
-            $this->flags[$id] = $flags;
+        if (isset($this->writeListeners[$key])) {
+            unset($this->writeListeners[$key]);
+            $this->unsubscribeStreamEvent($stream, EV_WRITE);
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function removeStream($stream)
     {
-        $id = (int) $stream;
+        $key = (int) $stream;
 
-        if (isset($this->events[$id])) {
-            $event = $this->events[$id];
-
-            unset(
-                $this->events[$id],
-                $this->flags[$id],
-                $this->readCallbacks[$id],
-                $this->writeCallbacks[$id]
-            );
+        if (isset($this->streamEvents[$key])) {
+            $event = $this->streamEvents[$key];
 
             event_del($event);
             event_free($event);
+
+            unset(
+                $this->streamFlags[$key],
+                $this->streamEvents[$key],
+                $this->readListeners[$key],
+                $this->writeListeners[$key]
+            );
         }
     }
 
-    protected function addTimerInternal($interval, $callback, $periodic = false)
+    /**
+     * {@inheritdoc}
+     */
+    public function addTimer($interval, callable $callback)
     {
-        if ($interval < self::MIN_TIMER_RESOLUTION) {
-            throw new \InvalidArgumentException('Timer events do not support sub-millisecond timeouts.');
-        }
+        $timer = new Timer($this, $interval, $callback, false);
 
-        $timer = new Timer($this, $interval, $callback, $periodic);
-        $resource = event_new();
-
-        $timers = $this->timers;
-        $timers->attach($timer, $resource);
-
-        $callback = function () use ($timers, $timer, &$callback) {
-            if (isset($timers[$timer])) {
-                call_user_func($timer->getCallback(), $timer);
-
-                if ($timer->isPeriodic() && isset($timers[$timer])) {
-                    event_add($timers[$timer], $timer->getInterval() * 1000000);
-                } else {
-                    $timer->cancel();
-                }
-            }
-        };
-
-        event_timer_set($resource, $callback);
-        event_base_set($resource, $this->base);
-        event_add($resource, $interval * 1000000);
+        $this->scheduleTimer($timer);
 
         return $timer;
     }
 
-    public function addTimer($interval, $callback)
+    /**
+     * {@inheritdoc}
+     */
+    public function addPeriodicTimer($interval, callable $callback)
     {
-        return $this->addTimerInternal($interval, $callback);
+        $timer = new Timer($this, $interval, $callback, true);
+
+        $this->scheduleTimer($timer);
+
+        return $timer;
     }
 
-    public function addPeriodicTimer($interval, $callback)
-    {
-        return $this->addTimerInternal($interval, $callback, true);
-    }
-
+    /**
+     * {@inheritdoc}
+     */
     public function cancelTimer(TimerInterface $timer)
     {
-        if (isset($this->timers[$timer])) {
-            $resource = $this->timers[$timer];
-            event_del($resource);
-            event_free($resource);
+        if ($this->isTimerActive($timer)) {
+            $event = $this->timerEvents[$timer];
 
-            $this->timers->detach($timer);
+            event_del($event);
+            event_free($event);
+
+            $this->timerEvents->detach($timer);
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function isTimerActive(TimerInterface $timer)
     {
-        return $this->timers->contains($timer);
+        return $this->timerEvents->contains($timer);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function nextTick(callable $listener)
+    {
+        $this->nextTickQueue->add($listener);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function tick()
     {
-        event_base_loop($this->base, EVLOOP_ONCE | EVLOOP_NONBLOCK);
+        $this->nextTickQueue->tick();
+
+        event_base_loop($this->eventBase, EVLOOP_ONCE | EVLOOP_NONBLOCK);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function run()
     {
-        event_base_loop($this->base);
+        $this->running = true;
+
+        while ($this->running) {
+            $this->nextTickQueue->tick();
+
+            if (!$this->streamEvents && !$this->timerEvents->count()) {
+                break;
+            }
+
+            event_base_loop($this->eventBase, EVLOOP_ONCE);
+        }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function stop()
     {
-        event_base_loopexit($this->base);
+        $this->running = false;
+    }
+
+    /**
+     * Schedule a timer for execution.
+     *
+     * @param TimerInterface $timer
+     */
+    private function scheduleTimer(TimerInterface $timer)
+    {
+        $this->timerEvents[$timer] = $event = event_timer_new();
+
+        event_timer_set($event, $this->timerCallback, $timer);
+        event_base_set($event, $this->eventBase);
+        event_add($event, $timer->getInterval() * self::MICROSECONDS_PER_SECOND);
+    }
+
+    /**
+     * Create a new ext-libevent event resource, or update the existing one.
+     *
+     * @param stream  $stream
+     * @param integer $flag   EV_READ or EV_WRITE
+     */
+    private function subscribeStreamEvent($stream, $flag)
+    {
+        $key = (int) $stream;
+
+        if (isset($this->streamEvents[$key])) {
+            $event = $this->streamEvents[$key];
+            $flags = $this->streamFlags[$key] |= $flag;
+
+            event_del($event);
+            event_set($event, $stream, EV_PERSIST | $flags, $this->streamCallback);
+        } else {
+            $event = event_new();
+
+            event_set($event, $stream, EV_PERSIST | $flag, $this->streamCallback);
+            event_base_set($event, $this->eventBase);
+
+            $this->streamEvents[$key] = $event;
+            $this->streamFlags[$key] = $flag;
+        }
+
+        event_add($event);
+    }
+
+    /**
+     * Update the ext-libevent event resource for this stream to stop listening to
+     * the given event type, or remove it entirely if it's no longer needed.
+     *
+     * @param stream  $stream
+     * @param integer $flag   EV_READ or EV_WRITE
+     */
+    private function unsubscribeStreamEvent($stream, $flag)
+    {
+        $key = (int) $stream;
+
+        $flags = $this->streamFlags[$key] &= ~$flag;
+
+        if (0 === $flags) {
+            $this->removeStream($stream);
+
+            return;
+        }
+
+        $event = $this->streamEvents[$key];
+
+        event_del($event);
+        event_set($event, $stream, EV_PERSIST | $flags, $this->streamCallback);
+        event_add($event);
+    }
+
+    /**
+     * Create a callback used as the target of timer events.
+     *
+     * A reference is kept to the callback for the lifetime of the loop
+     * to prevent "Cannot destroy active lambda function" fatal error from
+     * the event extension.
+     */
+    private function createTimerCallback()
+    {
+        $this->timerCallback = function ($_, $_, $timer) {
+            call_user_func($timer->getCallback(), $timer);
+
+            // Timer already cancelled ...
+            if (!$this->isTimerActive($timer)) {
+                return;
+
+            // Reschedule periodic timers ...
+            } elseif ($timer->isPeriodic()) {
+                event_add(
+                    $this->timerEvents[$timer],
+                    $timer->getInterval() * self::MICROSECONDS_PER_SECOND
+                );
+
+            // Clean-up one shot timers ...
+            } else {
+                $this->cancelTimer($timer);
+            }
+        };
+    }
+
+    /**
+     * Create a callback used as the target of stream events.
+     *
+     * A reference is kept to the callback for the lifetime of the loop
+     * to prevent "Cannot destroy active lambda function" fatal error from
+     * the event extension.
+     */
+    private function createStreamCallback()
+    {
+        $this->streamCallback = function ($stream, $flags) {
+            $key = (int) $stream;
+
+            if (EV_READ === (EV_READ & $flags) && isset($this->readListeners[$key])) {
+                call_user_func($this->readListeners[$key], $stream, $this);
+            }
+
+            if (EV_WRITE === (EV_WRITE & $flags) && isset($this->writeListeners[$key])) {
+                call_user_func($this->writeListeners[$key], $stream, $this);
+            }
+        };
     }
 }
