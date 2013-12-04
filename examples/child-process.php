@@ -1,27 +1,25 @@
 <?php
 
-    require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
-    $loop = React\EventLoop\Factory::create();
+$loop = React\EventLoop\Factory::create();
 
-    $process = new React\ChildProcess\Process('php child-child-bitch.php');
+$process = new React\ChildProcess\Process('php child-child.php');
 
-    $process->on('exit', function($exitCode, $termSignal) {
-        echo "Child exit()\n";
+$process->on('exit', function($exitCode, $termSignal) {
+    echo "Child exit\n";
+});
+
+$loop->addTimer(0.001, function($timer) use ($process) {
+    $process->start($timer->getLoop());
+
+    $process->stdout->on('data', function($output) {
+        echo "Child script says: {$output}";
     });
+});
 
-    $loop->addTimer(0.001, function($timer) use ($process) {
-        $process->start($timer->getLoop());
+$loop->addPeriodicTimer(5, function($timer) {
+    echo "Parent cannot be blocked by child\n";
+});
 
-        $process->stdout->on('data', function($output) {
-            echo "child bitch says what?: {$output}";
-        });
-    });
-
-    $loop->addPeriodicTimer(5, function($timer) {
-        echo "Parent can not be blocked by puny child!\n";
-    });
-
-    $loop->run();
-
-    echo "Parent is done\n";
+$loop->run();
