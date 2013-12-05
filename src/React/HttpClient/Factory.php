@@ -13,7 +13,7 @@ class Factory
     {
         $connector = new Connector($loop, $resolver);
         $secureConnector = new SecureConnector($connector, $loop);
-        return new Client($loop, $connector, $secureConnector);
+        return new Client($connector, $secureConnector);
     }
 }
 

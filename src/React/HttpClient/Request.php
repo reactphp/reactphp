@@ -22,7 +22,6 @@ class Request extends EventEmitter implements WritableStreamInterface
     const STATE_HEAD_WRITTEN = 2;
     const STATE_END = 3;
 
-    private $loop;
     private $connector;
     private $requestData;
 
@@ -32,9 +31,8 @@ class Request extends EventEmitter implements WritableStreamInterface
     private $response;
     private $state = self::STATE_INIT;
 
-    public function __construct(LoopInterface $loop, ConnectorInterface $connector, RequestData $requestData)
+    public function __construct(ConnectorInterface $connector, RequestData $requestData)
     {
-        $this->loop = $loop;
         $this->connector = $connector;
         $this->requestData = $requestData;
     }
@@ -227,12 +225,10 @@ class Request extends EventEmitter implements WritableStreamInterface
     public function getResponseFactory()
     {
         if (null === $factory = $this->responseFactory) {
-            $loop = $this->loop;
             $stream = $this->stream;
 
-            $factory = function ($protocol, $version, $code, $reasonPhrase, $headers) use ($loop, $stream) {
+            $factory = function ($protocol, $version, $code, $reasonPhrase, $headers) use ($stream) {
                 return new Response(
-                    $loop,
                     $stream,
                     $protocol,
                     $version,

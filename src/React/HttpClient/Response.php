@@ -11,7 +11,6 @@ use React\Stream\WritableStreamInterface;
 
 class Response extends EventEmitter implements ReadableStreamInterface
 {
-    private $loop;
     private $stream;
     private $protocol;
     private $version;
@@ -20,9 +19,8 @@ class Response extends EventEmitter implements ReadableStreamInterface
     private $headers;
     private $readable = true;
 
-    public function __construct(LoopInterface $loop, Stream $stream, $protocol, $version, $code, $reasonPhrase, $headers)
+    public function __construct(Stream $stream, $protocol, $version, $code, $reasonPhrase, $headers)
     {
-        $this->loop = $loop;
         $this->stream = $stream;
         $this->protocol = $protocol;
         $this->version = $version;
