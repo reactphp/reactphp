@@ -47,7 +47,7 @@ nameserver 8.8.8.8
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $loop
             ->expects($this->once())
-            ->method('addReadStream')
+            ->method('onReadable')
             ->will($this->returnCallback(function ($stream, $listener) use (&$triggerListener) {
                 $triggerListener = function () use ($stream, $listener) {
                     call_user_func($listener, $stream);
