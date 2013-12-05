@@ -202,7 +202,7 @@ class LibEvLoop implements LoopInterface
     /**
      * {@inheritdoc}
      */
-    public function nextTick(callable $listener)
+    public function onNextTick(callable $listener)
     {
         $this->nextTickQueue->add($listener);
     }
