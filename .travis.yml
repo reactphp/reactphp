@@ -16,6 +16,7 @@ before_script:
               cd libevent-0.0.5 && phpize && ./configure && make && sudo make install;
               echo "extension=libevent.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`;
             fi"
+  - echo "yes" | pecl install event
   - composer self-update
   - composer install --dev --prefer-source
 

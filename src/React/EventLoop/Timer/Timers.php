@@ -4,12 +4,9 @@ namespace React\EventLoop\Timer;
 
 use SplObjectStorage;
 use SplPriorityQueue;
-use InvalidArgumentException;
 
 class Timers
 {
-    const MIN_RESOLUTION = 0.001;
-
     private $time;
     private $timers;
     private $scheduler;
@@ -33,11 +30,6 @@ class Timers
     public function add(TimerInterface $timer)
     {
         $interval = $timer->getInterval();
-
-        if ($interval < self::MIN_RESOLUTION) {
-            throw new InvalidArgumentException('Timer events do not support sub-millisecond timeouts.');
-        }
-
         $scheduledAt = $interval + $this->getTime();
 
         $this->timers->attach($timer, $scheduledAt);
@@ -56,13 +48,17 @@ class Timers
 
     public function getFirst()
     {
-        if ($this->scheduler->isEmpty()) {
-            return null;
+        while ($this->scheduler->count()) {
+            $timer = $this->scheduler->top();
+
+            if ($this->timers->contains($timer)) {
+                return $this->timers[$timer];
+            }
+
+            $this->scheduler->extract();
         }
 
-        $scheduledAt = $this->timers[$this->scheduler->top()];
-
-        return $scheduledAt;
+        return null;
     }
 
     public function isEmpty()
