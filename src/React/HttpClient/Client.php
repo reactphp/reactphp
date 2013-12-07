@@ -8,13 +8,11 @@ use React\SocketClient\ConnectorInterface;
 
 class Client
 {
-    private $loop;
     private $connectionManager;
     private $secureConnectionManager;
 
-    public function __construct(LoopInterface $loop, ConnectorInterface $connector, ConnectorInterface $secureConnector)
+    public function __construct(ConnectorInterface $connector, ConnectorInterface $secureConnector)
     {
-        $this->loop = $loop;
         $this->connector = $connector;
         $this->secureConnector = $secureConnector;
     }
@@ -23,7 +21,7 @@ class Client
     {
         $requestData = new RequestData($method, $url, $headers);
         $connectionManager = $this->getConnectorForScheme($requestData->getScheme());
-        return new Request($this->loop, $connectionManager, $requestData);
+        return new Request($connectionManager, $requestData);
 
     }
 

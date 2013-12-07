@@ -7,13 +7,10 @@ use React\Tests\Socket\TestCase;
 
 class ResponseTest extends TestCase
 {
-    private $loop;
     private $stream;
 
     public function setUp()
     {
-        $this->loop = $this->getMock('React\EventLoop\LoopInterface');
-
         $this->stream = $this->getMockbuilder('React\Stream\Stream')
             ->disableOriginalConstructor()
             ->getMock();
@@ -35,7 +32,7 @@ class ResponseTest extends TestCase
             ->method('on')
             ->with('end', $this->anything());
 
-        $response = new Response($this->loop, $this->stream, 'HTTP', '1.0', '200', 'OK', array('Content-Type' => 'text/plain'));
+        $response = new Response($this->stream, 'HTTP', '1.0', '200', 'OK', array('Content-Type' => 'text/plain'));
 
         $handler = $this->createCallableMock();
         $handler->expects($this->once())
@@ -63,7 +60,7 @@ class ResponseTest extends TestCase
     /** @test */
     public function closedResponseShouldNotBeResumedOrPaused()
     {
-        $response = new Response($this->loop, $this->stream, 'http', '1.0', '200', 'ok', array('content-type' => 'text/plain'));
+        $response = new Response($this->stream, 'http', '1.0', '200', 'ok', array('content-type' => 'text/plain'));
 
         $this->stream
             ->expects($this->never())
