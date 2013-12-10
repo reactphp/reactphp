@@ -5,7 +5,7 @@ namespace React\Dns\Query;
 use React\Cache\CacheInterface;
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;
-use React\Promise\When;
+use React\Promise;
 
 class RecordCache
 {
@@ -29,7 +29,7 @@ class RecordCache
                 $recordBag = unserialize($value);
 
                 if (null !== $expiredAt && $expiredAt <= $query->currentTime) {
-                    return When::reject();
+                    return Promise\reject();
                 }
 
                 return $recordBag->all();

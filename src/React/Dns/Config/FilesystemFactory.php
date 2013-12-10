@@ -3,8 +3,8 @@
 namespace React\Dns\Config;
 
 use React\EventLoop\LoopInterface;
+use React\Promise;
 use React\Promise\Deferred;
-use React\Promise\When;
 use React\Stream\Stream;
 
 class FilesystemFactory
@@ -38,13 +38,13 @@ class FilesystemFactory
         $config = new Config();
         $config->nameservers = $nameservers;
 
-        return When::resolve($config);
+        return Promise\resolve($config);
     }
 
     public function loadEtcResolvConf($filename)
     {
         if (!file_exists($filename)) {
-            return When::reject(new \InvalidArgumentException("The filename for /etc/resolv.conf given does not exist: $filename"));
+            return Promise\reject(new \InvalidArgumentException("The filename for /etc/resolv.conf given does not exist: $filename"));
         }
 
         try {
@@ -68,7 +68,7 @@ class FilesystemFactory
 
             return $deferred->promise();
         } catch (\Exception $e) {
-            return When::reject($e);
+            return Promise\reject($e);
         }
     }
 }

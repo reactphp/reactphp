@@ -4,7 +4,6 @@ namespace React\SocketClient;
 
 use React\EventLoop\LoopInterface;
 use React\Stream\Stream;
-use React\Promise\When;
 
 class SecureConnector implements ConnectorInterface
 {
