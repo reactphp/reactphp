@@ -6,7 +6,7 @@ use React\Dns\Resolver\Resolver;
 use React\Dns\Query\Query;
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;
-use React\Promise\When;
+use React\Promise;
 
 class ResolverTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,7 +24,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
                 $response->questions[] = new Record($query->name, $query->type, $query->class);
                 $response->answers[] = new Record($query->name, $query->type, $query->class, 3600, '178.79.169.131');
 
-                return When::resolve($response);
+                return Promise\resolve($response);
             }));
 
         $resolver = new Resolver('8.8.8.8:53', $executor);
@@ -45,7 +45,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
                 $response->questions[] = new Record($query->name, $query->type, $query->class);
                 $response->answers[] = new Record('foo.bar', $query->type, $query->class, 3600, '178.79.169.131');
 
-                return When::resolve($response);
+                return Promise\resolve($response);
             }));
 
         $errback = $this->expectCallableOnceWith($this->isInstanceOf('React\Dns\RecordNotFoundException'));
@@ -67,7 +67,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
                 $response->header->set('qr', 1);
                 $response->questions[] = new Record($query->name, $query->type, $query->class);
 
-                return When::resolve($response);
+                return Promise\resolve($response);
             }));
 
         $errback = $this->expectCallableOnceWith($this->isInstanceOf('React\Dns\RecordNotFoundException'));
@@ -91,7 +91,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
                 $response->header->set('qr', 1);
                 $response->questions[] = new Record($query->name, $query->type, $query->class);
 
-                return When::resolve($response);
+                return Promise\resolve($response);
             }));
 
         $errback = $this->expectCallableOnceWith($this->isInstanceOf('React\Dns\RecordNotFoundException'));
@@ -109,7 +109,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
             ->method('query')
             ->with($this->anything(), $this->isInstanceOf('React\Dns\Query\Query'))
             ->will($this->returnCallback(function ($nameserver, $query) {
-                return When::resolve();
+                return Promise\resolve();
             }));;
 
         $resolver = new Resolver('8.8.8.8:53', $executor);

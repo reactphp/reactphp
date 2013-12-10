@@ -4,7 +4,6 @@ namespace React\Dns\Query;
 
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;
-use React\Promise\When;
 
 class CachedExecutor implements ExecutorInterface
 {
