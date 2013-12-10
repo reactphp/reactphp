@@ -8,6 +8,7 @@ CHANGELOG
   * BC break: [HttpClient] Drop unused `Response::getBody()`
   * BC break: Bump minimum PHP version to PHP 5.4, remove 5.3 specific hacks
   * BC break: Remove `$loop` argument from `HttpClient`: `Client`, `Request`, `Response`
+  * BC break: Update to React/Promise 2.0
   * Bug fix: [Dns] Properly resolve CNAME aliases
   * Bug fix: [EventLoop] No error on removing non-existent streams (@clue)
   * Bug fix: [EventLoop] Do not silently remove feof listeners in `LibEvLoop`

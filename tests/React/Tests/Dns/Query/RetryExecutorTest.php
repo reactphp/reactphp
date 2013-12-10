@@ -7,7 +7,7 @@ use React\Dns\Query\Query;
 use React\Dns\Model\Message;
 use React\Dns\Query\TimeoutException;
 use React\Dns\Model\Record;
-use React\Promise\When;
+use React\Promise;
 
 class RetryExecutorTest extends \PHPUnit_Framework_TestCase
 {
@@ -45,10 +45,10 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
             ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'))
             ->will($this->onConsecutiveCalls(
                 $this->returnCallback(function ($domain, $query) {
-                    return When::reject(new TimeoutException("timeout"));
+                    return Promise\reject(new TimeoutException("timeout"));
                 }),
                 $this->returnCallback(function ($domain, $query) use ($response) {
-                    return When::resolve($response);
+                    return Promise\resolve($response);
                 })
             ));
 
@@ -78,7 +78,7 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
             ->method('query')
             ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'))
             ->will($this->returnCallback(function ($domain, $query) {
-                return When::reject(new TimeoutException("timeout"));
+                return Promise\reject(new TimeoutException("timeout"));
             }));
 
         $callback = $this->expectCallableNever();
@@ -107,7 +107,7 @@ class RetryExecutorTest extends \PHPUnit_Framework_TestCase
             ->method('query')
             ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'))
             ->will($this->returnCallback(function ($domain, $query) {
-                return When::reject(new \Exception);
+                return Promise\reject(new \Exception);
             }));
 
         $callback = $this->expectCallableNever();

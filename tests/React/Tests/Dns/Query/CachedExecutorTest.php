@@ -6,7 +6,7 @@ use React\Dns\Query\CachedExecutor;
 use React\Dns\Query\Query;
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;
-use React\Promise\When;
+use React\Promise;
 
 class CachedExecutorTest extends \PHPUnit_Framework_TestCase
 {
@@ -29,7 +29,7 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
         $cache
             ->expects($this->once())
             ->method('lookup')
-            ->will($this->returnValue(When::reject()));
+            ->will($this->returnValue(Promise\reject()));
         $cachedExecutor = new CachedExecutor($executor, $cache);
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
@@ -57,7 +57,7 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
             ->expects($this->at(0))
             ->method('lookup')
             ->with($this->isInstanceOf('React\Dns\Query\Query'))
-            ->will($this->returnValue(When::reject()));
+            ->will($this->returnValue(Promise\reject()));
         $cache
             ->expects($this->at(1))
             ->method('storeResponseMessage')
@@ -66,7 +66,7 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
             ->expects($this->at(2))
             ->method('lookup')
             ->with($this->isInstanceOf('React\Dns\Query\Query'))
-            ->will($this->returnValue(When::resolve($cachedRecords)));
+            ->will($this->returnValue(Promise\resolve($cachedRecords)));
 
         $cachedExecutor = new CachedExecutor($executor, $cache);
 
@@ -83,7 +83,7 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
             $response->questions[] = new Record($query->name, $query->type, $query->class);
             $response->answers[] = new Record($query->name, $query->type, $query->class, 3600, $address);
 
-            return When::resolve($response);
+            return Promise\resolve($response);
         });
     }
 

@@ -2,7 +2,6 @@
 
 namespace React\SocketClient;
 
-use React\Promise\ResolverInterface;
 use React\Promise\Deferred;
 use React\Stream\Stream;
 use React\EventLoop\LoopInterface;
@@ -55,7 +54,7 @@ class StreamEncryption
         $this->loop->addReadStream($socket, $toggleCrypto);
         $toggleCrypto();
 
-        return $deferred->then(function () use ($stream) {
+        return $deferred->promise()->then(function () use ($stream) {
             $stream->resume();
             return $stream;
         }, function($error) use ($stream) {
@@ -64,7 +63,7 @@ class StreamEncryption
         });
     }
 
-    public function toggleCrypto($socket, ResolverInterface $resolver, $toggle)
+    public function toggleCrypto($socket, Deferred $deferred, $toggle)
     {
         set_error_handler(array($this, 'handleError'));
         $result = stream_socket_enable_crypto($socket, $toggle, $this->method);
@@ -74,12 +73,12 @@ class StreamEncryption
             $this->loop->removeWriteStream($socket);
             $this->loop->removeReadStream($socket);
 
-            $resolver->resolve();
+            $deferred->resolve();
         } else if (false === $result) {
             $this->loop->removeWriteStream($socket);
             $this->loop->removeReadStream($socket);
 
-            $resolver->reject(new UnexpectedValueException(
+            $deferred->reject(new UnexpectedValueException(
                 sprintf("Unable to complete SSL/TLS handshake: %s", $this->errstr),
                 $this->errno
             ));
