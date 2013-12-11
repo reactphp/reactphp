@@ -1,0 +1,20 @@
+{
+    "name": "react/http-server",
+    "description": "Library for building an evented http server.",
+    "keywords": ["http"],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.3",
+        "guzzle/parser": "3.0.*",
+        "react/socket-server": "0.3.*"
+    },
+    "autoload": {
+        "psr-0": { "React\\Http\\Server": "" }
+    },
+    "target-dir": "React/Http/Server",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.3-dev"
+        }
+    }
+}

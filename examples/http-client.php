@@ -9,7 +9,7 @@ $loop = React\EventLoop\Factory::create();
 $dnsResolverFactory = new React\Dns\Resolver\Factory();
 $dnsResolver = $dnsResolverFactory->createCached('8.8.8.8', $loop);
 
-$factory = new React\HttpClient\Factory();
+$factory = new React\Http\Client\Factory();
 $client = $factory->create($loop, $dnsResolver);
 
 $request = $client->request('GET', 'https://api.github.com/repos/reactphp/react/commits');

@@ -5,7 +5,7 @@ namespace React\Tests\Stream;
 use React\Stream\CompositeStream;
 use React\Stream\ReadableStream;
 use React\Stream\WritableStream;
-use React\Tests\Socket\TestCase;
+use React\Tests\Socket\Server\TestCase;
 
 /**
  * @covers React\Stream\CompositeStream

@@ -263,7 +263,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
 
     private function createConnectionMock()
     {
-        $conn = $this->getMock('React\Socket\ConnectionInterface');
+        $conn = $this->getMock('React\Socket\Server\ConnectionInterface');
         $conn
             ->expects($this->any())
             ->method('on')
@@ -295,6 +295,6 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
 
     protected function createCallableMock()
     {
-        return $this->getMock('React\Tests\Socket\Stub\CallableStub');
+        return $this->getMock('React\Tests\Socket\Server\Stub\CallableStub');
     }
 }

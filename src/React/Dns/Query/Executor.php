@@ -8,7 +8,7 @@ use React\Dns\Protocol\Parser;
 use React\Dns\Protocol\BinaryDumper;
 use React\EventLoop\LoopInterface;
 use React\Promise\Deferred;
-use React\Socket\Connection;
+use React\Socket\Server\Connection;
 
 class Executor implements ExecutorInterface
 {

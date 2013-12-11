@@ -149,7 +149,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
 
     protected function createCallableMock()
     {
-        return $this->getMock('React\Tests\Socket\Stub\CallableStub');
+        return $this->getMock('React\Tests\Socket\Server\Stub\CallableStub');
     }
 
     private function createExecutorMock()

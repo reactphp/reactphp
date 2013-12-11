@@ -3,7 +3,7 @@
 namespace React\Tests\Cache;
 
 use React\Cache\ArrayCache;
-use React\Tests\Socket\TestCase;
+use React\Tests\Socket\Server\TestCase;
 
 class ArrayCacheTest extends TestCase
 {
