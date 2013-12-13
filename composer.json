@@ -9,7 +9,7 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "evenement/evenement": "1.0.*",
+        "evenement/evenement": "~2.0",
         "guzzle/parser": "~3.0",
         "react/promise": "~2.0"
     },
