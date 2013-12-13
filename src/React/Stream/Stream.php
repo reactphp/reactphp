@@ -27,7 +27,7 @@ class Stream extends EventEmitter implements ReadableStreamInterface, WritableSt
         });
 
         $this->buffer->on('drain', function () {
-            $this->emit('drain');
+            $this->emit('drain', array($this));
         });
 
         $this->resume();
