@@ -5,6 +5,7 @@ namespace React\EventLoop;
 use libev\EventLoop;
 use libev\IOEvent;
 use libev\TimerEvent;
+use React\EventLoop\Tick\FutureTickQueue;
 use React\EventLoop\Tick\NextTickQueue;
 use React\EventLoop\Timer\Timer;
 use React\EventLoop\Timer\TimerInterface;
@@ -18,6 +19,7 @@ class LibEvLoop implements LoopInterface
 {
     private $loop;
     private $nextTickQueue;
+    private $futureTickQueue;
     private $timerEvents;
     private $readEvents = [];
     private $writeEvents = [];
@@ -27,6 +29,7 @@ class LibEvLoop implements LoopInterface
     {
         $this->loop = new EventLoop();
         $this->nextTickQueue = new NextTickQueue($this);
+        $this->futureTickQueue = new FutureTickQueue($this);
         $this->timerEvents = new SplObjectStorage();
     }
 
@@ -165,9 +168,19 @@ class LibEvLoop implements LoopInterface
     /**
      * {@inheritdoc}
      */
+    public function futureTick(callable $listener)
+    {
+        $this->futureTickQueue->add($listener);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function tick()
     {
         $this->nextTickQueue->tick();
+
+        $this->futureTickQueue->tick();
 
         $this->loop->run(EventLoop::RUN_ONCE | EventLoop::RUN_NOWAIT);
     }
@@ -182,11 +195,16 @@ class LibEvLoop implements LoopInterface
         while ($this->running) {
             $this->nextTickQueue->tick();
 
-            if (!$this->readEvents && !$this->writeEvents && !$this->timerEvents->count()) {
+            $this->futureTickQueue->tick();
+
+            $flags = EventLoop::RUN_ONCE;
+            if (!$this->futureTickQueue->isEmpty()) {
+                $flags |= EventLoop::RUN_NOWAIT;
+            } elseif (!$this->readEvents && !$this->writeEvents && !$this->timerEvents->count()) {
                 break;
             }
 
-            $this->loop->run(EventLoop::RUN_ONCE);
+            $this->loop->run($flags);
         }
     }
 

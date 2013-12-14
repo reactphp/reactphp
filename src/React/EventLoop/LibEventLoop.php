@@ -4,6 +4,7 @@ namespace React\EventLoop;
 
 use Event;
 use EventBase;
+use React\EventLoop\Tick\FutureTickQueue;
 use React\EventLoop\Tick\NextTickQueue;
 use React\EventLoop\Timer\Timer;
 use React\EventLoop\Timer\TimerInterface;
@@ -18,6 +19,7 @@ class LibEventLoop implements LoopInterface
 
     private $eventBase;
     private $nextTickQueue;
+    private $futureTickQueue;
     private $timerCallback;
     private $timerEvents;
     private $streamCallback;
@@ -31,6 +33,7 @@ class LibEventLoop implements LoopInterface
     {
         $this->eventBase = event_base_new();
         $this->nextTickQueue = new NextTickQueue($this);
+        $this->futureTickQueue = new FutureTickQueue($this);
         $this->timerEvents = new SplObjectStorage();
 
         $this->createTimerCallback();
@@ -169,9 +172,19 @@ class LibEventLoop implements LoopInterface
     /**
      * {@inheritdoc}
      */
+    public function futureTick(callable $listener)
+    {
+        $this->futureTickQueue->add($listener);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function tick()
     {
         $this->nextTickQueue->tick();
+
+        $this->futureTickQueue->tick();
 
         event_base_loop($this->eventBase, EVLOOP_ONCE | EVLOOP_NONBLOCK);
     }
@@ -186,11 +199,16 @@ class LibEventLoop implements LoopInterface
         while ($this->running) {
             $this->nextTickQueue->tick();
 
-            if (!$this->streamEvents && !$this->timerEvents->count()) {
+            $this->futureTickQueue->tick();
+
+            $flags = EVLOOP_ONCE;
+            if (!$this->futureTickQueue->isEmpty()) {
+                $flags |= EVLOOP_NONBLOCK;
+            } elseif (!$this->streamEvents && !$this->timerEvents->count()) {
                 break;
             }
 
-            event_base_loop($this->eventBase, EVLOOP_ONCE);
+            event_base_loop($this->eventBase, $flags);
         }
     }
 
