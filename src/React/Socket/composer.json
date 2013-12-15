@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
         "php": ">=5.3.3",
-        "evenement/evenement": "1.0.*",
+        "evenement/evenement": "~2.0",
         "react/event-loop": "0.3.*",
         "react/stream": "0.3.*"
     },
