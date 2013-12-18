@@ -13,6 +13,9 @@
         "guzzle/parser": "~3.0",
         "react/promise": "~2.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
     "replace": {
         "react/event-loop": "self.version",
         "react/cache": "self.version",

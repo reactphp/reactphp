@@ -13,4 +13,4 @@ matrix:
 before_script:
   - ./scripts/travis-init.sh
 
-script: phpunit --coverage-text
+script: php vendor/bin/phpunit --coverage-text
