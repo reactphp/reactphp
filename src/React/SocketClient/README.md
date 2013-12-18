@@ -5,9 +5,8 @@ Async Connector to open TCP/IP and SSL/TLS based connections.
 ## Introduction
 
 Think of this library as an async version of
-[`fsockopen()`](http://php.net/manual/en/function.fsockopen.php) or
-[`stream_socket_client()`](http://php.net/manual/en/function.stream-socket-
-client.php).
+[`fsockopen()`](http://www.php.net/function.fsockopen) or
+[`stream_socket_client()`](http://php.net/function.stream-socket-client).
 
 Before you can actually transmit and receive data to/from a remote server, you
 have to establish a connection to the remote end. Establishing this connection
