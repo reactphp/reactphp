@@ -11,6 +11,6 @@ matrix:
     - php: hhvm
 
 before_script:
-  - ./before_script.sh
+  - ./scripts/travis-init.sh
 
 script: phpunit --coverage-text
