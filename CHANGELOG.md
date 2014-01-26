@@ -1,10 +1,11 @@
 CHANGELOG
 =========
 
-### 0.4.0 (2013-xx-xx)
+### 0.4.0 (2014-xx-xx)
 
   * Feature: Added ChildProcess to run async child processes within the event loop (@jmikola)
   * Feature: [EventLoop] Added `EventLoopInterface::nextTick()`, implemented in all event loops (@jmalloc)
+  * Feature: [EventLoop] Added `ExtEventLoop` implementation using pecl/event (@jmalloc)
   * BC break: [HttpClient] Drop unused `Response::getBody()`
   * BC break: Bump minimum PHP version to PHP 5.4, remove 5.3 specific hacks
   * BC break: Remove `$loop` argument from `HttpClient`: `Client`, `Request`, `Response`
