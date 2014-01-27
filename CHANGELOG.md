@@ -13,6 +13,9 @@ CHANGELOG
   * BC break: Update to Evenement 2.0
   * BC break: [EventLoop] New method: `EventLoopInterface::nextTick()`
   * Bug fix: [Dns] Properly resolve CNAME aliases
+
+### 0.3.3 (2013-07-08)
+  
   * Bug fix: [EventLoop] No error on removing non-existent streams (@clue)
   * Bug fix: [EventLoop] Do not silently remove feof listeners in `LibEvLoop`
   * Bug fix: [Stream] Correctly detect closed connections
