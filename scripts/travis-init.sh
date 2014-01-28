@@ -1,17 +1,36 @@
 #!/bin/bash
+set -e
+set -o pipefail
 
-sudo apt-get install -y libevent-dev
-if [ "$TRAVIS_PHP_VERSION" != "hhvm" ] && [ "\$(php --re libevent | grep 'does not exist')" != "" ]; then
-     wget http://pecl.php.net/get/libevent-0.0.5.tgz;
-    tar -xzf libevent-0.0.5.tgz;
-    cd libevent-0.0.5 && phpize && ./configure && make && sudo make install && cd ../;
-    echo "extension=libevent.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`;
+if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then
+
+    # install "libevent' (used by 'event' and 'libevent' PHP extensions)
+    sudo apt-get install -y libevent-dev
+
+    # install 'event' PHP extension
+    echo "yes" | pecl install event
+
+    # install 'libevent' PHP extension
+    curl http://pecl.php.net/get/libevent-0.0.5.tgz | tar -xz
+    pushd libevent-0.0.5
+    phpize
+    ./configure
+    make
+    make install
+    popd
+    echo "extension=libevent.so" >> "$(php -r 'echo php_ini_loaded_file();')"
+
+    # install 'libev' PHP extension
+    git clone --recursive https://github.com/m4rw3r/php-libev
+    pushd php-libev
+    phpize
+    ./configure --with-libev
+    make
+    make install
+    popd
+    echo "extension=libev.so" >> "$(php -r 'echo php_ini_loaded_file();')"
+
 fi
-
-echo "yes" | pecl install event
-
-(git clone --recursive https://github.com/m4rw3r/php-libev && cd php-libev && phpize && ./configure --with-libev && make && make install)
-echo "extension=libev.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 
 composer self-update
 composer install --dev --prefer-source
