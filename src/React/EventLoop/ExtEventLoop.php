@@ -4,6 +4,7 @@ namespace React\EventLoop;
 
 use Event;
 use EventBase;
+use React\EventLoop\Tick\FutureTickQueue;
 use React\EventLoop\Tick\NextTickQueue;
 use React\EventLoop\Timer\Timer;
 use React\EventLoop\Timer\TimerInterface;
@@ -16,6 +17,7 @@ class ExtEventLoop implements LoopInterface
 {
     private $eventBase;
     private $nextTickQueue;
+    private $futureTickQueue;
     private $timerCallback;
     private $timerEvents;
     private $streamCallback;
@@ -29,6 +31,7 @@ class ExtEventLoop implements LoopInterface
     {
         $this->eventBase = new EventBase();
         $this->nextTickQueue = new NextTickQueue($this);
+        $this->futureTickQueue = new FutureTickQueue($this);
         $this->timerEvents = new SplObjectStorage();
 
         $this->createTimerCallback();
@@ -160,9 +163,19 @@ class ExtEventLoop implements LoopInterface
     /**
      * {@inheritdoc}
      */
+    public function futureTick(callable $listener)
+    {
+        $this->futureTickQueue->add($listener);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function tick()
     {
         $this->nextTickQueue->tick();
+
+        $this->futureTickQueue->tick();
 
         // @-suppression: https://github.com/reactphp/react/pull/234#discussion-diff-7759616R226
         @$this->eventBase->loop(EventBase::LOOP_ONCE | EventBase::LOOP_NONBLOCK);
@@ -178,12 +191,17 @@ class ExtEventLoop implements LoopInterface
         while ($this->running) {
             $this->nextTickQueue->tick();
 
-            if (!$this->streamEvents && !$this->timerEvents->count()) {
+            $this->futureTickQueue->tick();
+
+            $flags = EventBase::LOOP_ONCE;
+            if (!$this->futureTickQueue->isEmpty()) {
+                $flags |= EventBase::LOOP_NONBLOCK;
+            } elseif (!$this->streamEvents && !$this->timerEvents->count()) {
                 break;
             }
 
             // @-suppression: https://github.com/reactphp/react/pull/234#discussion-diff-7759616R226
-            @$this->eventBase->loop(EventBase::LOOP_ONCE);
+            @$this->eventBase->loop($flags);
         }
     }
 
