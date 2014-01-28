@@ -9,7 +9,6 @@ matrix:
   allow_failures:
     - php: hhvm
 
-before_script:
-  - ./scripts/travis-init.sh
+install: ./scripts/travis-init.sh
 
 script: php vendor/bin/phpunit --coverage-text
