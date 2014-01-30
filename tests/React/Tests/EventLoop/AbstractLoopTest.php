@@ -193,6 +193,24 @@ abstract class AbstractLoopTest extends TestCase
         $this->assertRunFasterThan(0.005);
     }
 
+    public function testStopShouldPreventRunFromBlocking()
+    {
+        $this->loop->addTimer(
+            1,
+            function () {
+                $this->fail('Timer was executed.');
+            }
+        );
+
+        $this->loop->nextTick(
+            function () {
+                $this->loop->stop();
+            }
+        );
+
+        $this->assertRunFasterThan(0.005);
+    }
+
     public function testIgnoreRemovedCallback()
     {
         // two independent streams, both should be readable right away
@@ -316,6 +334,113 @@ abstract class AbstractLoopTest extends TestCase
         );
 
         $this->expectOutputString('next-tick' . PHP_EOL);
+
+        $this->loop->run();
+    }
+
+    public function testFutureTick()
+    {
+        $called = false;
+
+        $callback = function ($loop) use (&$called) {
+            $this->assertSame($this->loop, $loop);
+            $called = true;
+        };
+
+        $this->loop->futureTick($callback);
+
+        $this->assertFalse($called);
+
+        $this->loop->tick();
+
+        $this->assertTrue($called);
+    }
+
+    public function testFutureTickFiresBeforeIO()
+    {
+        $stream = $this->createStream();
+
+        $this->loop->addWriteStream(
+            $stream,
+            function () {
+                echo 'stream' . PHP_EOL;
+            }
+        );
+
+        $this->loop->futureTick(
+            function () {
+                echo 'future-tick' . PHP_EOL;
+            }
+        );
+
+        $this->expectOutputString('future-tick' . PHP_EOL . 'stream' . PHP_EOL);
+
+        $this->loop->tick();
+    }
+
+    public function testRecursiveFutureTick()
+    {
+        $stream = $this->createStream();
+
+        $this->loop->addWriteStream(
+            $stream,
+            function () use ($stream) {
+                echo 'stream' . PHP_EOL;
+                $this->loop->removeWriteStream($stream);
+            }
+        );
+
+        $this->loop->futureTick(
+            function () {
+                echo 'future-tick-1' . PHP_EOL;
+                $this->loop->futureTick(
+                    function () {
+                        echo 'future-tick-2' . PHP_EOL;
+                    }
+                );
+            }
+        );
+
+        $this->expectOutputString('future-tick-1' . PHP_EOL . 'stream' . PHP_EOL . 'future-tick-2' . PHP_EOL);
+
+        $this->loop->run();
+    }
+
+    public function testRunWaitsForFutureTickEvents()
+    {
+        $stream = $this->createStream();
+
+        $this->loop->addWriteStream(
+            $stream,
+            function () use ($stream) {
+                $this->loop->removeStream($stream);
+                $this->loop->futureTick(
+                    function () {
+                        echo 'future-tick' . PHP_EOL;
+                    }
+                );
+            }
+        );
+
+        $this->expectOutputString('future-tick' . PHP_EOL);
+
+        $this->loop->run();
+    }
+
+    public function testFutureTickEventGeneratedByTimer()
+    {
+        $this->loop->addTimer(
+            0.001,
+            function () {
+                $this->loop->futureTick(
+                    function () {
+                        echo 'future-tick' . PHP_EOL;
+                    }
+                );
+            }
+        );
+
+        $this->expectOutputString('future-tick' . PHP_EOL);
 
         $this->loop->run();
     }

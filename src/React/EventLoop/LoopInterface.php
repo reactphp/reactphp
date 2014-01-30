@@ -96,6 +96,15 @@ interface LoopInterface
     public function nextTick(callable $listener);
 
     /**
+     * Schedule a callback to be invoked on a future tick of the event loop.
+     *
+     * Callbacks are guaranteed to be executed in the order they are enqueued.
+     *
+     * @param callable $listener The callback to invoke.
+     */
+    public function futureTick(callable $listener);
+
+    /**
      * Perform a single iteration of the event loop.
      */
     public function tick();

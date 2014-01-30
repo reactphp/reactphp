@@ -2,6 +2,7 @@
 
 namespace React\EventLoop;
 
+use React\EventLoop\Tick\FutureTickQueue;
 use React\EventLoop\Tick\NextTickQueue;
 use React\EventLoop\Timer\Timer;
 use React\EventLoop\Timer\TimerInterface;
@@ -12,7 +13,10 @@ use React\EventLoop\Timer\Timers;
  */
 class StreamSelectLoop implements LoopInterface
 {
+    const MICROSECONDS_PER_SECOND = 1000000;
+
     private $nextTickQueue;
+    private $futureTickQueue;
     private $timers;
     private $readStreams = [];
     private $readListeners = [];
@@ -23,6 +27,7 @@ class StreamSelectLoop implements LoopInterface
     public function __construct()
     {
         $this->nextTickQueue = new NextTickQueue($this);
+        $this->futureTickQueue = new FutureTickQueue($this);
         $this->timers = new Timers();
     }
 
@@ -138,9 +143,19 @@ class StreamSelectLoop implements LoopInterface
     /**
      * {@inheritdoc}
      */
+    public function futureTick(callable $listener)
+    {
+        $this->futureTickQueue->add($listener);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function tick()
     {
         $this->nextTickQueue->tick();
+
+        $this->futureTickQueue->tick();
 
         $this->timers->tick();
 
@@ -157,10 +172,12 @@ class StreamSelectLoop implements LoopInterface
         while ($this->running) {
             $this->nextTickQueue->tick();
 
+            $this->futureTickQueue->tick();
+
             $this->timers->tick();
 
-            // Timers have placed more items on the next-tick queue ...
-            if (!$this->nextTickQueue->isEmpty()) {
+            // Next-tick or future-tick queues have pending callbacks ...
+            if (!$this->running || !$this->nextTickQueue->isEmpty() || !$this->futureTickQueue->isEmpty()) {
                 $timeout = 0;
 
             // There is a pending timer, only block until it is due ...
@@ -178,7 +195,7 @@ class StreamSelectLoop implements LoopInterface
                 break;
             }
 
-            $this->waitForStreamActivity($timeout);
+            $this->waitForStreamActivity($timeout * self::MICROSECONDS_PER_SECOND);
         }
     }
 
