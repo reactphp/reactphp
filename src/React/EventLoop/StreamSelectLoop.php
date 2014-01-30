@@ -177,7 +177,7 @@ class StreamSelectLoop implements LoopInterface
             $this->timers->tick();
 
             // Next-tick or future-tick queues have pending callbacks ...
-            if (!$this->nextTickQueue->isEmpty() || !$this->futureTickQueue->isEmpty()) {
+            if (!$this->running || !$this->nextTickQueue->isEmpty() || !$this->futureTickQueue->isEmpty()) {
                 $timeout = 0;
 
             // There is a pending timer, only block until it is due ...

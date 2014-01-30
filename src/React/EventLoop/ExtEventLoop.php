@@ -194,7 +194,7 @@ class ExtEventLoop implements LoopInterface
             $this->futureTickQueue->tick();
 
             $flags = EventBase::LOOP_ONCE;
-            if (!$this->futureTickQueue->isEmpty()) {
+            if (!$this->running || !$this->futureTickQueue->isEmpty()) {
                 $flags |= EventBase::LOOP_NONBLOCK;
             } elseif (!$this->streamEvents && !$this->timerEvents->count()) {
                 break;

@@ -193,6 +193,24 @@ abstract class AbstractLoopTest extends TestCase
         $this->assertRunFasterThan(0.005);
     }
 
+    public function testStopShouldPreventRunFromBlocking()
+    {
+        $this->loop->addTimer(
+            1,
+            function () {
+                $this->fail('Timer was executed.');
+            }
+        );
+
+        $this->loop->nextTick(
+            function () {
+                $this->loop->stop();
+            }
+        );
+
+        $this->assertRunFasterThan(0.005);
+    }
+
     public function testIgnoreRemovedCallback()
     {
         // two independent streams, both should be readable right away

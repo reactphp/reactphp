@@ -198,7 +198,7 @@ class LibEvLoop implements LoopInterface
             $this->futureTickQueue->tick();
 
             $flags = EventLoop::RUN_ONCE;
-            if (!$this->futureTickQueue->isEmpty()) {
+            if (!$this->running || !$this->futureTickQueue->isEmpty()) {
                 $flags |= EventLoop::RUN_NOWAIT;
             } elseif (!$this->readEvents && !$this->writeEvents && !$this->timerEvents->count()) {
                 break;
