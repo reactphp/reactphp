@@ -13,6 +13,8 @@ use React\EventLoop\Timer\Timers;
  */
 class StreamSelectLoop implements LoopInterface
 {
+    const MICROSECONDS_PER_SECOND = 1000000;
+
     private $nextTickQueue;
     private $futureTickQueue;
     private $timers;
@@ -193,7 +195,7 @@ class StreamSelectLoop implements LoopInterface
                 break;
             }
 
-            $this->waitForStreamActivity($timeout);
+            $this->waitForStreamActivity($timeout * self::MICROSECONDS_PER_SECOND);
         }
     }
 
