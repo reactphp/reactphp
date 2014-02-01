@@ -9,11 +9,11 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="false"
-         bootstrap="tests/bootstrap.php"
+         bootstrap="vendor/autoload.php"
 >
     <testsuites>
         <testsuite name="React Test Suite">
-            <directory>./tests/React/</directory>
+            <directory>./tests/</directory>
         </testsuite>
     </testsuites>
 
