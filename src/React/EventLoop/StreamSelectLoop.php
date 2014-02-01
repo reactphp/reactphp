@@ -16,6 +16,8 @@ class StreamSelectLoop implements LoopInterface
     private $readListeners = array();
     private $writeStreams = array();
     private $writeListeners = array();
+    private $lastStreamResponse = 0;
+    private $noStreamActivityTimeout = 0;
 
     public function __construct()
     {
@@ -160,6 +162,10 @@ class StreamSelectLoop implements LoopInterface
                     call_user_func($listener, $stream, $this);
                 }
             }
+        } elseif($this->noStreamActivityTimeout > -1) {
+            if(time() > ($this->lastStreamResponse + $this->noStreamActivityTimeout)) {
+                throw new \Exception("Timeout: No stream activity since {$this->noStreamActivityTimeout} seconds");
+            }
         }
     }
 
@@ -181,12 +187,7 @@ class StreamSelectLoop implements LoopInterface
         $start = time();
         $this->running = true;
 
-        while ($this->tick()) {
-            // NOOP
-            if(time() > $start+$timeout){
-                throw new \Exception('Timeout');
-            }
-        }
+        while ($this->tick());
     }
 
     public function stop()
