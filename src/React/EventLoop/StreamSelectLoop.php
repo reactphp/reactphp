@@ -141,6 +141,8 @@ class StreamSelectLoop implements LoopInterface
         $timeout = $block ? $this->getNextEventTimeInMicroSeconds() : 0;
 
         if (stream_select($read, $write, $except, 0, $timeout) > 0) {
+            $this->lastStreamResponse = time();
+
             if ($read) {
                 foreach ($read as $stream) {
                     if (!isset($this->readListeners[(int) $stream])) {
@@ -186,6 +188,7 @@ class StreamSelectLoop implements LoopInterface
     {
         $start = time();
         $this->running = true;
+        $this->noStreamActivityTimeout = $timeout;
 
         while ($this->tick());
     }
