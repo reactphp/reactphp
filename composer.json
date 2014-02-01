@@ -28,12 +28,12 @@
     },
     "suggest": {
         "ext-libevent": "*",
+        "ext-event": "*",
         "ext-libev": "*"
     },
     "autoload": {
         "psr-4": {
-            "React\\": "src",
-            "React\\Tests\\": "tests"
+            "React\\": "src"
         }
     },
     "extra": {
