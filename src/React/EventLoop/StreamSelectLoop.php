@@ -186,11 +186,10 @@ class StreamSelectLoop implements LoopInterface
 
     public function run($timeout = 30)
     {
-        $start = time();
         $this->running = true;
         $this->noStreamActivityTimeout = $timeout;
 
-        while ($this->tick());
+        while ($this->loop());
     }
 
     public function stop()
