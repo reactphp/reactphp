@@ -4,18 +4,17 @@
     "keywords": ["socket"],
     "license": "MIT",
     "require": {
-        "php": ">=5.3.3",
+        "php": ">=5.4.0",
         "evenement/evenement": "~2.0",
-        "react/event-loop": "0.3.*",
-        "react/stream": "0.3.*"
+        "react/event-loop": "0.4.*",
+        "react/stream": "0.4.*"
     },
     "autoload": {
-        "psr-0": { "React\\Socket": "" }
+        "psr-4": { "React\\Socket\\": "" }
     },
-    "target-dir": "React/Socket",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.3-dev"
+            "dev-master": "0.4-dev"
         }
     }
 }

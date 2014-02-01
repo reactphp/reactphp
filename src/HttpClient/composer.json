@@ -4,18 +4,17 @@
     "keywords": ["http"],
     "license": "MIT",
     "require": {
-        "php": ">=5.3.3",
-        "guzzle/parser": "2.8.*",
-        "react/socket-client": "0.3.*",
-        "react/dns": "0.3.*"
+        "php": ">=5.4.0",
+        "guzzle/parser": "~3.0",
+        "react/socket-client": "0.4.*",
+        "react/dns": "0.4.*"
     },
     "autoload": {
-        "psr-0": { "React\\HttpClient": "" }
+        "psr-4": { "React\\HttpClient\\": "" }
     },
-    "target-dir": "React/HttpClient",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.3-dev"
+            "dev-master": "0.4-dev"
         }
     }
 }
