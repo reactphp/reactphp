@@ -15,6 +15,7 @@ CHANGELOG
   * BC break: [EventLoop] New method: `EventLoopInterface::nextTick()`
   * BC break: [EventLoop] New method: `EventLoopInterface::futureTick()`
   * Bug fix: [Dns] Properly resolve CNAME aliases
+  * Dependency: Autoloading and filesystem structure now PSR-4 instead of PSR-0
 
 ### 0.3.3 (2013-07-08)
 
