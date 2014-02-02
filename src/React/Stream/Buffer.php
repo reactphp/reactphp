@@ -78,13 +78,13 @@ class Buffer extends EventEmitter implements WritableStreamInterface
         $this->listening = false;
         $this->data = '';
 
-        $this->emit('close');
+        $this->emit('close', [$this]);
     }
 
     public function handleWrite()
     {
         if (!is_resource($this->stream) || ('generic_socket' === $this->meta['stream_type'] && feof($this->stream))) {
-            $this->emit('error', array(new \RuntimeException('Tried to write to closed or invalid stream.')));
+            $this->emit('error', array(new \RuntimeException('Tried to write to closed or invalid stream.'), $this));
 
             return;
         }
@@ -96,20 +96,23 @@ class Buffer extends EventEmitter implements WritableStreamInterface
         restore_error_handler();
 
         if (false === $sent) {
-            $this->emit('error', array(new \ErrorException(
-                $this->lastError['message'],
-                0,
-                $this->lastError['number'],
-                $this->lastError['file'],
-                $this->lastError['line']
-            )));
+            $this->emit('error', array(
+                new \ErrorException(
+                    $this->lastError['message'],
+                    0,
+                    $this->lastError['number'],
+                    $this->lastError['file'],
+                    $this->lastError['line']
+                ),
+                $this
+            ));
 
             return;
         }
 
         $len = strlen($this->data);
         if ($len >= $this->softLimit && $len - $sent < $this->softLimit) {
-            $this->emit('drain');
+            $this->emit('drain', [$this]);
         }
 
         $this->data = (string) substr($this->data, $sent);
@@ -118,7 +121,7 @@ class Buffer extends EventEmitter implements WritableStreamInterface
             $this->loop->removeWriteStream($this->stream);
             $this->listening = false;
 
-            $this->emit('full-drain');
+            $this->emit('full-drain', [$this]);
         }
     }
 
