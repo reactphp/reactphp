@@ -4,18 +4,17 @@
     "keywords": ["socket"],
     "license": "MIT",
     "require": {
-        "php": ">=5.3.3",
-        "react/dns": "0.3.*",
-        "react/event-loop": "0.3.*",
-        "react/promise": "~1.0"
+        "php": ">=5.4.0",
+        "react/dns": "0.4.*",
+        "react/event-loop": "0.4.*",
+        "react/promise": "~2.0"
     },
     "autoload": {
-        "psr-0": { "React\\SocketClient": "" }
+        "psr-4": { "React\\SocketClient\\": "" }
     },
-    "target-dir": "React/SocketClient",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.3-dev"
+            "dev-master": "0.4-dev"
         }
     }
 }

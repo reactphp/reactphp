@@ -28,10 +28,13 @@
     },
     "suggest": {
         "ext-libevent": "*",
+        "ext-event": "*",
         "ext-libev": "*"
     },
     "autoload": {
-        "psr-0": { "React": "src" }
+        "psr-4": {
+            "React\\": "src"
+        }
     },
     "extra": {
         "branch-alias": {
