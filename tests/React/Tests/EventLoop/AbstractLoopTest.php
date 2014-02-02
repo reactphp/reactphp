@@ -320,6 +320,25 @@ abstract class AbstractLoopTest extends TestCase
         $this->loop->run();
     }
 
+    public function testNextTickEventGeneratedByFutureTick()
+    {
+        $stream = $this->createStream();
+
+        $this->loop->futureTick(
+            function () {
+                $this->loop->nextTick(
+                    function () {
+                        echo 'next-tick' . PHP_EOL;
+                    }
+                );
+            }
+        );
+
+        $this->expectOutputString('next-tick' . PHP_EOL);
+
+        $this->loop->run();
+    }
+
     public function testNextTickEventGeneratedByTimer()
     {
         $this->loop->addTimer(
@@ -414,6 +433,25 @@ abstract class AbstractLoopTest extends TestCase
             $stream,
             function () use ($stream) {
                 $this->loop->removeStream($stream);
+                $this->loop->futureTick(
+                    function () {
+                        echo 'future-tick' . PHP_EOL;
+                    }
+                );
+            }
+        );
+
+        $this->expectOutputString('future-tick' . PHP_EOL);
+
+        $this->loop->run();
+    }
+
+    public function testFutureTickEventGeneratedByNextTick()
+    {
+        $stream = $this->createStream();
+
+        $this->loop->nextTick(
+            function () {
                 $this->loop->futureTick(
                     function () {
                         echo 'future-tick' . PHP_EOL;
