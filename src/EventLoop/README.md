@@ -20,11 +20,15 @@ In addition to the interface there are some implementations provided:
   ([github](https://github.com/m4rw3r/php-libev)). It supports the same
   backends as libevent.
 
+* `ExtEventLoop`: This uses the `event` pecl extension. It supports the same
+  backends as libevent.
+
 All of the loops support these features:
 
 * File descriptor polling
 * One-off timers
 * Periodic timers
+* Deferred execution of callbacks
 
 ## Usage
 
