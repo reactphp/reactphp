@@ -3,7 +3,6 @@
 namespace React\EventLoop\Tick;
 
 use React\EventLoop\LoopInterface;
-use SplQueue;
 
 class NextTickQueue
 {
@@ -16,7 +15,7 @@ class NextTickQueue
     public function __construct(LoopInterface $eventLoop)
     {
         $this->eventLoop = $eventLoop;
-        $this->queue = new SplQueue();
+        $this->queue = [];
     }
 
     /**
@@ -29,7 +28,7 @@ class NextTickQueue
      */
     public function add(callable $listener)
     {
-        $this->queue->enqueue($listener);
+        $this->queue[] = $listener;
     }
 
     /**
@@ -37,11 +36,9 @@ class NextTickQueue
      */
     public function tick()
     {
-        while (!$this->queue->isEmpty()) {
-            call_user_func(
-                $this->queue->dequeue(),
-                $this->eventLoop
-            );
+        while ($this->queue) {
+            $callback = array_shift($this->queue);
+            $callback($this->eventLoop);
         }
     }
 
@@ -52,6 +49,6 @@ class NextTickQueue
      */
     public function isEmpty()
     {
-        return $this->queue->isEmpty();
+        return !$this->queue;
     }
 }
