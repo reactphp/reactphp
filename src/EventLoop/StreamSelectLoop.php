@@ -182,8 +182,11 @@ class StreamSelectLoop implements LoopInterface
 
             // There is a pending timer, only block until it is due ...
             } elseif ($scheduledAt = $this->timers->getFirst()) {
-                if (0 > $timeout = $scheduledAt - $this->timers->getTime()) {
+                $timeout = $scheduledAt - $this->timers->getTime();
+                if ($timeout < 0) {
                     $timeout = 0;
+                } else {
+                    $timeout *= self::MICROSECONDS_PER_SECOND;
                 }
 
             // The only possible event is stream activity, so wait forever ...
@@ -195,7 +198,7 @@ class StreamSelectLoop implements LoopInterface
                 break;
             }
 
-            $this->waitForStreamActivity($timeout * self::MICROSECONDS_PER_SECOND);
+            $this->waitForStreamActivity($timeout);
         }
     }
 
