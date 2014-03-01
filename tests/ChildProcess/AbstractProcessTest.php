@@ -67,7 +67,7 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testProcessWithDefaultCwdAndEnv()
     {
-        $cmd = 'php -r ' . escapeshellarg('echo getcwd(), PHP_EOL, count($_ENV), PHP_EOL;');
+        $cmd = PHP_BINARY . ' -r ' . escapeshellarg('echo getcwd(), PHP_EOL, count($_ENV), PHP_EOL;');
 
         $loop = $this->createLoop();
         $process = new Process($cmd);
@@ -89,7 +89,7 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testProcessWithCwd()
     {
-        $cmd = 'php -r ' . escapeshellarg('echo getcwd(), PHP_EOL;');
+        $cmd = PHP_BINARY . ' -r ' . escapeshellarg('echo getcwd(), PHP_EOL;');
 
         $loop = $this->createLoop();
         $process = new Process($cmd, '/');
@@ -114,7 +114,7 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('Cannot execute PHP processes with custom environments on Travis CI.');
         }
 
-        $cmd = 'php -r ' . escapeshellarg('echo getenv("foo"), PHP_EOL;');
+        $cmd = PHP_BINARY . ' -r ' . escapeshellarg('echo getenv("foo"), PHP_EOL;');
 
         $loop = $this->createLoop();
         $process = new Process($cmd, null, array('foo' => 'bar'));
