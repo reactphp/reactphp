@@ -60,4 +60,9 @@ class ConnectionStub extends EventEmitter implements ConnectionInterface
     {
         return '127.0.0.1';
     }
+
+    public function getRemotePort()
+    {
+        return '12345';
+    }
 }

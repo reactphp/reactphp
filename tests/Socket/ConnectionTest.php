@@ -70,6 +70,34 @@ class ConnectionTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function remotePortProvider()
+    {
+        return array(
+            array('12345', '192.168.1.120:12345')
+        , array('12345', '[9999:0000:aaaa:bbbb:cccc:dddd:eeee:ffff]:12345')
+        , array('80', '10.0.0.1:80')
+        );
+    }
+
+    /**
+     * @dataProvider remotePortProvider
+     * @covers React\Socket\Connection::parsePort
+     */
+    public function testParsePort($expected, $given)
+    {
+        $class  = new \ReflectionClass('React\\Socket\\Connection');
+        $method = $class->getMethod('parsePort');
+        $method->setAccessible(true);
+
+        $socket = fopen('php://temp', 'r');
+        $loop   = $this->createLoopMock();
+
+        $conn = new Connection($socket, $loop);
+        $result = $method->invokeArgs($conn, array($given));
+
+        $this->assertEquals($expected, $result);
+    }
+
     private function createLoopMock()
     {
         return $this->getMock('React\EventLoop\LoopInterface');
