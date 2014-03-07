@@ -14,7 +14,7 @@
         "react/promise": "~2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "3.7.*"
+        "phpunit/phpunit": "4.0.*"
     },
     "replace": {
         "react/event-loop": "self.version",
