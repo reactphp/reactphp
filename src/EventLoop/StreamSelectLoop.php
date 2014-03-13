@@ -194,8 +194,9 @@ class StreamSelectLoop implements LoopInterface
             } else {
                 break;
             }
-
-            $this->waitForStreamActivity($timeout * self::MICROSECONDS_PER_SECOND);
+            
+            $timeoutMs = ($timeout === null) ? null : $timeout * self::MICROSECONDS_PER_SECOND;
+            $this->waitForStreamActivity($timeoutMs);
         }
     }
 
