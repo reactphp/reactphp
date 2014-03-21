@@ -189,6 +189,10 @@ class BufferTest extends TestCase
 
     public function testWritingToClosedStream()
     {
+        if ('Darwin' === PHP_OS) {
+            $this->markTestSkipped('OS X issue with shutting down pair for writing');
+        }
+
         list($a, $b) = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
         $loop = $this->createWriteableLoopMock();
 
