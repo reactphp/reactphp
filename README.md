@@ -84,7 +84,7 @@ $loop->run();
 ## Documentation
 
 Superficial documentation can be found in the README files of the individual
-components. See `src/React/*/README.md`.
+components. See `src/*/README.md`.
 
 ## Community
 
