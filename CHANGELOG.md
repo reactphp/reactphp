@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-### 0.3.3 (2013-xx-xx)
+### 0.3.4 (2014-03-30)
+
+  * Bug fix: [Stream] Fixed 100% CPU spike from non-empty write buffer on closed stream
+  * Buf fix: [Socket] Reset socket to non-blocking after shutting down (PHP bug)
+
+### 0.3.3 (2013-07-08)
 
   * Bug fix: [EventLoop] No error on removing non-existent streams (@clue)
   * Bug fix: [EventLoop] Do not silently remove feof listeners in `LibEvLoop`
