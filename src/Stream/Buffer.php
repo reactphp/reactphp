@@ -4,7 +4,6 @@ namespace React\Stream;
 
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
-use React\Stream\WritableStreamInterface;
 
 /** @event full-drain */
 class Buffer extends EventEmitter implements WritableStreamInterface
@@ -21,16 +20,11 @@ class Buffer extends EventEmitter implements WritableStreamInterface
         'file'    => '',
         'line'    => 0,
     );
-    private $meta;
 
     public function __construct($stream, LoopInterface $loop)
     {
         $this->stream = $stream;
         $this->loop = $loop;
-
-        if (is_resource($stream)) {
-            $this->meta = stream_get_meta_data($stream);
-        }
     }
 
     public function isWritable()
@@ -83,8 +77,8 @@ class Buffer extends EventEmitter implements WritableStreamInterface
 
     public function handleWrite()
     {
-        if (!is_resource($this->stream) || ('generic_socket' === $this->meta['stream_type'] && feof($this->stream))) {
-            $this->emit('error', array(new \RuntimeException('Tried to write to closed or invalid stream.'), $this));
+        if (!is_resource($this->stream)) {
+            $this->emit('error', array(new \RuntimeException('Tried to write to invalid stream.'), $this));
 
             return;
         }
@@ -106,6 +100,12 @@ class Buffer extends EventEmitter implements WritableStreamInterface
                 ),
                 $this
             ));
+
+            return;
+        }
+
+        if (0 === $sent && feof($this->stream)) {
+            $this->emit('error', array(new \RuntimeException('Tried to write to closed stream.'), $this));
 
             return;
         }
