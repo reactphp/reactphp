@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+### 0.3.4 (2014-03-30)
+
+  * Bug fix: [Stream] Fixed 100% CPU spike from non-empty write buffer on closed stream
+  * Buf fix: [Socket] Reset socket to non-blocking after shutting down (PHP bug)
+
 ### 0.4.0 (2014-02-02)
 
   * Feature: Added ChildProcess to run async child processes within the event loop (@jmikola)

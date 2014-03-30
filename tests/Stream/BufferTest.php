@@ -184,7 +184,32 @@ class BufferTest extends TestCase
 
         $buffer->write('Attempting to write to bad stream');
         $this->assertInstanceOf('Exception', $error);
-        $this->assertSame('Tried to write to closed or invalid stream.', $error->getMessage());
+        $this->assertSame('Tried to write to invalid stream.', $error->getMessage());
+    }
+
+    public function testWritingToClosedStream()
+    {
+        if ('Darwin' === PHP_OS) {
+            $this->markTestSkipped('OS X issue with shutting down pair for writing');
+        }
+
+        list($a, $b) = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
+        $loop = $this->createWriteableLoopMock();
+
+        $error = null;
+
+        $buffer = new Buffer($a, $loop);
+        $buffer->on('error', function($message) use (&$error) {
+            $error = $message;
+        });
+
+        $buffer->write('foo');
+        stream_socket_shutdown($b, STREAM_SHUT_RD);
+        stream_socket_shutdown($a, STREAM_SHUT_RD);
+        $buffer->write('bar');
+
+        $this->assertInstanceOf('Exception', $error);
+        $this->assertSame('Tried to write to closed stream.', $error->getMessage());
     }
 
     private function createWriteableLoopMock()
