@@ -12,27 +12,35 @@ class Connector implements ConnectorInterface
 {
     private $loop;
     private $resolver;
+    private $context;
 
-    public function __construct(LoopInterface $loop, Resolver $resolver)
+    public function __construct(LoopInterface $loop, Resolver $resolver, $context=null)
     {
         $this->loop = $loop;
         $this->resolver = $resolver;
+        $this->context = $context;
     }
 
-    public function create($host, $port)
+    public function create($host, $port, $protocol = 'tcp')
     {
         return $this
             ->resolveHostname($host)
-            ->then(function ($address) use ($port) {
-                return $this->createSocketForAddress($address, $port);
+            ->then(function ($address) use ($port, $protocol) {
+                return $this->createSocketForAddress($address, $port, $protocol);
             });
     }
 
-    public function createSocketForAddress($address, $port)
+    public function createSocketForAddress($address, $port, $protocol)
     {
-        $url = $this->getSocketUrl($address, $port);
+        $url = $this->getSocketUrl($address, $port, $protocol);
 
-        $socket = stream_socket_client($url, $errno, $errstr, 0, STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
+        if(is_resource($this->context)) {
+            $socket = stream_socket_client($url, $errno, $errstr, 0, STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT, $context);
+        }
+        else {
+            $socket = stream_socket_client($url, $errno, $errstr, 0, STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
+        }
+        
 
         if (!$socket) {
             return Promise\reject(new \RuntimeException(
@@ -82,13 +90,13 @@ class Connector implements ConnectorInterface
         return new Stream($socket, $this->loop);
     }
 
-    protected function getSocketUrl($host, $port)
+    protected function getSocketUrl($host, $port, $protocol)
     {
         if (strpos($host, ':') !== false) {
             // enclose IPv6 addresses in square brackets before appending port
             $host = '[' . $host . ']';
         }
-        return sprintf('tcp://%s:%s', $host, $port);
+        return sprintf('%s://%s:%s', $protocol, $host, $port);
     }
 
     protected function resolveHostname($host)

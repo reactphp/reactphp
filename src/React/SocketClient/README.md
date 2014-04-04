@@ -60,3 +60,36 @@ $secureConnector->create('www.google.com', 443)->then(function (React\Stream\Str
     ...
 });
 ```
+
+### UDP connexion
+
+```php
+$connector = new React\SocketClient\Connector($loop, $dns);
+
+$connector->create('nic.com', 715, 'udp')->then(function (React\Stream\Stream $stream) {
+    $stream->write('...');
+    $stream->close();
+});
+```
+
+### Adding context
+If you need to add a certificate or bind to a specific ip address
+
+```php
+$context = stream_context_create(array(
+    'socket'=>array(
+        'bindto'=>"other.local.ip.address"
+    ),
+    'tls'=>array(
+        'local_cert' => 'mycertificate.pem',
+        'passphrase' => 'realpassword'
+    )
+));
+$connector = new React\SocketClient\Connector($loop, $dns);
+
+$connector->create('test.com', 80)->then(function (React\Stream\Stream $stream) {
+    $stream->write('...');
+    $stream->close();
+});
+
+```
