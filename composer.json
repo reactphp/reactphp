@@ -1,5 +1,5 @@
 {
-    "name": "react/react",
+    "name": "artydev/react",
     "description": "Nuclear Reactor written in PHP.",
     "keywords": ["event-loop", "reactor"],
     "license": "MIT",
