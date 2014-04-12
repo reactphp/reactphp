@@ -10,7 +10,7 @@
         "react/promise": "~2.0"
     },
     "autoload": {
-        "psr-0": { "React\\Dns\\": "" }
+        "psr-4": { "React\\Dns\\": "" }
     },
     "extra": {
         "branch-alias": {
