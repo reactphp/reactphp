@@ -11,9 +11,10 @@ class Connection extends Stream implements ConnectionInterface
         // Socket is raw, not using fread as it's interceptable by filters
         // See issues #192, #209, and #240
         $data = stream_socket_recvfrom($stream, $this->bufferSize);
-        if( '' !== $data || false !== $data ){
+        if ('' !== $data && false !== $data) {
             $this->emit('data', array($data, $this));
         }
+
         if ('' === $data || false === $data || feof($stream)) {
             $this->end();
         }
