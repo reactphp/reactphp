@@ -11,7 +11,7 @@ The recommended way to install react is [through composer](http://getcomposer.or
 ```JSON
 {
     "require": {
-        "react/react": "0.3.*"
+        "react/react": "0.4.*"
     }
 }
 ```
