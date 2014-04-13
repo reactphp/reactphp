@@ -18,4 +18,5 @@ $GIT_SUBSPLIT publish "
     src/Http:git@github.com:reactphp/http.git
     src/HttpClient:git@github.com:reactphp/http-client.git
     src/Dns:git@github.com:reactphp/dns.git
+    src/ChildProcess:git@github.com/reactphp/child-process.git
 " --heads=master

@@ -100,6 +100,32 @@ class ServerTest extends TestCase
         $this->loop->tick();
     }
 
+    /**
+     * Test data sent from python language
+     *
+     * @covers React\EventLoop\StreamSelectLoop::tick
+     * @covers React\Socket\Connection::handleData
+     */
+    public function testDataSentFromPy()
+    {
+        $client = stream_socket_client('tcp://localhost:' . $this->port);
+        fwrite($client, "foo\n");
+        stream_socket_shutdown($client, STREAM_SHUT_WR);
+
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with("foo\n");
+
+
+        $this->server->on('connection', function ($conn) use ($mock) {
+            $conn->on('data', $mock);
+        });
+        $this->loop->tick();
+        $this->loop->tick();
+    }
+
     public function testFragmentedMessage()
     {
         $client = stream_socket_client('tcp://localhost:' . $this->port);
