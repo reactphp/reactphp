@@ -31,7 +31,10 @@ class Server extends EventEmitter implements ServerInterface
         stream_set_blocking($this->master, 0);
 
         $this->loop->addReadStream($this->master, function ($master) {
+            set_error_handler(function () { return true; }, E_WARNING);
             $newSocket = stream_socket_accept($master);
+            restore_error_handler();
+            
             if (false === $newSocket) {
                 $this->emit('error', array(new \RuntimeException('Error accepting new connection')));
 
