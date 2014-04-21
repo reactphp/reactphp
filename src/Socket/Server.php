@@ -31,13 +31,16 @@ class Server extends EventEmitter implements ServerInterface
         stream_set_blocking($this->master, 0);
 
         $this->loop->addReadStream($this->master, function ($master) {
-            $newSocket = stream_socket_accept($master);
-            
+            $newSocket = @stream_socket_accept($master);
             if (false === $newSocket) {
-                $this->emit('error', array(new \RuntimeException('Error accepting new connection')));
+                // if a system call has been interrupted, forget about it, let's try again and avoid warning messages.
+                if (!$this->hasSystemCallBeenInterrupted()) {
+                    $this->emit('error', array(new \RuntimeException('Error accepting new connection')));
+                }
 
                 return;
             }
+            
             $this->handleConnection($newSocket);
         });
     }
@@ -68,5 +71,16 @@ class Server extends EventEmitter implements ServerInterface
     public function createConnection($socket)
     {
         return new Connection($socket, $this->loop);
+    }
+    
+    /**
+     * @return bool
+     */
+    private function hasSystemCallBeenInterrupted()
+    {
+        $lastError = error_get_last();
+
+        // stream_select returns false when the `select` system call is interrupted by an incoming signal
+        return isset($lastError['message']) && false !== stripos($lastError['message'], 'interrupted system call');
     }
 }
