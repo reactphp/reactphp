@@ -252,15 +252,33 @@ class StreamSelectLoop implements LoopInterface
         if ($read || $write) {
             $except = null;
 
-            set_error_handler(function () { return true; }, E_WARNING);
-            $result = stream_select($read, $write, $except, $timeout === null ? null : 0, $timeout);
-            restore_error_handler();
+            if (false === $n = @stream_select($read, $write, $except, $timeout === null ? null : 0, $timeout)) {
+                // if a system call has been interrupted, forget about it, let's try again and avoid warning messages.
+                if ($this->hasSystemCallBeenInterrupted()) {
+                    return 0;
+                }
 
-            return $result;
+                $this->stop();
+
+                return false;
+            }
+
+            return $n;
         }
 
         usleep($timeout);
 
         return 0;
+    }
+    
+    /**
+     * @return bool
+     */
+    private function hasSystemCallBeenInterrupted()
+    {
+        $lastError = error_get_last();
+
+        // stream_select returns false when the `select` system call is interrupted by an incoming signal
+        return isset($lastError['message']) && false !== stripos($lastError['message'], 'interrupted system call');
     }
 }
