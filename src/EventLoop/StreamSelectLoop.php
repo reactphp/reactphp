@@ -218,7 +218,17 @@ class StreamSelectLoop implements LoopInterface
         $read  = $this->readStreams;
         $write = $this->writeStreams;
 
-        $this->streamSelect($read, $write, $timeout);
+        $n = $this->streamSelect($read, $write, $timeout);
+        if (false === $n) {
+            // if a system call has been interrupted, forget about it, let's try again and avoid warning messages.
+            if ($this->hasSystemCallBeenInterrupted()) {
+                return;
+            }
+
+            $this->stop();
+
+            return;
+        }
 
         foreach ($read as $stream) {
             $key = (int) $stream;
@@ -252,18 +262,7 @@ class StreamSelectLoop implements LoopInterface
         if ($read || $write) {
             $except = null;
 
-            if (false === $n = @stream_select($read, $write, $except, $timeout === null ? null : 0, $timeout)) {
-                // if a system call has been interrupted, forget about it, let's try again and avoid warning messages.
-                if ($this->hasSystemCallBeenInterrupted()) {
-                    return 0;
-                }
-
-                $this->stop();
-
-                return false;
-            }
-
-            return $n;
+            return @stream_select($read, $write, $except, $timeout === null ? null : 0, $timeout);
         }
 
         usleep($timeout);
