@@ -68,15 +68,4 @@ class Server extends EventEmitter implements ServerInterface
     {
         return new Connection($socket, $this->loop);
     }
-    
-    /**
-     * @return bool
-     */
-    private function hasSystemCallBeenInterrupted()
-    {
-        $lastError = error_get_last();
-
-        // stream_select returns false when the `select` system call is interrupted by an incoming signal
-        return isset($lastError['message']) && false !== stripos($lastError['message'], 'interrupted system call');
-    }
 }
