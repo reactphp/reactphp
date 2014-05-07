@@ -4,6 +4,9 @@ namespace React\SocketClient;
 
 use React\EventLoop\LoopInterface;
 use React\Dns\Resolver\Resolver;
+use React\Socket\AddressFactory;
+use React\Socket\AddressInterface;
+use React\Socket\TcpAddressInterface;
 use React\Stream\Stream;
 use React\Promise;
 use React\Promise\Deferred;
@@ -19,24 +22,29 @@ class Connector implements ConnectorInterface
         $this->resolver = $resolver;
     }
 
-    public function create($host, $port)
+    public function create($address)
     {
+        $address = AddressFactory::create($address);
+
         return $this
-            ->resolveHostname($host)
-            ->then(function ($address) use ($port) {
-                return $this->createSocketForAddress($address, $port);
+            ->resolveHostname($address)
+            ->then(function($resolved) use ($address) {
+                // Update TCP address with resolved IP address:
+                if ($address instanceof TcpAddressInterface && false === ($resolved instanceof TcpAddressInterface)) {
+                    $address->setHost($resolved);
+                }
+
+                return $this->createSocketForAddress($address);
             });
     }
 
-    public function createSocketForAddress($address, $port)
+    public function createSocketForAddress($address)
     {
-        $url = $this->getSocketUrl($address, $port);
-
-        $socket = stream_socket_client($url, $errno, $errstr, 0, STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
+        $socket = stream_socket_client($address, $errno, $errstr, 0, STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT);
 
         if (!$socket) {
             return Promise\reject(new \RuntimeException(
-                sprintf("connection to %s:%d failed: %s", $address, $port, $errstr),
+                sprintf("connection to %s failed: %s", $address, $errstr),
                 $errno
             ));
         }
@@ -82,21 +90,16 @@ class Connector implements ConnectorInterface
         return new Stream($socket, $this->loop);
     }
 
-    protected function getSocketUrl($host, $port)
+    protected function resolveHostname($address)
     {
-        if (strpos($host, ':') !== false) {
-            // enclose IPv6 addresses in square brackets before appending port
-            $host = '[' . $host . ']';
-        }
-        return sprintf('tcp://%s:%s', $host, $port);
-    }
-
-    protected function resolveHostname($host)
-    {
-        if (false !== filter_var($host, FILTER_VALIDATE_IP)) {
-            return Promise\resolve($host);
+        if (false === ($address instanceof TcpAddressInterface)) {
+            return Promise\resolve($address);
         }
 
-        return $this->resolver->resolve($host);
+        if (false !== filter_var($address->getHost(), FILTER_VALIDATE_IP)) {
+            return Promise\resolve($address);
+        }
+
+        return $this->resolver->resolve($address->getHost());
     }
 }
