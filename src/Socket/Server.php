@@ -9,8 +9,7 @@ use React\EventLoop\LoopInterface;
 /** @event error(RuntimeException $error) */
 class Server extends EventEmitter implements ServerInterface
 {
-    use AddressTrait;
-
+    protected $address;
     public $master;
     protected $loop;
 
@@ -19,8 +18,10 @@ class Server extends EventEmitter implements ServerInterface
         $this->loop = $loop;
     }
 
-    protected function createSocket()
+    public function listen($address)
     {
+        $this->address = AddressFactory::create($address);
+
         $this->master = @stream_socket_server($this->address, $errno, $errstr);
 
         if (false === $this->master) {
@@ -39,6 +40,10 @@ class Server extends EventEmitter implements ServerInterface
             }
             $this->handleConnection($newSocket);
         });
+    }
+
+    public function getAddress() {
+        return $this->address;
     }
 
     public function handleConnection($socket)
