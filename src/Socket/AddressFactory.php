@@ -15,6 +15,10 @@ class AddressFactory
             return new TcpAddress($address);
         }
 
+        else if (UdpAddress::checkAddressType($address, $error)) {
+            return new UdpAddress($address);
+        }
+
         else if (UnixAddress::checkAddressType($address, $error)) {
             return new UnixAddress($address);
         }

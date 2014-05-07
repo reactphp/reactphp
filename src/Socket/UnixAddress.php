@@ -16,11 +16,13 @@ class UnixAddress implements AddressInterface
      */
     protected $filename;
 
-    public function __construct($address)
+    public function __construct($address = null)
     {
         if ('WINNT' === PHP_OS) {
             throw new \RuntimeException("Unix sockets are unavailable on Windows.");
         }
+
+        if ($address === null) return;
 
         preg_match(static::EXPRESSION, $address, $matches);
 
@@ -61,5 +63,10 @@ class UnixAddress implements AddressInterface
     public function getFilename()
     {
         return $this->filename;
+    }
+
+    public function isValid()
+    {
+        return isset($this->filename);
     }
 }
