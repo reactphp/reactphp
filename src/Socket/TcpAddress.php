@@ -25,8 +25,12 @@ class TcpAddress implements TcpAddressInterface
     {
         preg_match(static::EXPRESSION, $address, $matches);
 
-        $this->host = $matches['host'];
+        $this->host = trim($matches['host'], '[]');
         $this->address = "tcp://{$this->host}";
+
+        if (false !== strpos($this->host, ':')) {
+            $this->address = "tcp://[{$this->host}]";
+        }
 
         if (isset($matches['port'])) {
             $this->port = $matches['port'];
