@@ -26,21 +26,29 @@ class TcpAddress implements TcpAddressInterface
         preg_match(static::EXPRESSION, $address, $matches);
 
         $this->host = trim($matches['host'], '[]');
+
+        if (isset($matches['port'])) {
+            $this->port = $matches['port'];
+        }
+
+        $this->buildAddress();
+    }
+
+    public function __toString()
+    {
+        return (string)$this->address;
+    }
+
+    protected function buildAddress() {
         $this->address = "tcp://{$this->host}";
 
         if (false !== strpos($this->host, ':')) {
             $this->address = "tcp://[{$this->host}]";
         }
 
-        if (isset($matches['port'])) {
-            $this->port = $matches['port'];
+        if (isset($this->port)) {
             $this->address .= ":{$this->port}";
         }
-    }
-
-    public function __toString()
-    {
-        return (string)$this->address;
     }
 
     public static function checkAddressType($address, &$error)
@@ -72,5 +80,17 @@ class TcpAddress implements TcpAddressInterface
     public function getPort()
     {
         return $this->port;
+    }
+
+    public function setHost($host)
+    {
+        $this->host = $host;
+        $this->buildAddress();
+    }
+
+    public function setPort($port)
+    {
+        $this->port = $port;
+        $this->buildAddress();
     }
 }

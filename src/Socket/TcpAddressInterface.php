@@ -9,4 +9,6 @@ interface TcpAddressInterface extends AddressInterface
     public function getAddress();
     public function getHost();
     public function getPort();
+    public function setHost($host);
+    public function setPort($port);
 }
