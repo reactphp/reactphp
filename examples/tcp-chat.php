@@ -31,5 +31,5 @@ $socket->on('connection', function ($conn) use ($conns) {
 echo "Socket server listening on port 4000.\n";
 echo "You can connect to it by running: telnet localhost 4000\n";
 
-$socket->listen(4000);
+$socket->listen('tcp://127.0.0.1:4000');
 $loop->run();

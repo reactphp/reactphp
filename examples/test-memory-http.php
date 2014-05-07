@@ -24,5 +24,5 @@ $loop->addPeriodicTimer(2, function () use (&$i) {
     echo "Memory: $kmem KiB\n";
 });
 
-$socket->listen(8080);
+$socket->listen('tcp://127.0.0.1:8080');
 $loop->run();
