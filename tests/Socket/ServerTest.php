@@ -19,13 +19,13 @@ class ServerTest extends TestCase
     /**
      * @covers React\Socket\Server::__construct
      * @covers React\Socket\Server::listen
-     * @covers React\Socket\Server::getPort
+     * @covers React\Socket\Server::getAddress
      */
     public function setUp()
     {
         $this->loop = $this->createLoop();
         $this->server = new Server($this->loop);
-        $this->server->listen(4321);
+        $this->server->listen('tcp://127.0.0.1:4321');
 
         $this->address = $this->server->getAddress();
     }

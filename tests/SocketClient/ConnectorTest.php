@@ -35,7 +35,7 @@ class ConnectorTest extends TestCase
         $server->on('connection', function () use ($server, $loop) {
             $server->shutdown();
         });
-        $server->listen(9999);
+        $server->listen('tcp://127.0.0.1:9999');
 
         $dns = $this->createResolverMock();
 
@@ -76,7 +76,7 @@ class ConnectorTest extends TestCase
         $server = new Server($loop);
         $server->on('connection', $this->expectCallableOnce());
         $server->on('connection', array($server, 'shutdown'));
-        $server->listen(9999, '::1');
+        $server->listen('tcp://[::1]:9999');
 
         $dns = $this->createResolverMock();
 

@@ -15,7 +15,7 @@ class ConnectionTest extends TestCase
     {
         $loop   = new StreamSelectLoop();
         $server = new Server($loop);
-        $server->listen(4321);
+        $server->listen('tcp://127.0.0.1:4321');
 
         $class  = new \ReflectionClass('React\\Socket\\Server');
         $master = $class->getProperty('master');
