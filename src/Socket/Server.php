@@ -42,7 +42,8 @@ class Server extends EventEmitter implements ServerInterface
         });
     }
 
-    public function getAddress() {
+    public function getAddress()
+    {
         return $this->address;
     }
 
