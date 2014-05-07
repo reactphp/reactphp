@@ -9,7 +9,7 @@ class ServerTest extends TestCase
 {
     private $loop;
     private $server;
-    private $port;
+    private $address;
 
     private function createLoop()
     {
@@ -25,9 +25,9 @@ class ServerTest extends TestCase
     {
         $this->loop = $this->createLoop();
         $this->server = new Server($this->loop);
-        $this->server->listen(0);
+        $this->server->listen(4321);
 
-        $this->port = $this->server->getPort();
+        $this->address = $this->server->getAddress();
     }
 
     /**
@@ -37,7 +37,7 @@ class ServerTest extends TestCase
      */
     public function testConnection()
     {
-        $client = stream_socket_client('tcp://localhost:'.$this->port);
+        $client = stream_socket_client($this->address);
 
         $this->server->on('connection', $this->expectCallableOnce());
         $this->loop->tick();
@@ -50,9 +50,9 @@ class ServerTest extends TestCase
      */
     public function testConnectionWithManyClients()
     {
-        $client1 = stream_socket_client('tcp://localhost:'.$this->port);
-        $client2 = stream_socket_client('tcp://localhost:'.$this->port);
-        $client3 = stream_socket_client('tcp://localhost:'.$this->port);
+        $client1 = stream_socket_client($this->address);
+        $client2 = stream_socket_client($this->address);
+        $client3 = stream_socket_client($this->address);
 
         $this->server->on('connection', $this->expectCallableExactly(3));
         $this->loop->tick();
@@ -66,7 +66,7 @@ class ServerTest extends TestCase
      */
     public function testDataWithNoData()
     {
-        $client = stream_socket_client('tcp://localhost:'.$this->port);
+        $client = stream_socket_client($this->address);
 
         $mock = $this->expectCallableNever();
 
@@ -83,7 +83,7 @@ class ServerTest extends TestCase
      */
     public function testData()
     {
-        $client = stream_socket_client('tcp://localhost:'.$this->port);
+        $client = stream_socket_client($this->address);
 
         fwrite($client, "foo\n");
 
@@ -108,7 +108,7 @@ class ServerTest extends TestCase
      */
     public function testDataSentFromPy()
     {
-        $client = stream_socket_client('tcp://localhost:' . $this->port);
+        $client = stream_socket_client($this->address);
         fwrite($client, "foo\n");
         stream_socket_shutdown($client, STREAM_SHUT_WR);
 
@@ -128,7 +128,7 @@ class ServerTest extends TestCase
 
     public function testFragmentedMessage()
     {
-        $client = stream_socket_client('tcp://localhost:' . $this->port);
+        $client = stream_socket_client($this->address);
 
         fwrite($client, "Hello World!\n");
 
@@ -151,7 +151,7 @@ class ServerTest extends TestCase
      */
     public function testDisconnectWithoutDisconnect()
     {
-        $client = stream_socket_client('tcp://localhost:'.$this->port);
+        $client = stream_socket_client($this->address);
 
         $mock = $this->expectCallableNever();
 
@@ -168,7 +168,7 @@ class ServerTest extends TestCase
      */
     public function testDisconnect()
     {
-        $client = stream_socket_client('tcp://localhost:'.$this->port);
+        $client = stream_socket_client($this->address);
 
         fclose($client);
 

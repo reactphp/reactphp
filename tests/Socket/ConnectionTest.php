@@ -15,13 +15,13 @@ class ConnectionTest extends TestCase
     {
         $loop   = new StreamSelectLoop();
         $server = new Server($loop);
-        $server->listen(0);
+        $server->listen(4321);
 
         $class  = new \ReflectionClass('React\\Socket\\Server');
         $master = $class->getProperty('master');
         $master->setAccessible(true);
 
-        $client = stream_socket_client('tcp://localhost:' . $server->getPort());
+        $client = stream_socket_client($server->getAddress());
 
         $class  = new \ReflectionClass('React\\Socket\\Connection');
         $method = $class->getMethod('parseAddress');
@@ -36,8 +36,9 @@ class ConnectionTest extends TestCase
             ->with($method->invokeArgs($servConn, array(stream_socket_get_name($master->getValue($server), false))))
         ;
 
-        $server->on('connection', function ($conn) use ($mock) {
+        $server->on('connection', function ($conn) use ($server, $mock) {
             $mock($conn->getRemoteAddress());
+            $server->shutdown();
         });
         $loop->tick();
     }
