@@ -78,6 +78,10 @@ trait AddressTrait
         }
 
         else if ('unix' === $data->scheme) {
+            if ('WINNT' === PHP_OS) {
+                throw new \RuntimeException("Unix sockets are unavailable on Windows");
+            }
+
             $filename = substr($address, 7);
             $this->address = $address;
 
