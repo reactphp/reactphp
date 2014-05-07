@@ -210,11 +210,7 @@ class Request extends EventEmitter implements WritableStreamInterface
 
     protected function connect()
     {
-        $host = $this->requestData->getHost();
-        $port = $this->requestData->getPort();
-
-        return $this->connector
-            ->create($host, $port);
+        return $this->connector->create($this->requestData->getAddress());
     }
 
     public function setResponseFactory($factory)

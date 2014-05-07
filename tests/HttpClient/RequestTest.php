@@ -2,6 +2,7 @@
 
 namespace React\Tests\HttpClient;
 
+use React\HttpClient\AddressFactory;
 use React\HttpClient\Request;
 use React\HttpClient\RequestData;
 use React\Stream\Stream;
@@ -391,7 +392,7 @@ class RequestTest extends TestCase
         $this->connector
             ->expects($this->once())
             ->method('create')
-            ->with('www.example.com', 80)
+            ->with(AddressFactory::create('http://www.example.com'))
             ->will($this->returnValue(new FulfilledPromise($this->stream)));
     }
 
@@ -400,7 +401,7 @@ class RequestTest extends TestCase
         $this->connector
             ->expects($this->once())
             ->method('create')
-            ->with('www.example.com', 80)
+            ->with(AddressFactory::create('http://www.example.com'))
             ->will($this->returnValue(new RejectedPromise(new \RuntimeException())));
     }
 }

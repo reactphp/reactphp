@@ -5,21 +5,21 @@ namespace React\HttpClient;
 class RequestData
 {
     private $method;
-    private $url;
+    private $address;
     private $headers;
 
     private $protocolVersion = '1.1';
 
-    public function __construct($method, $url, array $headers = array())
+    public function __construct($method, $address, array $headers = array())
     {
         $this->method = $method;
-        $this->url = $url;
+        $this->address = AddressFactory::create($address);
         $this->headers = $headers;
     }
 
     private function mergeDefaultheaders(array $headers)
     {
-        $port = ($this->getDefaultPort() === $this->getPort()) ? '' : ":{$this->getPort()}";
+        $port = ($this->getDefaultPort() === $this->getPort()) ? '' : ':' . $this->getPort();
         $connectionHeaders = ('1.1' === $this->protocolVersion) ? array('Connection' => 'close') : array();
 
         return array_merge(
@@ -32,30 +32,40 @@ class RequestData
         );
     }
 
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
     public function getScheme()
     {
-        return parse_url($this->url, PHP_URL_SCHEME);
+        $url = $this->address->getHttpAddress();
+
+        return parse_url($url, PHP_URL_SCHEME);
     }
 
     public function getHost()
     {
-        return parse_url($this->url, PHP_URL_HOST);
+        return $this->address->getHost();
     }
 
     public function getPort()
     {
-        return (int) parse_url($this->url, PHP_URL_PORT) ?: $this->getDefaultPort();
+        return $this->address->getPort();
     }
 
     public function getDefaultPort()
     {
-        return ('https' === $this->getScheme()) ? 443 : 80;
+        return ($this->address->isSecure())
+            ? HttpAddress::SECURE_PORT
+            : HttpAddress::STANDARD_PORT;
     }
 
     public function getPath()
     {
-        $path = parse_url($this->url, PHP_URL_PATH) ?: '/';
-        $queryString = parse_url($this->url, PHP_URL_QUERY);
+        $url = $this->address->getHttpAddress();
+        $path = parse_url($url, PHP_URL_PATH) ?: '/';
+        $queryString = parse_url($url, PHP_URL_QUERY);
 
         return $path.($queryString ? "?$queryString" : '');
     }
