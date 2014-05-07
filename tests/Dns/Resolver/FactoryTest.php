@@ -3,6 +3,7 @@
 namespace React\Tests\Dns\Resolver;
 
 use React\Dns\Resolver\Factory;
+use React\Socket\AddressFactory;
 
 class FactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -12,7 +13,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $loop = $this->getMock('React\EventLoop\LoopInterface');
 
         $factory = new Factory();
-        $resolver = $factory->create('8.8.8.8:53', $loop);
+        $resolver = $factory->create('udp://8.8.8.8:53', $loop);
 
         $this->assertInstanceOf('React\Dns\Resolver\Resolver', $resolver);
     }
@@ -23,10 +24,10 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $loop = $this->getMock('React\EventLoop\LoopInterface');
 
         $factory = new Factory();
-        $resolver = $factory->create('8.8.8.8', $loop);
+        $resolver = $factory->create('udp://8.8.8.8', $loop);
 
         $this->assertInstanceOf('React\Dns\Resolver\Resolver', $resolver);
-        $this->assertSame('8.8.8.8:53', $this->getResolverPrivateMemberValue($resolver, 'nameserver'));
+        $this->assertEquals(AddressFactory::create('udp://8.8.8.8:53'), $this->getResolverPrivateMemberValue($resolver, 'nameserver'));
     }
 
     /** @test */
@@ -35,7 +36,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $loop = $this->getMock('React\EventLoop\LoopInterface');
 
         $factory = new Factory();
-        $resolver = $factory->createCached('8.8.8.8:53', $loop);
+        $resolver = $factory->createCached('udp://8.8.8.8:53', $loop);
 
         $this->assertInstanceOf('React\Dns\Resolver\Resolver', $resolver);
         $this->assertInstanceOf('React\Dns\Query\CachedExecutor', $this->getResolverPrivateMemberValue($resolver, 'executor'));
@@ -53,18 +54,18 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $resolver = $factory->create($input, $loop);
 
         $this->assertInstanceOf('React\Dns\Resolver\Resolver', $resolver);
-        $this->assertSame($expected, $this->getResolverPrivateMemberValue($resolver, 'nameserver'));
+        $this->assertEquals($expected, $this->getResolverPrivateMemberValue($resolver, 'nameserver'));
     }
 
     public static function factoryShouldAddDefaultPortProvider()
     {
         return array(
-            array('8.8.8.8',        '8.8.8.8:53'),
-            array('1.2.3.4:5',      '1.2.3.4:5'),
-            array('localhost',      'localhost:53'),
-            array('localhost:1234', 'localhost:1234'),
-            array('::1',            '[::1]:53'),
-            array('[::1]:53',       '[::1]:53')
+            array('udp://8.8.8.8',        AddressFactory::create('udp://8.8.8.8:53')),
+            array('udp://1.2.3.4:5',      'udp://1.2.3.4:5'),
+            array('udp://localhost',      'udp://localhost:53'),
+            array('udp://localhost:1234', 'udp://localhost:1234'),
+            // array('udp://::1',            'udp://[::1]:53'),
+            array('udp://[::1]:53',       'udp://[::1]:53')
         );
     }
 

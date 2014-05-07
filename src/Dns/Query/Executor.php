@@ -8,6 +8,10 @@ use React\Dns\Protocol\Parser;
 use React\Dns\Protocol\BinaryDumper;
 use React\EventLoop\LoopInterface;
 use React\Promise\Deferred;
+use React\Socket\AddressFactory;
+use React\Socket\RemoteAddressInterface;
+use React\Socket\TcpAddress;
+use React\Socket\UdpAddress;
 use React\Socket\Connection;
 
 class Executor implements ExecutorInterface
@@ -28,11 +32,21 @@ class Executor implements ExecutorInterface
     public function query($nameserver, Query $query)
     {
         $request = $this->prepareRequest($query);
-
         $queryData = $this->dumper->toBinary($request);
-        $transport = strlen($queryData) > 512 ? 'tcp' : 'udp';
 
-        return $this->doQuery($nameserver, $transport, $queryData, $query->name);
+        if (false === ($nameserver instanceof RemoteAddressInterface)) {
+            $nameserver = AddressFactory::create($nameserver);
+        }
+
+        if (strlen($queryData) > 512 && $nameserver instanceof UdpAddress) {
+            $nameserver = $nameserver->toTcpAddress();
+        }
+
+        else if ($nameserver instanceof TcpAddress) {
+            $nameserver = $nameserver->toUdpAddress();
+        }
+
+        return $this->doQuery($nameserver, $queryData, $query->name);
     }
 
     public function prepareRequest(Query $query)
@@ -46,7 +60,7 @@ class Executor implements ExecutorInterface
         return $request;
     }
 
-    public function doQuery($nameserver, $transport, $queryData, $name)
+    public function doQuery(RemoteAddressInterface $nameserver, $queryData, $name)
     {
         $parser = $this->parser;
         $loop = $this->loop;
@@ -55,7 +69,7 @@ class Executor implements ExecutorInterface
         $deferred = new Deferred();
 
         $retryWithTcp = function () use ($nameserver, $queryData, $name) {
-            return $this->doQuery($nameserver, 'tcp', $queryData, $name);
+            return $this->doQuery($nameserver->toTcpAddress(), $queryData, $name);
         };
 
         $timer = $this->loop->addTimer($this->timeout, function () use (&$conn, $name, $deferred) {
@@ -63,8 +77,8 @@ class Executor implements ExecutorInterface
             $deferred->reject(new TimeoutException(sprintf("DNS query for %s timed out", $name)));
         });
 
-        $conn = $this->createConnection($nameserver, $transport);
-        $conn->on('data', function ($data) use ($retryWithTcp, $conn, $parser, $response, $transport, $deferred, $timer) {
+        $conn = $this->createConnection($nameserver);
+        $conn->on('data', function ($data) use ($retryWithTcp, $conn, $parser, $response, $nameserver, $deferred, $timer) {
             $responseReady = $parser->parseChunk($data, $response);
 
             if (!$responseReady) {
@@ -74,7 +88,7 @@ class Executor implements ExecutorInterface
             $timer->cancel();
 
             if ($response->header->isTruncated()) {
-                if ('tcp' === $transport) {
+                if ($nameserver instanceof TcpAddress) {
                     $deferred->reject(new BadServerException('The server set the truncated bit although we issued a TCP request'));
                 } else {
                     $conn->end();
@@ -97,9 +111,13 @@ class Executor implements ExecutorInterface
         return mt_rand(0, 0xffff);
     }
 
-    protected function createConnection($nameserver, $transport)
+    protected function createConnection(RemoteAddressInterface $nameserver)
     {
-        $fd = stream_socket_client("$transport://$nameserver");
+        if ($nameserver->getPort() === null) {
+            $nameserver->setPort(53);
+        }
+
+        $fd = stream_socket_client($nameserver);
         $conn = new Connection($fd, $this->loop);
 
         return $conn;

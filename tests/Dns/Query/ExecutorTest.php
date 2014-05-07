@@ -7,6 +7,7 @@ use React\Dns\Query\Query;
 use React\Dns\Model\Message;
 use React\Dns\Model\Record;
 use React\Dns\Protocol\BinaryDumper;
+use React\Socket\AddressFactory;
 
 class ExecutorTest extends \PHPUnit_Framework_TestCase
 {
@@ -38,11 +39,11 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
         $this->executor
             ->expects($this->once())
             ->method('createConnection')
-            ->with('8.8.8.8:53', 'udp')
+            ->with(AddressFactory::create('udp://8.8.8.8:53'))
             ->will($this->returnNewConnectionMock());
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $this->executor->query('8.8.8.8:53', $query, function () {}, function () {});
+        $this->executor->query('udp://8.8.8.8:53', $query, function () {}, function () {});
     }
 
     /** @test */
@@ -54,11 +55,11 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
         $this->executor
             ->expects($this->once())
             ->method('createConnection')
-            ->with('8.8.8.8:53', 'tcp')
+            ->with(AddressFactory::create('tcp://8.8.8.8:53'))
             ->will($this->returnNewConnectionMock());
 
         $query = new Query(str_repeat('a', 512).'.igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $this->executor->query('8.8.8.8:53', $query, function () {}, function () {});
+        $this->executor->query('udp://8.8.8.8:53', $query, function () {}, function () {});
     }
 
     /** @test */
@@ -88,16 +89,16 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
         $this->executor
             ->expects($this->at(0))
             ->method('createConnection')
-            ->with('8.8.8.8:53', 'udp')
+            ->with(AddressFactory::create('udp://8.8.8.8:53'))
             ->will($this->returnNewConnectionMock());
         $this->executor
             ->expects($this->at(1))
             ->method('createConnection')
-            ->with('8.8.8.8:53', 'tcp')
+            ->with(AddressFactory::create('tcp://8.8.8.8:53'))
             ->will($this->returnNewConnectionMock());
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $this->executor->query('8.8.8.8:53', $query, function () {}, function () {});
+        $this->executor->query('tcp://8.8.8.8:53', $query, function () {}, function () {});
     }
 
     /** @test */
@@ -120,7 +121,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
         $this->executor
             ->expects($this->once())
             ->method('createConnection')
-            ->with('8.8.8.8:53', 'tcp')
+            ->with(AddressFactory::create('tcp://8.8.8.8:53'))
             ->will($this->returnNewConnectionMock());
 
         $mock = $this->createCallableMock();
@@ -133,7 +134,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             }));
 
         $query = new Query(str_repeat('a', 512).'.igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $this->executor->query('8.8.8.8:53', $query)
+        $this->executor->query('udp://8.8.8.8:53', $query)
             ->then($this->expectCallableNever(), $mock);
     }
 
@@ -152,7 +153,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
         $this->executor
             ->expects($this->at(0))
             ->method('createConnection')
-            ->with('8.8.8.8:53', 'udp')
+            ->with(AddressFactory::create('udp://8.8.8.8:53'))
             ->will($this->returnNewConnectionMock());
 
 
@@ -168,7 +169,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($timer));
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $this->executor->query('8.8.8.8:53', $query, function () {}, function () {});
+        $this->executor->query('udp://8.8.8.8:53', $query, function () {}, function () {});
     }
 
     /** @test */
@@ -178,7 +179,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
         $this->executor
             ->expects($this->at(0))
             ->method('createConnection')
-            ->with('8.8.8.8:53', 'udp')
+            ->with(AddressFactory::create('udp://8.8.8.8:53'))
             ->will($this->returnNewConnectionMock());
 
         $this->loop
@@ -205,7 +206,7 @@ class ExecutorTest extends \PHPUnit_Framework_TestCase
             ));
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $this->executor->query('8.8.8.8:53', $query)->then($callback, $errorback);
+        $this->executor->query('udp://8.8.8.8:53', $query)->then($callback, $errorback);
 
         $this->assertNotNull($timerCallback);
         $timerCallback();
