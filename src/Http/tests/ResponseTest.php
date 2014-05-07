@@ -3,7 +3,6 @@
 namespace React\Tests\Http;
 
 use React\Http\Response;
-use React\Tests\Socket\TestCase;
 
 class ResponseTest extends TestCase
 {

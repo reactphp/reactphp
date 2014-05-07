@@ -3,7 +3,6 @@
 namespace React\Tests\Stream;
 
 use React\Stream\Buffer;
-use React\Tests\Socket\TestCase;
 
 class BufferTest extends TestCase
 {

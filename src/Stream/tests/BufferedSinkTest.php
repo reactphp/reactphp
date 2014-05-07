@@ -4,7 +4,6 @@ namespace React\Tests\Stream;
 
 use React\Stream\BufferedSink;
 use React\Stream\ReadableStream;
-use React\Tests\Socket\TestCase;
 
 /**
  * @covers React\Stream\BufferedSink

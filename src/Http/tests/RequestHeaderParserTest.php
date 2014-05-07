@@ -3,7 +3,6 @@
 namespace React\Tests\Http;
 
 use React\Http\RequestHeaderParser;
-use React\Tests\Socket\TestCase;
 
 class RequestHeaderParserTest extends TestCase
 {

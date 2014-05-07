@@ -5,7 +5,6 @@ namespace React\Tests\Stream;
 use React\Stream\Buffer;
 use React\Stream\ReadableStream;
 use React\Stream\Util;
-use React\Tests\Socket\TestCase;
 
 /**
  * @covers React\Stream\Util

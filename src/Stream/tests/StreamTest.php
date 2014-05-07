@@ -3,7 +3,6 @@
 namespace React\Tests\Stream;
 
 use React\Stream\Stream;
-use React\Tests\Socket\TestCase;
 
 class StreamTest extends TestCase
 {

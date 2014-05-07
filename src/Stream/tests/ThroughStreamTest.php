@@ -4,7 +4,6 @@ namespace React\Tests\Stream;
 
 use React\Stream\ReadableStream;
 use React\Stream\ThroughStream;
-use React\Tests\Socket\TestCase;
 
 /**
  * @covers React\Stream\ThroughStream

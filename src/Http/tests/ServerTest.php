@@ -3,9 +3,6 @@
 namespace React\Tests\Http;
 
 use React\Http\Server;
-use React\Tests\Socket\TestCase;
-use React\Tests\Socket\Stub\ServerStub;
-use React\Tests\Socket\Stub\ConnectionStub;
 
 class ServerTest extends TestCase
 {

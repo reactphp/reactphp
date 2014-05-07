@@ -1,5 +1,5 @@
 <?php
 
-$loader = require __DIR__ . '/../vendor/autoload.php';
-$loader->addPsr4('React\\Tests\\', __DIR__);
-
+foreach (glob(__DIR__ . '/../src/*/tests/bootstrap.php') as $b) {
+    include $b;
+}

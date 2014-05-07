@@ -7,7 +7,6 @@ use React\HttpClient\RequestData;
 use React\Stream\Stream;
 use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
-use React\Tests\Socket\TestCase;
 
 class RequestTest extends TestCase
 {

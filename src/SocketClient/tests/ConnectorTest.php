@@ -5,7 +5,6 @@ namespace React\Tests\SocketClient;
 use React\EventLoop\StreamSelectLoop;
 use React\Socket\Server;
 use React\SocketClient\Connector;
-use React\Tests\Socket\TestCase;
 
 class ConnectorTest extends TestCase
 {

@@ -2,8 +2,6 @@
 
 namespace React\Tests\EventLoop;
 
-use React\Tests\Socket\TestCase;
-
 abstract class AbstractLoopTest extends TestCase
 {
     protected $loop;
