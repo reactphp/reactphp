@@ -2,7 +2,7 @@
 
 namespace React\Socket;
 
-interface TcpAddressInterface extends AddressInterface
+interface UnixAddressInterface extends AddressInterface
 {
     public function getFilename();
 }
