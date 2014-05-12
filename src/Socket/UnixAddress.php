@@ -2,7 +2,7 @@
 
 namespace React\Socket;
 
-class UnixAddress implements AddressInterface
+class UnixAddress implements UnixAddressInterface
 {
     const EXPRESSION = '%^unix://(?<resource>.+)$%';
 
