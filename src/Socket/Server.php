@@ -58,9 +58,19 @@ class Server extends EventEmitter implements ServerInterface
 
     public function shutdown()
     {
-        $this->loop->removeStream($this->master);
-        fclose($this->master);
+        if (is_resource($this->master)) {
+            $this->loop->removeStream($this->master);
+            fclose($this->master);
+        }
+
         $this->removeAllListeners();
+
+        if (
+            ($this->address instanceof UnixAddressInterface)
+            && file_exists($this->address->getFilename())
+        ) {
+            unlink($this->address->getFilename());
+        }
     }
 
     public function createConnection($socket)
