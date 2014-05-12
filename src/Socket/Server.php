@@ -22,6 +22,17 @@ class Server extends EventEmitter implements ServerInterface
     {
         $this->address = AddressFactory::create($address);
 
+        // Unfortunately there does not appear to be a good way to check
+        // if a unix socket file is still active, as a result we will unlink
+        // the socket file before attempting to connect. This will leave any
+        // previous server using the socket unreachable but still running.
+        if (
+            $this->address instanceof UnixAddressInterface
+            && file_exists($this->address->getFilename())
+        ) {
+            unlink($this->address->getFilename());
+        }
+
         $this->master = @stream_socket_server($this->address, $errno, $errstr);
 
         if (false === $this->master) {
@@ -66,7 +77,7 @@ class Server extends EventEmitter implements ServerInterface
         $this->removeAllListeners();
 
         if (
-            ($this->address instanceof UnixAddressInterface)
+            $this->address instanceof UnixAddressInterface
             && file_exists($this->address->getFilename())
         ) {
             unlink($this->address->getFilename());
