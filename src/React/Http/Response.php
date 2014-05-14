@@ -112,6 +112,7 @@ class Response extends EventEmitter implements WritableStreamInterface
     public function close()
     {
         if ($this->closed) {
+            $this->removeAllListeners();
             return;
         }
 

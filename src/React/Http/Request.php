@@ -11,6 +11,7 @@ use React\Stream\Util;
 class Request extends EventEmitter implements ReadableStreamInterface
 {
     private $conn;
+    private $closed = false;
     private $readable = true;
     private $method;
     private $path;
@@ -80,6 +81,13 @@ class Request extends EventEmitter implements ReadableStreamInterface
 
     public function close()
     {
+        if ($this->closed) {
+            $this->removeAllListeners();
+            return;
+        }
+        
+        $this->closed = true;
+        
         $this->readable = false;
         $this->emit('end');
         $this->stopListeningToConn();
@@ -99,7 +107,7 @@ class Request extends EventEmitter implements ReadableStreamInterface
         
         $this->connListeners = array(
             'end'   => function () use ($request) {
-                $request->emit('end');
+                $request->close();
             },
             'data'  => function ($data) use ($request) {
                 $request->emit('data', array($data));
