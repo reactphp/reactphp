@@ -13,25 +13,13 @@ class Response extends EventEmitter implements WritableStreamInterface
     private $conn;
     private $headWritten = false;
     private $chunkedEncoding = true;
+    private $connListeners;
 
     public function __construct(ConnectionInterface $conn)
     {
         $this->conn = $conn;
-
-        $that = $this;
-
-        $this->conn->on('end', function () use ($that) {
-            $that->close();
-        });
-
-        $this->conn->on('error', function ($error) use ($that) {
-            $that->emit('error', array($error, $that));
-            $that->close();
-        });
-
-        $this->conn->on('drain', function () use ($that) {
-            $that->emit('drain');
-        });
+        
+        $this->listenToConn();
     }
 
     public function isWritable()
@@ -117,8 +105,8 @@ class Response extends EventEmitter implements WritableStreamInterface
         }
 
         $this->emit('end');
+        $this->stopListeningToConn();
         $this->removeAllListeners();
-        $this->conn->end();
     }
 
     public function close()
@@ -131,7 +119,37 @@ class Response extends EventEmitter implements WritableStreamInterface
 
         $this->writable = false;
         $this->emit('close');
+        $this->stopListeningToConn();
         $this->removeAllListeners();
         $this->conn->close();
+    }
+    
+    private function listenToConn()
+    {
+        $response = $this;
+        
+        $this->connListeners = array(
+            'end'   => array($this, 'close'),
+            'error' => function ($error) use ($response) {
+                $response->emit('error', array($error, $response));
+                $response->close();
+            },
+            'drain' => function () use ($response) {
+                $response->emit('drain');
+            },
+        );
+        
+        foreach ($this->connListeners as $event => $listener) {
+            $this->conn->on($event, $listener);
+        }
+    }
+    
+    private function stopListeningToConn()
+    {
+        foreach ($this->connListeners as $event => $listener) {
+            $this->conn->removeListener($event, $listener);
+        }
+        
+        $this->connListeners = array();
     }
 }

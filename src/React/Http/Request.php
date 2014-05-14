@@ -2,6 +2,7 @@
 
 namespace React\Http;
 
+use React\Socket\ConnectionInterface;
 use Evenement\EventEmitter;
 use React\Stream\ReadableStreamInterface;
 use React\Stream\WritableStreamInterface;
@@ -9,20 +10,25 @@ use React\Stream\Util;
 
 class Request extends EventEmitter implements ReadableStreamInterface
 {
+    private $conn;
     private $readable = true;
     private $method;
     private $path;
     private $query;
     private $httpVersion;
     private $headers;
+    private $connListeners;
 
-    public function __construct($method, $path, $query = array(), $httpVersion = '1.1', $headers = array())
+    public function __construct(ConnectionInterface $conn, $method, $path, $query = array(), $httpVersion = '1.1', $headers = array())
     {
+        $this->conn = $conn;
         $this->method = $method;
         $this->path = $path;
         $this->query = $query;
         $this->httpVersion = $httpVersion;
         $this->headers = $headers;
+        
+        $this->listenToConn();
     }
 
     public function getMethod()
@@ -62,11 +68,13 @@ class Request extends EventEmitter implements ReadableStreamInterface
 
     public function pause()
     {
+        $this->conn->pause();
         $this->emit('pause');
     }
 
     public function resume()
     {
+        $this->conn->resume();
         $this->emit('resume');
     }
 
@@ -74,6 +82,7 @@ class Request extends EventEmitter implements ReadableStreamInterface
     {
         $this->readable = false;
         $this->emit('end');
+        $this->stopListeningToConn();
         $this->removeAllListeners();
     }
 
@@ -82,5 +91,32 @@ class Request extends EventEmitter implements ReadableStreamInterface
         Util::pipe($this, $dest, $options);
 
         return $dest;
+    }
+    
+    private function listenToConn()
+    {
+        $request = $this;
+        
+        $this->connListeners = array(
+            'end'   => function () use ($request) {
+                $request->emit('end');
+            },
+            'data'  => function ($data) use ($request) {
+                $request->emit('data', array($data));
+            },
+        );
+        
+        foreach ($this->connListeners as $event => $listener) {
+            $this->conn->on($event, $listener);
+        }
+    }
+    
+    private function stopListeningToConn()
+    {
+        foreach ($this->connListeners as $event => $listener) {
+            $this->conn->removeListener($event, $listener);
+        }
+        
+        $this->connListeners = array();
     }
 }
