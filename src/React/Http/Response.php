@@ -130,9 +130,7 @@ class Response extends EventEmitter implements WritableStreamInterface
         $response = $this;
         
         $this->connListeners = array(
-            'end'   => function () use ($response) {
-                $response->close();
-            },
+            'end'   => array($this, 'close'),
             'error' => function ($error) use ($response) {
                 $response->emit('error', array($error, $response));
                 $response->close();

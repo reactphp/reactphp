@@ -106,9 +106,7 @@ class Request extends EventEmitter implements ReadableStreamInterface
         $request = $this;
         
         $this->connListeners = array(
-            'end'   => function () use ($request) {
-                $request->close();
-            },
+            'end'   => array($this, 'close'),
             'data'  => function ($data) use ($request) {
                 $request->emit('data', array($data));
             },

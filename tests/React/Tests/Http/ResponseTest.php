@@ -112,7 +112,7 @@ class ResponseTest extends TestCase
         $conn
             ->expects($this->at(0))
             ->method('on')
-            ->with('end', $this->isInstanceOf('Closure'));
+            ->with('end', $this->isType('callable'));
         $conn
             ->expects($this->at(1))
             ->method('on')
@@ -120,7 +120,7 @@ class ResponseTest extends TestCase
         $conn
             ->expects($this->at(2))
             ->method('on')
-            ->with('drain', $this->isInstanceOf('Closure'));
+            ->with('drain', $this->isType('callable'));
 
         $response = new Response($conn);
     }

@@ -11,17 +11,14 @@ class Server extends EventEmitter implements ServerInterface
 {
     public function __construct(SocketServerInterface $io)
     {
-        $server = $this;
-
-        $io->on('connection', function ($conn) use ($server) {
-            // TODO: chunked transfer encoding (also for outgoing data)
-            // TODO: multipart parsing
-            $server->awaitRequest($conn);
-        });
+        $io->on('connection', array($this, 'awaitRequest'));
     }
     
     public function awaitRequest(ConnectionInterface $conn)
     {
+        // TODO: chunked transfer encoding (also for outgoing data)
+        // TODO: multipart parsing
+        
         $server = $this;
         
         $parser = new RequestHeaderParser($conn);
