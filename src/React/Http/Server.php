@@ -9,46 +9,42 @@ use React\Socket\ConnectionInterface;
 /** @event request */
 class Server extends EventEmitter implements ServerInterface
 {
-    private $io;
-
     public function __construct(SocketServerInterface $io)
     {
-        $this->io = $io;
-
+        $io->on('connection', array($this, 'awaitRequest'));
+    }
+    
+    public function awaitRequest(ConnectionInterface $conn)
+    {
+        // TODO: chunked transfer encoding (also for outgoing data)
+        // TODO: multipart parsing
+        
         $server = $this;
-
-        $this->io->on('connection', function ($conn) use ($server) {
-            // TODO: http 1.1 keep-alive
-            // TODO: chunked transfer encoding (also for outgoing data)
-            // TODO: multipart parsing
-
-            $parser = new RequestHeaderParser();
-            $parser->on('headers', function (Request $request, $bodyBuffer) use ($server, $conn, $parser) {
-                $server->handleRequest($conn, $request, $bodyBuffer);
-
-                $conn->removeListener('data', array($parser, 'feed'));
-                $conn->on('end', function () use ($request) {
-                    $request->emit('end');
-                });
-                $conn->on('data', function ($data) use ($request) {
-                    $request->emit('data', array($data));
-                });
-                $request->on('pause', function () use ($conn) {
-                    $conn->emit('pause');
-                });
-                $request->on('resume', function () use ($conn) {
-                    $conn->emit('resume');
-                });
-            });
-
-            $conn->on('data', array($parser, 'feed'));
+        
+        $parser = new RequestHeaderParser($conn);
+        
+        $parser->on('headers', function (Request $request, $bodyBuffer) use ($server, $conn) {
+            $server->handleRequest($conn, $request, $bodyBuffer);
         });
     }
 
     public function handleRequest(ConnectionInterface $conn, Request $request, $bodyBuffer)
     {
-        $response = new Response($conn);
-        $response->on('close', array($request, 'close'));
+        $requestHttpVersion = $request->getHttpVersion();
+        
+        if ('1.0' === $requestHttpVersion) {
+            $keepAlive = (0 === strcasecmp('keep-alive', $request->getHeader('connection')));
+        } else {
+            $keepAlive = (0 !== strcasecmp('close', $request->getHeader('connection')));
+        }
+        
+        $response = new Response($conn, $keepAlive, $requestHttpVersion);
+        
+        $server = $this;
+        $response->on('end', function () use ($request, $server, $conn) {
+            $request->close();
+            $server->awaitRequest($conn);
+        });
 
         if (!$this->listeners('request')) {
             $response->end();

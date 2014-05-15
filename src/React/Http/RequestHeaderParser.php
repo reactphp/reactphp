@@ -2,6 +2,7 @@
 
 namespace React\Http;
 
+use React\Socket\ConnectionInterface;
 use Evenement\EventEmitter;
 use Guzzle\Parser\Message\MessageParser;
 
@@ -11,9 +12,18 @@ use Guzzle\Parser\Message\MessageParser;
  */
 class RequestHeaderParser extends EventEmitter
 {
+    private $conn;
     private $buffer = '';
     private $maxSize = 4096;
+    private $connListeners;
 
+    public function __construct(ConnectionInterface $conn)
+    {
+        $this->conn = $conn;
+        
+        $this->listenToConn();
+    }
+        
     public function feed($data)
     {
         if (strlen($this->buffer) + strlen($data) > $this->maxSize) {
@@ -23,11 +33,12 @@ class RequestHeaderParser extends EventEmitter
         }
 
         $this->buffer .= $data;
-
+        
         if (false !== strpos($this->buffer, "\r\n\r\n")) {
             list($request, $bodyBuffer) = $this->parseRequest($this->buffer);
 
             $this->emit('headers', array($request, $bodyBuffer));
+            $this->stopListeningToConn();
             $this->removeAllListeners();
         }
     }
@@ -45,6 +56,7 @@ class RequestHeaderParser extends EventEmitter
         }
 
         $request = new Request(
+            $this->conn,
             $parsed['method'],
             $parsed['request_url']['path'],
             $parsedQuery,
@@ -53,5 +65,30 @@ class RequestHeaderParser extends EventEmitter
         );
 
         return array($request, $bodyBuffer);
+    }
+    
+    private function listenToConn()
+    {
+        $parser = $this;
+        
+        $this->connListeners = array(
+            'end'   => function () use ($parser) {
+                $parser->removeAllListeners();
+            },
+            'data'  => array($this, 'feed'),
+        );
+        
+        foreach ($this->connListeners as $event => $listener) {
+            $this->conn->on($event, $listener);
+        }
+    }
+    
+    private function stopListeningToConn()
+    {
+        foreach ($this->connListeners as $event => $listener) {
+            $this->conn->removeListener($event, $listener);
+        }
+        
+        $this->connListeners = array();
     }
 }

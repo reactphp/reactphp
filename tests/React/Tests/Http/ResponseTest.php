@@ -21,7 +21,7 @@ class ResponseTest extends TestCase
             ->method('write')
             ->with($expected);
 
-        $response = new Response($conn);
+        $response = new Response($conn, true, '1.1');
         $response->writeHead();
     }
 
@@ -39,7 +39,7 @@ class ResponseTest extends TestCase
             ->method('write')
             ->with($expected);
 
-        $response = new Response($conn);
+        $response = new Response($conn, true, '1.1');
         $response->writeHead(200, array('Content-Length' => 22));
     }
 
@@ -63,7 +63,7 @@ class ResponseTest extends TestCase
             ->method('write')
             ->with("0\r\n\r\n");
 
-        $response = new Response($conn);
+        $response = new Response($conn, true, '1.1');
         $response->writeHead();
 
         $response->write('Hello');
@@ -77,7 +77,7 @@ class ResponseTest extends TestCase
         $ended = false;
 
         $conn = $this->getMock('React\Socket\ConnectionInterface');
-        $response = new Response($conn);
+        $response = new Response($conn, true, '1.1');
 
         $response->on('end', function () use (&$ended) {
             $ended = true;
@@ -100,7 +100,7 @@ class ResponseTest extends TestCase
             ->method('write')
             ->with($this->stringContains("HTTP/1.1 200 OK\r\n"));
 
-        $response = new Response($conn);
+        $response = new Response($conn, true, '1.1');
         $response->writeContinue();
         $response->writeHead();
     }
@@ -112,7 +112,7 @@ class ResponseTest extends TestCase
         $conn
             ->expects($this->at(0))
             ->method('on')
-            ->with('end', $this->isInstanceOf('Closure'));
+            ->with('end', $this->isType('callable'));
         $conn
             ->expects($this->at(1))
             ->method('on')
@@ -120,9 +120,9 @@ class ResponseTest extends TestCase
         $conn
             ->expects($this->at(2))
             ->method('on')
-            ->with('drain', $this->isInstanceOf('Closure'));
+            ->with('drain', $this->isType('callable'));
 
-        $response = new Response($conn);
+        $response = new Response($conn, true, '1.1');
     }
 
     /** @test */
@@ -141,7 +141,7 @@ class ResponseTest extends TestCase
             ->method('write')
             ->with($expected);
 
-        $response = new Response($conn);
+        $response = new Response($conn, true, '1.1');
         $response->writeHead(200, array("Foo\nBar" => "Baz\rQux"));
     }
 
@@ -160,7 +160,7 @@ class ResponseTest extends TestCase
             ->method('write')
             ->with($expected);
 
-        $response = new Response($conn);
+        $response = new Response($conn, true, '1.1');
         $response->writeHead(700);
     }
 }
