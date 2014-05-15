@@ -30,7 +30,15 @@ class Server extends EventEmitter implements ServerInterface
 
     public function handleRequest(ConnectionInterface $conn, Request $request, $bodyBuffer)
     {
-        $response = new Response($conn);
+        $requestHttpVersion = $request->getHttpVersion();
+        
+        if ('1.0' === $requestHttpVersion) {
+            $keepAlive = (0 === strcasecmp('keep-alive', $request->getHeader('connection')));
+        } else {
+            $keepAlive = (0 !== strcasecmp('close', $request->getHeader('connection')));
+        }
+        
+        $response = new Response($conn, $keepAlive, $requestHttpVersion);
         
         $server = $this;
         $response->on('end', function () use ($request, $server, $conn) {

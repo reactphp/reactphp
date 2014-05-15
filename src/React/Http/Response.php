@@ -11,13 +11,17 @@ class Response extends EventEmitter implements WritableStreamInterface
     private $closed = false;
     private $writable = true;
     private $conn;
+    private $keepAlive;
+    private $requestHttpVersion;
     private $headWritten = false;
     private $chunkedEncoding = true;
     private $connListeners;
 
-    public function __construct(ConnectionInterface $conn)
+    public function __construct(ConnectionInterface $conn, $keepAlive, $requestHttpVersion)
     {
         $this->conn = $conn;
+        $this->keepAlive = $keepAlive;
+        $this->requestHttpVersion = $requestHttpVersion;
         
         $this->listenToConn();
     }
@@ -50,6 +54,17 @@ class Response extends EventEmitter implements WritableStreamInterface
             array('X-Powered-By' => 'React/alpha'),
             $headers
         );
+        
+        if ('1.0' === $this->requestHttpVersion) {
+            // 1.0 defaults to non-persistent
+            if ($this->keepAlive) {
+                $headers['Connection'] = 'Keep-Alive';
+            }
+        } elseif (!$this->keepAlive) {
+            // 1.1 defaults to persistent
+            $headers['Connection'] = 'close';
+        }
+        
         if ($this->chunkedEncoding) {
             $headers['Transfer-Encoding'] = 'chunked';
         }
@@ -107,6 +122,10 @@ class Response extends EventEmitter implements WritableStreamInterface
         $this->emit('end');
         $this->stopListeningToConn();
         $this->removeAllListeners();
+        
+        if (!$this->keepAlive) {
+            $this->conn->close();
+        }
     }
 
     public function close()

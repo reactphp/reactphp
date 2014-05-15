@@ -18,16 +18,27 @@ class Request extends EventEmitter implements ReadableStreamInterface
     private $query;
     private $httpVersion;
     private $headers;
+    private $normalizedHeaders = array();
     private $connListeners;
 
-    public function __construct(ConnectionInterface $conn, $method, $path, $query = array(), $httpVersion = '1.1', $headers = array())
-    {
+    public function __construct(
+        ConnectionInterface $conn,
+        $method,
+        $path,
+        $query = array(),
+        $httpVersion = '1.1',
+        $headers = array()
+    ) {
         $this->conn = $conn;
         $this->method = $method;
         $this->path = $path;
         $this->query = $query;
         $this->httpVersion = $httpVersion;
         $this->headers = $headers;
+        
+        foreach ($headers as $name => &$value) {
+            $this->normalizedHeaders[strtolower($name)] = &$value;
+        }
         
         $this->listenToConn();
     }
@@ -56,10 +67,21 @@ class Request extends EventEmitter implements ReadableStreamInterface
     {
         return $this->headers;
     }
+    
+    public function getHeader($name)
+    {
+        $name = strtolower($name);
+        
+        if (!array_key_exists($name, $this->normalizedHeaders)) {
+            return null;
+        }
+        
+        return $this->normalizedHeaders[$name];
+    }
 
     public function expectsContinue()
     {
-        return isset($this->headers['Expect']) && '100-continue' === $this->headers['Expect'];
+        return ('100-continue' === $this->getHeader('expect'));
     }
 
     public function isReadable()
