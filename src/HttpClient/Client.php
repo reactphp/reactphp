@@ -19,15 +19,16 @@ class Client
 
     public function request($method, $url, array $headers = array())
     {
-        $requestData = new RequestData($method, $url, $headers);
-        $connectionManager = $this->getConnectorForScheme($requestData->getScheme());
+        $address = AddressFactory::create($url);
+        $requestData = new RequestData($method, $address, $headers);
+        $connectionManager = $this->getConnectorForScheme($address);
         return new Request($connectionManager, $requestData);
 
     }
 
-    private function getConnectorForScheme($scheme)
+    private function getConnectorForScheme(HttpAddressInterface $address)
     {
-        return ('https' === $scheme) ? $this->secureConnector : $this->connector;
+        return ($address->isSecure()) ? $this->secureConnector : $this->connector;
     }
 }
 

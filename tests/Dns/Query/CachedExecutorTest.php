@@ -20,7 +20,7 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
         $executor
             ->expects($this->once())
             ->method('query')
-            ->with('8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'))
+            ->with('tcp://8.8.8.8', $this->isInstanceOf('React\Dns\Query\Query'))
             ->will($this->returnValue($this->createPromiseMock()));
 
         $cache = $this->getMockBuilder('React\Dns\Query\RecordCache')
@@ -33,7 +33,7 @@ class CachedExecutorTest extends \PHPUnit_Framework_TestCase
         $cachedExecutor = new CachedExecutor($executor, $cache);
 
         $query = new Query('igor.io', Message::TYPE_A, Message::CLASS_IN, 1345656451);
-        $cachedExecutor->query('8.8.8.8', $query);
+        $cachedExecutor->query('tcp://8.8.8.8', $query);
     }
 
     /**

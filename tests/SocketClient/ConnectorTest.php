@@ -17,7 +17,7 @@ class ConnectorTest extends TestCase
         $dns = $this->createResolverMock();
 
         $connector = new Connector($loop, $dns);
-        $connector->create('127.0.0.1', 9999)
+        $connector->create('tcp://127.0.0.1:9999')
                 ->then($this->expectCallableNever(), $this->expectCallableOnce());
 
         $loop->run();
@@ -35,12 +35,12 @@ class ConnectorTest extends TestCase
         $server->on('connection', function () use ($server, $loop) {
             $server->shutdown();
         });
-        $server->listen(9999);
+        $server->listen('tcp://127.0.0.1:9999');
 
         $dns = $this->createResolverMock();
 
         $connector = new Connector($loop, $dns);
-        $connector->create('127.0.0.1', 9999)
+        $connector->create('tcp://127.0.0.1:9999')
                 ->then(function ($stream) use (&$capturedStream) {
                     $capturedStream = $stream;
                     $stream->end();
@@ -60,7 +60,7 @@ class ConnectorTest extends TestCase
 
         $connector = new Connector($loop, $dns);
         $connector
-            ->create('::1', 9999)
+            ->create('tcp://[::1]:9999')
             ->then($this->expectCallableNever(), $this->expectCallableOnce());
 
         $loop->run();
@@ -76,13 +76,13 @@ class ConnectorTest extends TestCase
         $server = new Server($loop);
         $server->on('connection', $this->expectCallableOnce());
         $server->on('connection', array($server, 'shutdown'));
-        $server->listen(9999, '::1');
+        $server->listen('tcp://[::1]:9999');
 
         $dns = $this->createResolverMock();
 
         $connector = new Connector($loop, $dns);
         $connector
-            ->create('::1', 9999)
+            ->create('tcp://[::1]:9999')
             ->then(function ($stream) use (&$capturedStream) {
                 $capturedStream = $stream;
                 $stream->end();
