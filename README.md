@@ -2,7 +2,7 @@
 
 Event-driven, non-blocking I/O with PHP.
 
-[![Build Status](https://secure.travis-ci.org/reactphp/react.png?branch=master)](http://travis-ci.org/reactphp/react)
+[![Build Status](https://secure.travis-ci.org/reactphp/react.png?branch=split)](http://travis-ci.org/reactphp/react)
 
 ## Install
 
@@ -84,7 +84,7 @@ $loop->run();
 ## Documentation
 
 Superficial documentation can be found in the README files of the individual
-components. See `src/*/README.md`.
+components. See `vendor/react/*/src/README.md`.
 
 ## Community
 
