@@ -1,2 +1,3 @@
 .subsplit
+composer.lock
 vendor
