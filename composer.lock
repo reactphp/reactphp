@@ -102,12 +102,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/cache.git",
-                "reference": "46b285569b693e1ef5d0383daf2a04a49c02bb96"
+                "reference": "41bf353ae98eda64ef71b60332724c3a6fbdc7a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/cache/zipball/46b285569b693e1ef5d0383daf2a04a49c02bb96",
-                "reference": "46b285569b693e1ef5d0383daf2a04a49c02bb96",
+                "url": "https://api.github.com/repos/reactphp/cache/zipball/41bf353ae98eda64ef71b60332724c3a6fbdc7a8",
+                "reference": "41bf353ae98eda64ef71b60332724c3a6fbdc7a8",
                 "shasum": ""
             },
             "require": {
@@ -133,7 +133,7 @@
             "keywords": [
                 "cache"
             ],
-            "time": "2014-05-25 16:40:49"
+            "time": "2014-06-21 13:02:15"
         },
         {
             "name": "react/child-process",
@@ -141,12 +141,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/child-process.git",
-                "reference": "49a81633c7b08aba8f5af3811b1f0920452075db"
+                "reference": "a75cb3e7d444abfea339bc40ad9ced7ba78d4afa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/child-process/zipball/49a81633c7b08aba8f5af3811b1f0920452075db",
-                "reference": "49a81633c7b08aba8f5af3811b1f0920452075db",
+                "url": "https://api.github.com/repos/reactphp/child-process/zipball/a75cb3e7d444abfea339bc40ad9ced7ba78d4afa",
+                "reference": "a75cb3e7d444abfea339bc40ad9ced7ba78d4afa",
                 "shasum": ""
             },
             "require": {
@@ -154,6 +154,9 @@
                 "php": ">=5.4.0",
                 "react/event-loop": "0.4.*",
                 "react/stream": "0.4.*"
+            },
+            "require-dev": {
+                "sebastian/environment": "~1.0"
             },
             "type": "library",
             "extra": {
@@ -174,7 +177,7 @@
             "keywords": [
                 "process"
             ],
-            "time": "2014-05-25 16:46:37"
+            "time": "2014-08-08 23:27:29"
         },
         {
             "name": "react/dns",
@@ -182,12 +185,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/dns.git",
-                "reference": "1b709f0cbd67b80f8c5347067e068de0b6266cef"
+                "reference": "2f36ddafe682953079222285511a296d34d0cd02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/dns/zipball/1b709f0cbd67b80f8c5347067e068de0b6266cef",
-                "reference": "1b709f0cbd67b80f8c5347067e068de0b6266cef",
+                "url": "https://api.github.com/repos/reactphp/dns/zipball/2f36ddafe682953079222285511a296d34d0cd02",
+                "reference": "2f36ddafe682953079222285511a296d34d0cd02",
                 "shasum": ""
             },
             "require": {
@@ -216,7 +219,7 @@
                 "dns",
                 "dns-resolver"
             ],
-            "time": "2014-05-25 16:56:53"
+            "time": "2014-06-21 13:01:45"
         },
         {
             "name": "react/event-loop",
@@ -224,12 +227,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/event-loop.git",
-                "reference": "61a3b7b43e196b8bd566d7c66832f6de3c484c53"
+                "reference": "27c34c491c8588b1521cd42de4c3c5e21137456a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/61a3b7b43e196b8bd566d7c66832f6de3c484c53",
-                "reference": "61a3b7b43e196b8bd566d7c66832f6de3c484c53",
+                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/27c34c491c8588b1521cd42de4c3c5e21137456a",
+                "reference": "27c34c491c8588b1521cd42de4c3c5e21137456a",
                 "shasum": ""
             },
             "require": {
@@ -260,7 +263,7 @@
                 "asynchronous",
                 "event-loop"
             ],
-            "time": "2014-05-25 17:01:15"
+            "time": "2014-06-18 21:49:21"
         },
         {
             "name": "react/http",
@@ -268,18 +271,20 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/http.git",
-                "reference": "27a92ba45e6082099d2fb2ea5a87ebad06de37de"
+                "reference": "3620c19e92a9c0ca7cdc0f3125135aab0551b3a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/http/zipball/27a92ba45e6082099d2fb2ea5a87ebad06de37de",
-                "reference": "27a92ba45e6082099d2fb2ea5a87ebad06de37de",
+                "url": "https://api.github.com/repos/reactphp/http/zipball/3620c19e92a9c0ca7cdc0f3125135aab0551b3a9",
+                "reference": "3620c19e92a9c0ca7cdc0f3125135aab0551b3a9",
                 "shasum": ""
             },
             "require": {
+                "evenement/evenement": "~2.0",
                 "guzzle/parser": "~3.0",
                 "php": ">=5.4.0",
-                "react/socket": "0.4.*"
+                "react/socket": "0.4.*",
+                "react/stream": "0.4.*"
             },
             "type": "library",
             "extra": {
@@ -300,7 +305,7 @@
             "keywords": [
                 "http"
             ],
-            "time": "2014-05-25 17:01:57"
+            "time": "2014-06-21 13:02:10"
         },
         {
             "name": "react/http-client",
@@ -308,19 +313,22 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/http-client.git",
-                "reference": "27de78b288ba6a657d5fa5a8a69a6ae2ccf8e9a2"
+                "reference": "305567a52d8435223a404c067a9ae14d7f3d5bda"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/http-client/zipball/27de78b288ba6a657d5fa5a8a69a6ae2ccf8e9a2",
-                "reference": "27de78b288ba6a657d5fa5a8a69a6ae2ccf8e9a2",
+                "url": "https://api.github.com/repos/reactphp/http-client/zipball/305567a52d8435223a404c067a9ae14d7f3d5bda",
+                "reference": "305567a52d8435223a404c067a9ae14d7f3d5bda",
                 "shasum": ""
             },
             "require": {
+                "evenement/evenement": "~2.0",
                 "guzzle/parser": "~3.0",
                 "php": ">=5.4.0",
                 "react/dns": "0.4.*",
-                "react/socket-client": "0.4.*"
+                "react/event-loop": "0.4.*",
+                "react/socket-client": "0.4.*",
+                "react/stream": "0.4.*"
             },
             "type": "library",
             "extra": {
@@ -341,7 +349,7 @@
             "keywords": [
                 "http"
             ],
-            "time": "2014-05-25 17:01:38"
+            "time": "2014-06-21 13:02:02"
         },
         {
             "name": "react/promise",
@@ -349,19 +357,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise.git",
-                "reference": "519ea05aed79c46e476239338d19a0f258a43e3d"
+                "reference": "e66547a592d434d0a605195c2da728752d85d12d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise/zipball/519ea05aed79c46e476239338d19a0f258a43e3d",
-                "reference": "519ea05aed79c46e476239338d19a0f258a43e3d",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/e66547a592d434d0a605195c2da728752d85d12d",
+                "reference": "e66547a592d434d0a605195c2da728752d85d12d",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "3.7.*"
             },
             "type": "library",
             "extra": {
@@ -390,7 +395,7 @@
                 }
             ],
             "description": "A lightweight implementation of CommonJS Promises/A for PHP",
-            "time": "2014-05-25 17:27:53"
+            "time": "2014-06-25 17:35:44"
         },
         {
             "name": "react/socket",
@@ -398,12 +403,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/socket.git",
-                "reference": "a6acf405ca53fc6cfbfe7c77778ededff46aa7cc"
+                "reference": "3c9bddaeee617463a407dccb1068997f6f40d77f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/socket/zipball/a6acf405ca53fc6cfbfe7c77778ededff46aa7cc",
-                "reference": "a6acf405ca53fc6cfbfe7c77778ededff46aa7cc",
+                "url": "https://api.github.com/repos/reactphp/socket/zipball/3c9bddaeee617463a407dccb1068997f6f40d77f",
+                "reference": "3c9bddaeee617463a407dccb1068997f6f40d77f",
                 "shasum": ""
             },
             "require": {
@@ -431,7 +436,7 @@
             "keywords": [
                 "Socket"
             ],
-            "time": "2014-05-25 17:02:16"
+            "time": "2014-06-21 13:01:12"
         },
         {
             "name": "react/socket-client",
@@ -439,19 +444,20 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/socket-client.git",
-                "reference": "49620d13020916d7115b95637bec29f6883814e6"
+                "reference": "cc9087cd9e86a5dd2ab6b6f2525d2e6da0d4b6f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/socket-client/zipball/49620d13020916d7115b95637bec29f6883814e6",
-                "reference": "49620d13020916d7115b95637bec29f6883814e6",
+                "url": "https://api.github.com/repos/reactphp/socket-client/zipball/cc9087cd9e86a5dd2ab6b6f2525d2e6da0d4b6f8",
+                "reference": "cc9087cd9e86a5dd2ab6b6f2525d2e6da0d4b6f8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
                 "react/dns": "0.4.*",
                 "react/event-loop": "0.4.*",
-                "react/promise": "~2.0"
+                "react/promise": "~2.0",
+                "react/stream": "0.4.*"
             },
             "type": "library",
             "extra": {
@@ -472,7 +478,7 @@
             "keywords": [
                 "Socket"
             ],
-            "time": "2014-05-25 17:02:39"
+            "time": "2014-06-21 13:01:23"
         },
         {
             "name": "react/stream",
@@ -480,12 +486,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/stream.git",
-                "reference": "bf33f6f8c2c62b9b792b338cff0cf89d1c775a19"
+                "reference": "9a39a7c40de7bee9c1181ca0e3ebdadf2987ab61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/stream/zipball/bf33f6f8c2c62b9b792b338cff0cf89d1c775a19",
-                "reference": "bf33f6f8c2c62b9b792b338cff0cf89d1c775a19",
+                "url": "https://api.github.com/repos/reactphp/stream/zipball/9a39a7c40de7bee9c1181ca0e3ebdadf2987ab61",
+                "reference": "9a39a7c40de7bee9c1181ca0e3ebdadf2987ab61",
                 "shasum": ""
             },
             "require": {
@@ -520,7 +526,7 @@
                 "pipe",
                 "stream"
             ],
-            "time": "2014-05-25 17:02:58"
+            "time": "2014-06-21 13:02:21"
         }
     ],
     "packages-dev": [
@@ -892,17 +898,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.4.5",
+            "version": "v2.5.3",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "fd22bb88c3a6f73c898b39bec185a9e211b06265"
+                "reference": "5a75366ae9ca8b4792cd0083e4ca4dff9fe96f1f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/fd22bb88c3a6f73c898b39bec185a9e211b06265",
-                "reference": "fd22bb88c3a6f73c898b39bec185a9e211b06265",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/5a75366ae9ca8b4792cd0083e4ca4dff9fe96f1f",
+                "reference": "5a75366ae9ca8b4792cd0083e4ca4dff9fe96f1f",
                 "shasum": ""
             },
             "require": {
@@ -911,7 +917,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.4-dev"
+                    "dev-master": "2.5-dev"
                 }
             },
             "autoload": {
@@ -925,19 +931,17 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
-                },
-                {
                     "name": "Symfony Community",
                     "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2014-05-12 09:27:48"
+            "time": "2014-08-05 09:00:40"
         }
     ],
     "aliases": [
@@ -979,10 +983,9 @@
         "react/socket": 20,
         "react/stream": 20
     },
+    "prefer-stable": false,
     "platform": {
         "php": ">=5.4.0"
     },
-    "platform-dev": [
-
-    ]
+    "platform-dev": []
 }
