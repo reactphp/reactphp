@@ -24,6 +24,7 @@ foreach ($files as $file => $url) {
     $read->on('end', function () use ($file, &$files) {
         unset($files[$file]);
         echo "Finished downloading $file\n";
+	exit;
     });
 
     $read->pipe($write);
