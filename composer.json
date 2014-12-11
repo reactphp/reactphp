@@ -9,16 +9,16 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "react/cache": "dev-master as 0.4",
-        "react/child-process": "dev-master",
-        "react/dns": "dev-master",
-        "react/event-loop": "dev-master as 0.4",
-        "react/http-client": "dev-master",
-        "react/http": "dev-master",
-        "react/promise": "dev-master as 2.0",
-        "react/socket-client": "dev-master",
-        "react/socket": "dev-master",
-        "react/stream": "dev-master as 0.4"
+        "react/cache": "0.4.*",
+        "react/child-process": "0.4.*",
+        "react/dns": "0.4.*",
+        "react/event-loop": "0.4.*",
+        "react/http-client": "0.4.*",
+        "react/http": "0.4.*",
+        "react/promise": "~2.1",
+        "react/socket-client": "0.4.*",
+        "react/socket": "0.4.*",
+        "react/stream": "0.4.*"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0"
