@@ -2,7 +2,7 @@
 
 Event-driven, non-blocking I/O with PHP.
 
-[![Build Status](https://secure.travis-ci.org/reactphp/react.png?branch=split)](http://travis-ci.org/reactphp/react)
+[![Build Status](https://secure.travis-ci.org/reactphp/react.png?branch=master)](http://travis-ci.org/reactphp/react)
 
 ### Notice - (May 25th, 2014)
 
@@ -13,14 +13,10 @@ All existing PRs will be evaluated and work will be done with the submitter to m
 
 ## Install
 
-The recommended way to install react is [through composer](http://getcomposer.org).
+The recommended way to install React is [through composer](http://getcomposer.org). Type the following command in your shell environment:
 
-```JSON
-{
-    "require": {
-        "react/react": "0.4.*"
-    }
-}
+```
+php ~/composer.phar require react/react:0.4.*
 ```
 
 ## What is it?
