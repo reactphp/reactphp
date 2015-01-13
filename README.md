@@ -16,7 +16,7 @@ All existing PRs will be evaluated and work will be done with the submitter to m
 The recommended way to install React is [through composer](http://getcomposer.org). Type the following command in your shell environment:
 
 ```
-php ~/composer.phar require react/react:0.4.*
+php ~/composer.phar require react/react
 ```
 
 ## What is it?
