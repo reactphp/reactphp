@@ -9,7 +9,7 @@ use React\EventLoop\LoopInterface;
 class Server extends EventEmitter implements ServerInterface
 {
     public $master;
-    private $loop;
+    protected $loop;
 
     public function __construct(LoopInterface $loop)
     {
