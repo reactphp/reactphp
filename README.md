@@ -62,6 +62,8 @@ Here is an example of a simple HTTP server listening on port 1337:
 ```php
 <?php
 
+require 'vendor/autoload.php';
+
 $i = 0;
 
 $app = function ($request, $response) use (&$i) {
