@@ -19,7 +19,7 @@
 
     <filter>
         <whitelist>
-            <directory>./src/</directory>
+            <directory>./vendor/react/*/src/</directory>
         </whitelist>
     </filter>
 </phpunit>
