@@ -27,17 +27,17 @@ $loop = React\EventLoop\Factory::create();
 $loop->addTimer(
     0,
     function () {
-        echo 'timer' . PHP_EOL;
+        echo 'timer' , PHP_EOL;
     }
 );
 
 $loop->nextTick(
     function ($loop) {
-        echo 'next-tick #1' . PHP_EOL;
+        echo 'next-tick #1' , PHP_EOL;
 
         $loop->nextTick(
             function () {
-                echo 'next-tick #2' . PHP_EOL;
+                echo 'next-tick #2' , PHP_EOL;
             }
         );
     }
@@ -45,11 +45,11 @@ $loop->nextTick(
 
 $loop->futureTick(
     function ($loop) {
-        echo 'future-tick #1' . PHP_EOL;
+        echo 'future-tick #1' , PHP_EOL;
 
         $loop->futureTick(
             function () {
-                echo 'future-tick #2' . PHP_EOL;
+                echo 'future-tick #2' , PHP_EOL;
             }
         );
     }

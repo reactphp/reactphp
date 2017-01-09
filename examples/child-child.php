@@ -4,7 +4,7 @@ $i = 0;
 
 // block all the things!
 while (true) {
-    echo ++$i . "\n";
+    echo ++$i , "\n";
 
     sleep(1);
 }
