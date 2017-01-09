@@ -33,4 +33,4 @@ if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then
 fi
 
 composer self-update
-composer install --dev --prefer-source
+composer install --prefer-source
