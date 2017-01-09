@@ -16,12 +16,14 @@
         "react/http-client": "0.4.*",
         "react/http": "0.4.*",
         "react/promise": "~2.1",
-        "react/socket-client": "0.4.*",
+        "react/socket-client": "^0.5.3",
         "react/socket": "0.4.*",
         "react/stream": "0.4.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.0"
+        "phpunit/phpunit": "~4.0",
+        "clue/block-react": "^1.1",
+        "clue/stream-filter": "^1.3"
     },
     "suggest": {
         "ext-libevent": "Allows for use of a more performant event-loop implementation.",
@@ -31,6 +33,11 @@
     "extra": {
         "branch-alias": {
             "dev-master": "0.5-dev"
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "5.4"
         }
     }
 }
