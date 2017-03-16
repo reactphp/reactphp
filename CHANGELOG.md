@@ -26,6 +26,7 @@ CHANGELOG
 
 ### 0.3.0 (2013-04-14)
 
+  * BC break: Bump minimum PHP version to PHP 5.4, remove 5.3 specific hacks
   * BC break: [EventLoop] New timers API (@nrk)
   * BC break: [EventLoop] Remove check on return value from stream callbacks (@nrk)
   * BC break: [HttpClient] Socket connection handling moved to new SocketClient component
