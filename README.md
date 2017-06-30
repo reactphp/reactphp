@@ -7,17 +7,8 @@ Event-driven, non-blocking I/O with PHP.
 ### Notice - (May 25th, 2014)
 
 As of 2014-05-25 we have reversed roles of this and the component repositories. 
-Instead of reactphp/react being the master code repository it is now the sum of React's parts. 
+Instead of reactphp/react being the master code repository it is now the sum of React's components. 
 All PRs should be made against their corresponding repository found in [/reactphp](https://github.com/reactphp). 
-All existing PRs will be evaluated and work will be done with the submitter to merge it into the proper component. 
-
-## Install
-
-The recommended way to install React is [through composer](http://getcomposer.org). Type the following command in your shell environment:
-
-```
-php ~/composer.phar require react/react
-```
 
 ## What is it?
 
@@ -56,35 +47,23 @@ manageable.
 
 You should use these abstractions whenever you can.
 
-## Usage
+## Getting started
 
-Here is an example of a simple HTTP server listening on port 1337:
-```php
-<?php
+React consists of individual components.
+This means that instead of installing something like a "React framework", you actually
+pick only the components that you need.
 
-require 'vendor/autoload.php';
+The recommended way to install these components is [through Composer](http://getcomposer.org).
+[New to Composer?](http://getcomposer.org/doc/00-intro.md)
 
-$i = 0;
+For example, this may look something like this:
 
-$app = function ($request, $response) use (&$i) {
-    $i++;
-
-    $text = "This is request number $i.\n";
-    $headers = array('Content-Type' => 'text/plain');
-
-    $response->writeHead(200, $headers);
-    $response->end($text);
-};
-
-$loop = React\EventLoop\Factory::create();
-$socket = new React\Socket\Server($loop);
-$http = new React\Http\Server($socket);
-
-$http->on('request', $app);
-
-$socket->listen(1337);
-$loop->run();
+```bash
+$ composer require react/event-loop react/http
 ```
+
+For more details, check out [React's homepage](http://reactphp.org) for
+quickstart examples and usage details.
 
 ## Documentation
 
