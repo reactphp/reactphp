@@ -1,8 +1,20 @@
-<img src="https://rawgit.com/reactphp/branding/master/reactphp-logo.png" alt="ReactPHP Logo" width="280">
+<div align="center">
+    <a href="https://reactphp.org"><img src="https://rawgit.com/reactphp/branding/master/reactphp-logo.svg" alt="ReactPHP Logo" width="160"></a>
+</div>
+    
+<br>
+    
+<div align="center">
+    <strong>Event-driven, non-blocking I/O with PHP.</strong>
+</div>
 
-**Event-driven, non-blocking I/O with PHP.**
+<br>
 
-[![Build Status](https://travis-ci.org/reactphp/react.svg?branch=master)](http://travis-ci.org/reactphp/react)
+<div align="center">
+    <a href="https://travis-ci.org/reactphp/react"><img src="https://travis-ci.org/reactphp/react.svg?branch=master" alt="Build Status"></a>
+</div>
+
+<br>
 
 ReactPHP is a low-level library for event-driven programming in PHP. At its core
 is an event loop, on top of which it  provides low-level utilities, such as:
