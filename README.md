@@ -1,10 +1,10 @@
-# React
+<img src="https://rawgit.com/reactphp/branding/master/reactphp-logo.png" alt="ReactPHP Logo" width="280">
 
-Event-driven, non-blocking I/O with PHP.
+**Event-driven, non-blocking I/O with PHP.**
 
-[![Build Status](https://secure.travis-ci.org/reactphp/react.png?branch=master)](http://travis-ci.org/reactphp/react)
+[![Build Status](https://travis-ci.org/reactphp/react.svg?branch=master)](http://travis-ci.org/reactphp/react)
 
-React is a low-level library for event-driven programming in PHP. At its core
+ReactPHP is a low-level library for event-driven programming in PHP. At its core
 is an event loop, on top of which it  provides low-level utilities, such as:
 Streams abstraction, async dns resolver, network client/server, http
 client/server, interaction with processes. Third-party libraries can use these
@@ -20,7 +20,7 @@ Node.js (V8).
 * Provide a standalone event-loop component that can be re-used by other libraries.
 * Decouple parts so they can be replaced by alternate implementations.
 
-React is non-blocking by default. Use workers for blocking I/O.
+ReactPHP is non-blocking by default. Use workers for blocking I/O.
 
 ## Core Components
 
@@ -77,8 +77,8 @@ React is non-blocking by default. Use workers for blocking I/O.
 
 ## Getting started
 
-React consists of individual components.
-This means that instead of installing something like a "React framework", you actually
+ReactPHP consists of individual components.
+This means that instead of installing something like a "ReactPHP framework", you actually
 pick only the components that you need.
 
 The recommended way to install these components is [through Composer](http://getcomposer.org).
@@ -90,7 +90,7 @@ For example, this may look something like this:
 $ composer require react/event-loop react/http
 ```
 
-For more details, check out [React's homepage](http://reactphp.org) for
+For more details, check out [ReactPHP's homepage](https://reactphp.org) for
 quickstart examples and usage details.
 
 ## Documentation
