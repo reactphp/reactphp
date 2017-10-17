@@ -4,14 +4,6 @@ Event-driven, non-blocking I/O with PHP.
 
 [![Build Status](https://secure.travis-ci.org/reactphp/react.png?branch=master)](http://travis-ci.org/reactphp/react)
 
-### Notice - (May 25th, 2014)
-
-As of 2014-05-25 we have reversed roles of this and the component repositories. 
-Instead of reactphp/react being the master code repository it is now the sum of React's components. 
-All PRs should be made against their corresponding repository found in [/reactphp](https://github.com/reactphp). 
-
-## What is it?
-
 React is a low-level library for event-driven programming in PHP. At its core
 is an event loop, on top of which it  provides low-level utilities, such as:
 Streams abstraction, async dns resolver, network client/server, http
@@ -30,22 +22,58 @@ Node.js (V8).
 
 React is non-blocking by default. Use workers for blocking I/O.
 
-## High-level abstractions
+## Core Components
 
-There are two main abstractions that make dealing with control flow a lot more
-manageable.
+* **EventLoop**
+  ReactPHP's core reactor event-loop.
+  [Read the documentation](https://github.com/reactphp/event-loop)
 
-* **Stream:** A stream represents an I/O source (ReadableStream) or
-  destination (WritableStream). These can be used to model pipes, similar
-  to a unix pipe that is composed of processes. Streams represent very large
-  values as chunks.
+* **Stream**
+  Event-driven readable and writable streams for non-blocking I/O in ReactPHP.
+  [Read the documentation](https://github.com/reactphp/stream)
 
-* **Promise:** A promise represents an eventual return value. Promises can be
-  composed and are a lot easier to deal with than traditional CPS callback
-  spaghetti and allow for almost sane error handling. Promises represent the
-  computation for producing single values.
+* **Promise**
+  Promises/A implementation for PHP.
+  [Read the documentation](https://github.com/reactphp/promise)
 
-You should use these abstractions whenever you can.
+
+## Network Components
+
+* **Socket**
+  Async, streaming plaintext TCP/IP and secure TLS socket server and client connections for ReactPHP.
+  [Read the documentation](https://github.com/reactphp/socket)
+
+* **Datagram**
+  Event-driven UDP client and server sockets for ReactPHP.
+  [Read the documentation](https://github.com/reactphp/datagram)
+
+## Protocol Components
+
+* **HTTP**
+  Event-driven, streaming plaintext HTTP and secure HTTPS server for ReactPHP.
+  [Read the documentation](https://github.com/reactphp/http)
+
+* **HTTPClient**
+  Event-driven, streaming HTTP client for ReactPHP.
+  [Read the documentation](https://github.com/reactphp/http-client)
+
+* **DNS**
+  Async DNS resolver for ReactPHP.
+  [Read the documentation](https://github.com/reactphp/dns)
+
+## Utility Components
+
+* **Cache**
+  Async caching for ReactPHP.
+  [Read the documentation](https://github.com/reactphp/cache)
+
+* **PromiseTimer**
+  Trivial timeout implementation for ReactPHP's Promise lib.
+  [Read the documentation](https://github.com/reactphp/promise-timer)
+
+* **ChildProcess**
+  Library for executing child processes.
+  [Read the documentation](https://github.com/reactphp/child-process)
 
 ## Getting started
 
