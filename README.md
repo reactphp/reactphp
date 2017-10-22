@@ -79,13 +79,17 @@ ReactPHP is non-blocking by default. Use workers for blocking I/O.
   Async caching for ReactPHP.
   [Read the documentation](https://github.com/reactphp/cache)
 
+* **ChildProcess**
+  Library for executing child processes.
+  [Read the documentation](https://github.com/reactphp/child-process)
+
 * **PromiseTimer**
   Trivial timeout implementation for ReactPHP's Promise lib.
   [Read the documentation](https://github.com/reactphp/promise-timer)
 
-* **ChildProcess**
-  Library for executing child processes.
-  [Read the documentation](https://github.com/reactphp/child-process)
+* **PromiseStream**
+  The missing link between Promise-land and Stream-land, built on top of ReactPHP.
+  [Read the documentation](https://github.com/reactphp/promise-stream)
 
 ## Getting started
 
