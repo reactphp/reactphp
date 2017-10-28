@@ -3,12 +3,15 @@ language: php
 php:
   - 5.4
   - 5.5
+  - 5.6
   - hhvm
 
 matrix:
   allow_failures:
     - php: hhvm
 
-install: ./scripts/travis-init.sh
+install:
+  - ./tests/travis-init.sh
 
-script: php vendor/bin/phpunit --coverage-text
+script:
+  - php vendor/bin/phpunit --coverage-text

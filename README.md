@@ -1,24 +1,22 @@
-# React
+<div align="center">
+    <a href="https://reactphp.org"><img src="https://rawgit.com/reactphp/branding/master/reactphp-logo.svg" alt="ReactPHP Logo" width="160"></a>
+</div>
+    
+<br>
+    
+<div align="center">
+    <strong>Event-driven, non-blocking I/O with PHP.</strong>
+</div>
 
-Event-driven, non-blocking I/O with PHP.
+<br>
 
-[![Build Status](https://secure.travis-ci.org/reactphp/react.png?branch=master)](http://travis-ci.org/reactphp/react)
+<div align="center">
+    <a href="https://travis-ci.org/reactphp/react"><img src="https://travis-ci.org/reactphp/react.svg?branch=master" alt="Build Status"></a>
+</div>
 
-## Install
+<br>
 
-The recommended way to install react is [through composer](http://getcomposer.org).
-
-```JSON
-{
-    "require": {
-        "react/react": "0.4.*"
-    }
-}
-```
-
-## What is it?
-
-React is a low-level library for event-driven programming in PHP. At its core
+ReactPHP is a low-level library for event-driven programming in PHP. At its core
 is an event loop, on top of which it  provides low-level utilities, such as:
 Streams abstraction, async dns resolver, network client/server, http
 client/server, interaction with processes. Third-party libraries can use these
@@ -34,57 +32,87 @@ Node.js (V8).
 * Provide a standalone event-loop component that can be re-used by other libraries.
 * Decouple parts so they can be replaced by alternate implementations.
 
-React is non-blocking by default. Use workers for blocking I/O.
+ReactPHP is non-blocking by default. Use workers for blocking I/O.
 
-## High-level abstractions
+## Core Components
 
-There are two main abstractions that make dealing with control flow a lot more
-manageable.
+* **EventLoop**
+  ReactPHP's core reactor event-loop.
+  [Read the documentation](https://github.com/reactphp/event-loop)
 
-* **Stream:** A stream represents an I/O source (ReadableStream) or
-  destination (WritableStream). These can be used to model pipes, similar
-  to a unix pipe that is composed of processes. Streams represent very large
-  values as chunks.
+* **Stream**
+  Event-driven readable and writable streams for non-blocking I/O in ReactPHP.
+  [Read the documentation](https://github.com/reactphp/stream)
 
-* **Promise:** A promise represents an eventual return value. Promises can be
-  composed and are a lot easier to deal with than traditional CPS callback
-  spaghetti and allow for almost sane error handling. Promises represent the
-  computation for producing single values.
+* **Promise**
+  Promises/A implementation for PHP.
+  [Read the documentation](https://github.com/reactphp/promise)
 
-You should use these abstractions whenever you can.
 
-## Usage
+## Network Components
 
-Here is an example of a simple HTTP server listening on port 1337:
-```php
-<?php
+* **Socket**
+  Async, streaming plaintext TCP/IP and secure TLS socket server and client connections for ReactPHP.
+  [Read the documentation](https://github.com/reactphp/socket)
 
-$i = 0;
+* **Datagram**
+  Event-driven UDP client and server sockets for ReactPHP.
+  [Read the documentation](https://github.com/reactphp/datagram)
 
-$app = function ($request, $response) use (&$i) {
-    $i++;
+## Protocol Components
 
-    $text = "This is request number $i.\n";
-    $headers = array('Content-Type' => 'text/plain');
+* **HTTP**
+  Event-driven, streaming plaintext HTTP and secure HTTPS server for ReactPHP.
+  [Read the documentation](https://github.com/reactphp/http)
 
-    $response->writeHead(200, $headers);
-    $response->end($text);
-};
+* **HTTPClient**
+  Event-driven, streaming HTTP client for ReactPHP.
+  [Read the documentation](https://github.com/reactphp/http-client)
 
-$loop = React\EventLoop\Factory::create();
-$socket = new React\Socket\Server($loop);
-$http = new React\Http\Server($socket);
+* **DNS**
+  Async DNS resolver for ReactPHP.
+  [Read the documentation](https://github.com/reactphp/dns)
 
-$http->on('request', $app);
+## Utility Components
 
-$socket->listen(1337);
-$loop->run();
+* **Cache**
+  Async caching for ReactPHP.
+  [Read the documentation](https://github.com/reactphp/cache)
+
+* **ChildProcess**
+  Library for executing child processes.
+  [Read the documentation](https://github.com/reactphp/child-process)
+
+* **PromiseTimer**
+  Trivial timeout implementation for ReactPHP's Promise lib.
+  [Read the documentation](https://github.com/reactphp/promise-timer)
+
+* **PromiseStream**
+  The missing link between Promise-land and Stream-land, built on top of ReactPHP.
+  [Read the documentation](https://github.com/reactphp/promise-stream)
+
+## Getting started
+
+ReactPHP consists of individual components.
+This means that instead of installing something like a "ReactPHP framework", you actually
+pick only the components that you need.
+
+The recommended way to install these components is [through Composer](http://getcomposer.org).
+[New to Composer?](http://getcomposer.org/doc/00-intro.md)
+
+For example, this may look something like this:
+
+```bash
+$ composer require react/event-loop react/http
 ```
+
+For more details, check out [ReactPHP's homepage](https://reactphp.org) for
+quickstart examples and usage details.
 
 ## Documentation
 
 Superficial documentation can be found in the README files of the individual
-components. See `src/*/README.md`.
+components. See `vendor/react/*/src/README.md`.
 
 ## Community
 
@@ -93,11 +121,18 @@ Check out #reactphp on irc.freenode.net. Also follow
 
 ## Tests
 
-To run the test suite, you need install the dependencies via composer, then
-run PHPUnit.
+To run the test suite, you first need to clone this repo and then install all
+dependencies [through Composer](https://getcomposer.org):
 
-    $ composer install
-    $ phpunit
+```bash
+$ composer install
+```
+
+To run the test suite, go to the project root and run:
+
+```bash
+$ php vendor/bin/phpunit
+```
 
 ## License
 
