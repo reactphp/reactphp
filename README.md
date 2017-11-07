@@ -91,6 +91,38 @@ ReactPHP is non-blocking by default. Use workers for blocking I/O.
   The missing link between Promise-land and Stream-land, built on top of ReactPHP.
   [Read the documentation](https://github.com/reactphp/promise-stream)
 
+
+## Built with ReactPHP
+
+* **Thruway**
+  PHP Client and Router Library for Autobahn and WAMP (Web Application Messaging
+  Protocol) for Real-Time Application Messaging
+  [voryx/Thruway](https://github.com/voryx/Thruway)
+
+* **PPM - PHP Process Manager**
+  PPM is a process manager, supercharger and load balancer for modern PHP
+  applications.
+  [php-pm/php-pm](https://github.com/php-pm/php-pm)
+
+* **php-ar-drone**
+  🚁 Port of node-ar-drone which allows user to control a Parrot AR Drone over
+  PHP
+  [jolicode/php-ar-drone](https://github.com/jolicode/php-ar-drone)
+
+* **Ratchet**
+  Asynchronous WebSocket server
+  [ratchetphp/Ratchet](https://github.com/ratchetphp/Ratchet)
+
+* **Predis\Async**
+  Asynchronous PHP client library for Redis built on top of ReactPHP
+  [nrk/predis-async](https://github.com/nrk/predis-async)
+
+* **clue/redis-server**
+  A Redis server implementation in pure PHP
+  [clue/redis-server](https://github.com/clue/php-redis-server)
+
+[And many more on our wiki page »](https://github.com/reactphp/react/wiki/Users)
+
 ## Getting started
 
 ReactPHP consists of individual components.
