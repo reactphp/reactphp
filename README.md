@@ -142,6 +142,17 @@ ReactPHP is non-blocking by default. Use workers for blocking I/O.
   Bring High Performance Into Your PHP App (with ReactPHP).
   [marcjschmidt.de](http://marcjschmidt.de/blog/2014/02/08/php-high-performance.html)
 
+## Talks
+
+* **Christian Lück**
+  [Pushing the limits with ReactPHP](https://www.youtube.com/watch?v=-5ZdGUvOqx4)
+
+* **Jeremy Mikola**
+  [Async PHP With React](https://www.youtube.com/watch?v=s6xrnYae1FU)
+
+* **Igor Wiedler**
+  [Event-driven PHP](https://www.youtube.com/watch?v=MWNcItWuKpI)
+
 ## Getting started
 
 ReactPHP consists of individual components.
