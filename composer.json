@@ -21,7 +21,7 @@
         "react/stream": "0.4.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.0",
+        "phpunit/phpunit": "~4.8.35",
         "clue/block-react": "^1.1",
         "clue/stream-filter": "^1.3"
     },
