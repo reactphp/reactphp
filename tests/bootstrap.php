@@ -18,5 +18,10 @@ foreach (glob(__DIR__ . '/../vendor/react/*/composer.json') as $b) {
 
 // load all legacy test bootstrap scripts from React's components
 foreach (glob(__DIR__ . '/../vendor/react/*/tests/bootstrap.php') as $b) {
+    // skip react/promise-stream for now
+    if (strpos($b, 'react/promise-stream/tests/bootstrap.php') !== false) {
+        continue;
+    }
+
     include $b;
 }

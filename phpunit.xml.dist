@@ -13,7 +13,19 @@
 >
     <testsuites>
         <testsuite name="React Test Suite">
-            <directory>./vendor/react/*/tests/</directory>
+            <directory>./vendor/react/event-loop/tests/</directory>
+            <directory>./vendor/react/stream/tests/</directory>
+            <directory>./vendor/react/promise/tests/</directory>
+            
+            <directory>./vendor/react/socket/tests/</directory>
+            <directory>./vendor/react/datagram/tests/</directory>
+                        
+            <directory>./vendor/react/http/tests/</directory>
+            <directory>./vendor/react/http-client/tests/</directory>
+            <directory>./vendor/react/dns/tests/</directory>
+            
+            <directory>./vendor/react/cache/tests/</directory>
+            <directory>./vendor/react/child-process/tests/</directory>
         </testsuite>
     </testsuites>
 
