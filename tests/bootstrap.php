@@ -10,7 +10,7 @@ foreach (glob(__DIR__ . '/../vendor/react/*/composer.json') as $b) {
         $base = dirname($b) . '/';
         foreach ($config['autoload-dev']['psr-4'] as $namespace => $paths) {
             foreach ((array)$paths as $path) {
-                $autoload->addPsr4($namespace, $base . trim($path, '\\/'));
+                $autoload->addPsr4($namespace, $base . $path);
             }
         }
     }

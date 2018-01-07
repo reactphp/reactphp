@@ -9,19 +9,19 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "react/cache": "0.4.*",
-        "react/child-process": "0.4.*",
-        "react/dns": "0.4.*",
-        "react/event-loop": "0.4.*",
-        "react/http-client": "0.4.*",
-        "react/http": "0.4.*",
-        "react/promise": "~2.1",
-        "react/socket-client": "^0.5.3",
-        "react/socket": "0.4.*",
-        "react/stream": "0.4.*"
+        "react/cache": "^0.4",
+        "react/child-process": "^0.5",
+        "react/dns": "^0.4",
+        "react/event-loop": "^0.4",
+        "react/http": "^0.8.1",
+        "react/http-client": "^0.5",
+        "react/promise": "^2.1",
+        "react/promise-stream": "^1.1.1",
+        "react/socket": "^0.8.8",
+        "react/stream": "^0.7"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.0",
+        "phpunit/phpunit": "^4.8.35",
         "clue/block-react": "^1.1",
         "clue/stream-filter": "^1.3"
     },
