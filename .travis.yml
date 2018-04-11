@@ -11,7 +11,7 @@ matrix:
     - php: hhvm
 
 install:
-  - ./tests/travis-init.sh
+  - composer install --no-interaction
 
 script:
   - php vendor/bin/phpunit --coverage-text
