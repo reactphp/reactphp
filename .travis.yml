@@ -18,3 +18,7 @@ install:
 
 script:
   - php vendor/bin/phpunit --coverage-text --exclude-group internet
+
+cache:
+  directories:
+    - "$HOME/.composer/cache/files"
