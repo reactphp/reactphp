@@ -2,7 +2,14 @@
 
 ## 0.4.2 (2014-12-11)
 
-**Real Split**: The one where we remember to tag the change were the master repo pulls in all the split components.
+**Real Split**: The one where we tag the change where the master repo pulls in all the split components.
+
+New component releases are now tagged and released in their respective
+component repository. See also [core components](https://reactphp.org/#core-components)
+to learn more about this.
+
+This project continues to be under active development and is anything but dead.
+You can check out the combined [changelog for all ReactPHP components](https://reactphp.org/changelog.html).
 
 ## 0.4.1 (2014-04-13)
 
