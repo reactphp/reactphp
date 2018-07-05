@@ -17,4 +17,4 @@ install:
   - composer install --no-interaction
 
 script:
-  - php vendor/bin/phpunit --coverage-text
+  - php vendor/bin/phpunit --coverage-text --exclude-group internet

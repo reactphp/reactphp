@@ -137,6 +137,15 @@ To run the test suite, go to the project root and run:
 $ php vendor/bin/phpunit
 ```
 
+The test suite also contains a number of functional integration tests that rely
+on a stable internet connection. Due to the vast number of integration tests,
+these are skipped by default on Travis CI. If you also do not want to run these,
+they can simply be skipped like this:
+
+```bash
+$ php vendor/bin/phpunit --exclude-group internet
+```
+
 ## License
 
 MIT, see LICENSE.
