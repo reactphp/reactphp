@@ -109,6 +109,9 @@ $ composer require react/event-loop react/http
 For more details, check out [ReactPHP's homepage](https://reactphp.org) for
 quickstart examples and usage details.
 
+See also the combined [changelog for all ReactPHP components](https://reactphp.org/changelog.html)
+for details about version upgrades.
+
 ## Documentation
 
 Superficial documentation can be found in the README files of the individual
