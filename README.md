@@ -91,6 +91,68 @@ ReactPHP is non-blocking by default. Use workers for blocking I/O.
   The missing link between Promise-land and Stream-land, built on top of ReactPHP.
   [Read the documentation](https://github.com/reactphp/promise-stream)
 
+
+## Built with ReactPHP
+
+* **Thruway**
+  PHP Client and Router Library for Autobahn and WAMP (Web Application Messaging
+  Protocol) for Real-Time Application Messaging
+  [voryx/Thruway](https://github.com/voryx/Thruway)
+
+* **PPM - PHP Process Manager**
+  PPM is a process manager, supercharger and load balancer for modern PHP
+  applications.
+  [php-pm/php-pm](https://github.com/php-pm/php-pm)
+
+* **php-ar-drone**
+  🚁 Port of node-ar-drone which allows user to control a Parrot AR Drone over
+  PHP
+  [jolicode/php-ar-drone](https://github.com/jolicode/php-ar-drone)
+
+* **Ratchet**
+  Asynchronous WebSocket server
+  [ratchetphp/Ratchet](https://github.com/ratchetphp/Ratchet)
+
+* **Predis\Async**
+  Asynchronous PHP client library for Redis built on top of ReactPHP
+  [nrk/predis-async](https://github.com/nrk/predis-async)
+
+* **clue/redis-server**
+  A Redis server implementation in pure PHP
+  [clue/redis-server](https://github.com/clue/php-redis-server)
+
+[And many more on our wiki page »](https://github.com/reactphp/react/wiki/Users)
+
+## Articles
+
+* **Sergey Zhuk**
+  A series of articles covering ReactPHP: from the basics to the real
+  application examples.
+  [sergeyzhuk.me](http://sergeyzhuk.me/reactphp-series)
+
+* **Cees-Jan Kiewiet**
+  Blog series about several ReactPHP components and how they work.
+  [blog.wyrihaximus.net](http://blog.wyrihaximus.net/categories/reactphp-series/)
+
+* **Loïc Faugeron**
+  Super Speed Symfony - ReactPHP.
+  [gnugat.github.io](https://gnugat.github.io/2016/04/13/super-speed-sf-react-php.html)
+
+* **Marc J. Schmidt**
+  Bring High Performance Into Your PHP App (with ReactPHP).
+  [marcjschmidt.de](http://marcjschmidt.de/blog/2014/02/08/php-high-performance.html)
+
+## Talks
+
+* **Christian Lück**
+  [Pushing the limits with ReactPHP](https://www.youtube.com/watch?v=-5ZdGUvOqx4)
+
+* **Jeremy Mikola**
+  [Async PHP With React](https://www.youtube.com/watch?v=s6xrnYae1FU)
+
+* **Igor Wiedler**
+  [Event-driven PHP](https://www.youtube.com/watch?v=MWNcItWuKpI)
+
 ## Getting started
 
 ReactPHP consists of individual components.
