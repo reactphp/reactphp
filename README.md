@@ -174,15 +174,44 @@ quickstart examples and usage details.
 See also the combined [changelog for all ReactPHP components](https://reactphp.org/changelog.html)
 for details about version upgrades.
 
-## Documentation
+## Support
 
-Superficial documentation can be found in the README files of the individual
-components. See `vendor/react/*/src/README.md`.
+Do you have a question and need help with ReactPHP? Don't worry, we're here to help!
 
-## Community
+As a first step, check the elaborate documentation that comes with each
+component (see links to individual documentation for each component above).
+If you find your question is not answered within the documentation, there's a
+fair chance that it may be relevant to more people. Please do not hesitate to
+file your question as an issue in the relevant component so others can also
+participate.
 
-Check out #reactphp on irc.freenode.net. Also follow
-[@reactphp](https://twitter.com/reactphp) on twitter.
+Check out `#reactphp` on `irc.freenode.net`. You can use the
+[Webchat](http://webchat.freenode.net/?channels=%23reactphp) if you don't
+already use an IRC client. Many of us are available in this channel, so many
+questions get answered in a few minutes to some hours. We also use this channel
+to announce all new releases and ongoing development efforts, so consider
+setting up an IRC client and idling in this channel for a little longer.
+
+Also follow [@reactphp](https://twitter.com/reactphp) on Twitter for updates.
+We use this mostly for noteworthy, bigger updates and to keep the community
+updated about ongoing development efforts. You can always use the `#reactphp`
+hashtag if you have anything to share!
+
+We're a very open project and we prefer public communication whenever possible,
+so that more people can participate and help getting the best solutions available.
+At the same time, we realize that some things are better addressed in private.
+Whether you just want to say *thank you*, want to report a security issue or
+want to help sponsor a certain feature development, you can reach out to the
+core team in private by sending an email to `support@reactphp.org`. Please keep in
+mind that we're a small team of volunteers and do our best to support anybody
+reaching out.
+
+Do you want to support ReactPHP? Awesome! Let's start with letting the the world
+know why you think ReactPHP is awesome and try to help others getting on board!
+Send a tweet, write a blog post, give a talk at your local user group or
+conference or even write a book. There are many ways you can help. You can
+always reach out to us in private and help others in our support channels.
+Thank you!
 
 ## Tests
 
