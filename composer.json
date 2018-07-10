@@ -1,7 +1,7 @@
 {
     "name": "react/react",
-    "description": "Nuclear Reactor written in PHP.",
-    "keywords": ["event-loop", "reactor", "asynchronous"],
+    "description": "ReactPHP: Event-driven, non-blocking I/O with PHP.",
+    "keywords": ["reactor", "asynchronous", "ReactPHP"],
     "license": "MIT",
     "support": {
         "issues": "https://github.com/reactphp/react/issues",
