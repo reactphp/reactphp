@@ -17,22 +17,42 @@
 <br>
 
 ReactPHP is a low-level library for event-driven programming in PHP. At its core
-is an event loop, on top of which it  provides low-level utilities, such as:
-Streams abstraction, async dns resolver, network client/server, http
-client/server, interaction with processes. Third-party libraries can use these
+is an event loop, on top of which it provides low-level utilities, such as:
+Streams abstraction, async DNS resolver, network client/server, HTTP
+client/server and interaction with processes. Third-party libraries can use these
 components to create async network clients/servers and more.
 
+ReactPHP is production ready and battle-tested with millions of installations
+from all kinds of projects around the world. Its event-driven architecture makes
+it a perfect fit for efficient network servers and clients handling hundreds or
+thousands of concurrent connections, long-running applications and many other
+forms of cooperative multitasking with non-blocking I/O operations. What makes
+ReactPHP special is its vivid ecosystem with hundreds of third-party libraries
+allowing you to integrate with many existing systems, such as common network
+services, database systems and other third-party APIs.
+
+* **Production ready** and battle-tested.
+* **Rock-solid** with stable long-term support (LTS) releases.
+* **Requires no extensions** and runs on any platform - no excuses!
+* Takes advantage of **optional extensions** to get better performance when available.
+* **Highly recommends latest version of PHP 7+** for best performance and support.
+* **Supports legacy PHP 5.3+ and HHVM** for maximum compatibility.
+* **Well designed** and **reusable components**.
+* **Decoupled parts** so they can be replaced by alternate implementations.
+* Carefully **tested** (unit & functional).
+* Promotes **standard PSRs** where possible for maximum interoperability.
+* Aims to be **technology neutral**, so you can use your preferred application stack.
+* Small **core team of professionals** supported by **large network** of outside contributors.
+
+ReactPHP is non-blocking by default. Use workers for blocking I/O.
 The event loop is based on the reactor pattern (hence the name) and strongly
 inspired by libraries such as EventMachine (Ruby), Twisted (Python) and
 Node.js (V8).
 
-## Design goals
-
-* Usable with a bare minimum of PHP extensions, add more extensions to get better performance.
-* Provide a standalone event-loop component that can be re-used by other libraries.
-* Decouple parts so they can be replaced by alternate implementations.
-
-ReactPHP is non-blocking by default. Use workers for blocking I/O.
+> This repository you're currently looking at is mostly used as a meta
+  repository to discuss and plan all things @ReactPHP. See the individual
+  components linked below for more details about each component, its
+  documentation and source code.
 
 ## Core Components
 
