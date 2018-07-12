@@ -36,7 +36,7 @@ services, database systems and other third-party APIs.
 * **Requires no extensions** and runs on any platform - no excuses!
 * Takes advantage of **optional extensions** to get better performance when available.
 * **Highly recommends latest version of PHP 7+** for best performance and support.
-* **Supports legacy PHP 5.3+ and HHVM** for maximum compatibility.
+* **Supports legacy PHP 5.4+ and HHVM** for maximum compatibility.
 * **Well designed** and **reusable components**.
 * **Decoupled parts** so they can be replaced by alternate implementations.
 * Carefully **tested** (unit & functional).
