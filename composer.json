@@ -8,14 +8,14 @@
         "irc": "irc://irc.freenode.org/reactphp"
     },
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=5.3.8",
         "react/cache": "^0.5",
         "react/child-process": "^0.5",
         "react/dns": "^0.4",
         "react/event-loop": "^1.0",
         "react/http": "^0.8.1",
         "react/http-client": "^0.5",
-        "react/promise": "^2.1",
+        "react/promise": "^2.1 || ^1.2",
         "react/promise-stream": "^1.1.1",
         "react/socket": "^1.0",
         "react/stream": "^1.0"
