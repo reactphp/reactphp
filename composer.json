@@ -10,7 +10,7 @@
     "require": {
         "php": ">=5.3.8",
         "react/cache": "^0.5",
-        "react/child-process": "^0.5",
+        "react/child-process": "^0.6",
         "react/dns": "^0.4",
         "react/event-loop": "^1.0",
         "react/http": "^0.8.1",
