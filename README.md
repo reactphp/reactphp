@@ -175,17 +175,28 @@ Node.js (V8).
 
 ## Getting started
 
-ReactPHP consists of individual components.
+ReactPHP consists of a set of individual [components](#core-components).
 This means that instead of installing something like a "ReactPHP framework", you actually
 pick only the components that you need.
 
-The recommended way to install these components is [through Composer](http://getcomposer.org).
+The recommended way to install these components is [through Composer](https://getcomposer.org).
 [New to Composer?](http://getcomposer.org/doc/00-intro.md)
 
 For example, this may look something like this:
 
 ```bash
+# recommended install: pick required components
 $ composer require react/event-loop react/http
+```
+
+As an alternative, we also provide a meta package that will install all stable
+components at once. Installing this is only recommended for quick prototyping,
+as the list of stable components may change over time. This meta package can be
+installed like this:
+
+```bash
+# quick protoyping only: install all stable components
+$ composer require react/react:dev-master
 ```
 
 For more details, check out [ReactPHP's homepage](https://reactphp.org) for
