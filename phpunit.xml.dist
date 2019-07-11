@@ -14,6 +14,9 @@
     <testsuites>
         <testsuite name="React Test Suite">
             <directory>./vendor/react/*/tests/</directory>
+            <!-- temporarily skip broken tests, see https://github.com/reactphp/socket/issues/207 -->
+            <exclude>./vendor/react/socket/tests/ConnectorTest.php</exclude>
+            <exclude>./vendor/react/socket/tests/DnsConnectorTest.php</exclude>
         </testsuite>
     </testsuites>
 
