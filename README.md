@@ -179,6 +179,7 @@ ReactPHP consists of a set of individual [components](#core-components).
 This means that instead of installing something like a "ReactPHP framework", you actually
 pick only the components that you need.
 
+This project follows [SemVer](https://semver.org/) for all its stable components.
 The recommended way to install these components is [through Composer](https://getcomposer.org).
 [New to Composer?](http://getcomposer.org/doc/00-intro.md)
 
@@ -196,7 +197,7 @@ installed like this:
 
 ```bash
 # quick protoyping only: install all stable components
-$ composer require react/react:dev-master
+$ composer require react/react:^1.0
 ```
 
 For more details, check out [ReactPHP's homepage](https://reactphp.org) for

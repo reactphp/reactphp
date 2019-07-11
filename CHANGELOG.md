@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.0.0 (2019-07-11)
+
+*   First stable LTS release, now following [SemVer](https://semver.org/).
+    We'd like to emphasize that this project is production ready and battle-tested.
+    We plan to support all long-term support (LTS) releases for at least 24 months,
+    so you have a rock-solid foundation to build on top of.
+
+>   ReactPHP consists of a set of individual [components](https://reactphp.org/#core-components).
+    This means that instead of installing something like a "ReactPHP framework",
+    you actually can pick only the components that you need. As an alternative,
+    we also provide this meta package that will install all stable components at
+    once. Installing this is only recommended for quick prototyping, as the list
+    of stable components may change over time.
+    In other words, this meta package does not contain any source code and
+    instead only consists of links to all our main components, see also our
+    [list of components](https://reactphp.org/#core-components) for more details.
+
 ## 0.4.2 (2014-12-11)
 
 **Real Split**: The one where we tag the change where the master repo pulls in all the split components.
