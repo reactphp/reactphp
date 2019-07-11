@@ -9,8 +9,8 @@
     },
     "require": {
         "php": ">=5.3.8",
-        "react/cache": "^0.5",
-        "react/dns": "^0.4",
+        "react/cache": "^1.0",
+        "react/dns": "^1.0",
         "react/event-loop": "^1.0",
         "react/promise": "^2.1 || ^1.2",
         "react/promise-stream": "^1.1.1",
