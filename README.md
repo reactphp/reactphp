@@ -161,6 +161,10 @@ Node.js (V8).
 * **Marc J. Schmidt**
   Bring High Performance Into Your PHP App (with ReactPHP).
   [marcjschmidt.de](http://marcjschmidt.de/blog/2014/02/08/php-high-performance.html)
+  
+* **Marc Morera**
+  When ReactPHP meet Symfony
+  [medium.com/@apisearch](https://medium.com/@apisearch/symfony-and-reactphp-series-82082167f6fb)
 
 ## Talks
 
