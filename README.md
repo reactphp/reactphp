@@ -221,12 +221,11 @@ fair chance that it may be relevant to more people. Please do not hesitate to
 file your question as an issue in the relevant component so others can also
 participate.
 
-Check out `#reactphp` on `irc.freenode.net`. You can use the
-[Webchat](http://webchat.freenode.net/?channels=%23reactphp) if you don't
-already use an IRC client. Many of us are available in this channel, so many
-questions get answered in a few minutes to some hours. We also use this channel
+You can also check out our official [Gitter chat room](https://gitter.im/reactphp/reactphp).
+Most of the people involved in this project are available in this chat room, so many
+questions get answered in a few minutes to some hours. We also use this chat room
 to announce all new releases and ongoing development efforts, so consider
-setting up an IRC client and idling in this channel for a little longer.
+staying in this chat room for a little longer.
 
 Also follow [@reactphp](https://twitter.com/reactphp) on Twitter for updates.
 We use this mostly for noteworthy, bigger updates and to keep the community
