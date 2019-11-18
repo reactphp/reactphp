@@ -11,7 +11,7 @@
 <br>
 
 <div align="center">
-    <a href="https://travis-ci.org/reactphp/react"><img src="https://travis-ci.org/reactphp/react.svg?branch=master" alt="Build Status"></a>
+    <a href="https://travis-ci.org/reactphp/reactphp"><img src="https://travis-ci.org/reactphp/reactphp.svg?branch=master" alt="Build Status"></a>
 </div>
 
 <br>
