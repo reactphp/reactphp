@@ -5,7 +5,6 @@
     "homepage": "https://reactphp.org/",
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/reactphp/react/issues",
         "chat": "https://gitter.im/reactphp/reactphp"
     },
     "require": {
