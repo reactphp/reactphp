@@ -21,5 +21,10 @@
         "phpunit/phpunit": "^5.7 || ^4.8.35",
         "clue/block-react": "^1.1",
         "clue/stream-filter": "^1.3"
+    },
+    "config": {
+        "preferred-install": {
+            "react/*": "source"
+        }
     }
 }
