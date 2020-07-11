@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.0 (2020-07-11)
+
+A major new feature release, see [**release announcement**](https://clue.engineering/2020/announcing-reactphp-http).
+
+*   Feature: Add event-driven, streaming HTTP client and server implementation via [`react/http`](https://reactphp.org/http/).
+    (#440 by @clue)
+
+*   Update documentation to link to project meta repo and link to our official Gitter chat room.
+    (#432 and #433 by @clue)
+
+*   Improve test suite to run tests on PHP 7.4 and add `.gitattributes` to exclude dev files from exports.
+    (#434 by @reedy and #439 by @clue)
+
 ## 1.0.0 (2019-07-11)
 
 *   First stable LTS release, now following [SemVer](https://semver.org/).
