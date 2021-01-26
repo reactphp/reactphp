@@ -11,7 +11,7 @@
 <br>
 
 <div align="center">
-    <a href="https://travis-ci.org/reactphp/reactphp"><img src="https://travis-ci.org/reactphp/reactphp.svg?branch=master" alt="Build Status"></a>
+    <a href="https://github.com/reactphp/reactphp/actions"><img src="https://github.com/reactphp/reactphp/workflows/CI/badge.svg" alt="Build Status"></a>
 </div>
 
 <br>
@@ -265,7 +265,7 @@ $ php vendor/bin/phpunit
 
 The test suite also contains a number of functional integration tests that rely
 on a stable internet connection. Due to the vast number of integration tests,
-these are skipped by default on Travis CI. If you also do not want to run these,
+these are skipped by default during CI runs. If you also do not want to run these,
 they can simply be skipped like this:
 
 ```bash
