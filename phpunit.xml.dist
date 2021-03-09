@@ -4,10 +4,6 @@
     <testsuites>
         <testsuite name="ReactPHP Test Suite">
             <directory>./vendor/react/*/tests/</directory>
-            <!-- temporarily skip broken tests, see https://github.com/reactphp/dns/pull/164 -->
-            <exclude>./vendor/react/dns/tests/FunctionalResolverTest.php</exclude>
-            <exclude>./vendor/react/dns/tests/Query/CoopExecutorTest.php</exclude>
-            <exclude>./vendor/react/dns/tests/Query/SelectiveTransportExecutorTest.php</exclude>
         </testsuite>
     </testsuites>
 
