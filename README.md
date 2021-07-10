@@ -22,6 +22,25 @@ Streams abstraction, async DNS resolver, network client/server, HTTP
 client/server and interaction with processes. Third-party libraries can use these
 components to create async network clients/servers and more.
 
+```php
+$server = new React\Http\Server(function (Psr\Http\Message\ServerRequestInterface $request) {
+    return new React\Http\Message\Response(
+        200,
+        array(
+            'Content-Type' => 'text/plain'
+        ),
+        "Hello World!\n"
+    );
+});
+
+$socket = new React\Socket\Server('127.0.0.1:8080');
+$server->listen($socket);
+
+echo "Server running at http://127.0.0.1:8080" . PHP_EOL;
+```
+
+This simple web server written in ReactPHP responds with "Hello World!" for every request.
+
 ReactPHP is production ready and battle-tested with millions of installations
 from all kinds of projects around the world. Its event-driven architecture makes
 it a perfect fit for efficient network servers and clients handling hundreds or
