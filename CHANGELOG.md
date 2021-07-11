@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0 (2021-07-11)
+
+A major new feature release, see [**release announcement**](https://clue.engineering/2021/announcing-reactphp-default-loop).
+
+*   Feature: Simplify usage by supporting new [default loop](https://reactphp.org/event-loop/#loop).
+    (#445 by @clue)
+
 ## 1.1.0 (2020-07-11)
 
 A major new feature release, see [**release announcement**](https://clue.engineering/2020/announcing-reactphp-http).

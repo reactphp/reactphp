@@ -220,7 +220,7 @@ installed like this:
 
 ```bash
 # quick protoyping only: install all stable components
-$ composer require react/react:^1.1
+$ composer require react/react:^1.2
 ```
 
 For more details, check out [ReactPHP's homepage](https://reactphp.org) for
