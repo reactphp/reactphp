@@ -23,7 +23,7 @@ client/server and interaction with processes. Third-party libraries can use thes
 components to create async network clients/servers and more.
 
 ```php
-$server = new React\Http\Server(function (Psr\Http\Message\ServerRequestInterface $request) {
+$server = new React\Http\HttpServer(function (Psr\Http\Message\ServerRequestInterface $request) {
     return new React\Http\Message\Response(
         200,
         array(
@@ -33,7 +33,7 @@ $server = new React\Http\Server(function (Psr\Http\Message\ServerRequestInterfac
     );
 });
 
-$socket = new React\Socket\Server('127.0.0.1:8080');
+$socket = new React\Socket\SocketServer('127.0.0.1:8080');
 $server->listen($socket);
 
 echo "Server running at http://127.0.0.1:8080" . PHP_EOL;
