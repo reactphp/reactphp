@@ -12,7 +12,7 @@
         "react/cache": "^1.0",
         "react/dns": "^1.8",
         "react/event-loop": "^1.2",
-        "react/http": "^1.5",
+        "react/http": "^1.6",
         "react/promise": "^2.1 || ^1.2",
         "react/promise-stream": "^1.1.1",
         "react/promise-timer": "^1.7",

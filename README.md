@@ -24,11 +24,7 @@ components to create async network clients/servers and more.
 
 ```php
 $server = new React\Http\HttpServer(function (Psr\Http\Message\ServerRequestInterface $request) {
-    return new React\Http\Message\Response(
-        200,
-        array(
-            'Content-Type' => 'text/plain'
-        ),
+    return React\Http\Message\Response::plaintext(
         "Hello World!\n"
     );
 });
