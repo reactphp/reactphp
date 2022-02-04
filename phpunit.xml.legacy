@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- PHPUnit configuration file with new format for PHPUnit 9.5+ -->
+<!-- PHPUnit configuration file with old PHPUnit format for PHP < 7.3 -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/4.8/phpunit.xsd"
          bootstrap="tests/bootstrap.php"
-         cacheResult="false"
          colors="true">
     <testsuites>
         <testsuite name="ReactPHP Test Suite">
@@ -15,9 +14,9 @@
             <exclude>./vendor/react/http/tests/HttpServerTest.php</exclude>
         </testsuite>
     </testsuites>
-    <coverage>
-        <include>
+    <filter>
+        <whitelist>
             <directory>./vendor/react/*/src/</directory>
-        </include>
-    </coverage>
+        </whitelist>
+    </filter>
 </phpunit>
