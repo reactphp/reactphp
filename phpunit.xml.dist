@@ -6,6 +6,8 @@
             <directory>./vendor/react/*/tests/</directory>
             <!-- temporarily skip broken und unneeded tests, see https://github.com/reactphp/event-loop/pull/232 -->
             <exclude>./vendor/react/event-loop/tests/BinTest.php</exclude>
+            <!-- temporarily skip broken und unneeded tests, see https://github.com/reactphp/http/pull/440 -->
+            <exclude>./vendor/react/http/tests/HttpServerTest.php</exclude>
         </testsuite>
     </testsuites>
 
