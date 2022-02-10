@@ -28,6 +28,9 @@ jobs:
           coverage: xdebug
       - run: composer install
       - run: vendor/bin/phpunit --coverage-text --exclude-group internet
+        if: ${{ matrix.php >= 7.3 }}
+      - run: vendor/bin/phpunit --coverage-text --exclude-group internet -c phpunit.xml.legacy
+        if: ${{ matrix.php < 7.3 }}
 
   PHPUnit-hhvm:
     name: PHPUnit (HHVM)
@@ -38,5 +41,5 @@ jobs:
       - uses: azjezz/setup-hhvm@v1
         with:
           version: lts-3.30
-      - run: hhvm $(which composer) require phpunit/phpunit:^5 --dev # requires legacy phpunit
+      - run: hhvm $(which composer) install
       - run: hhvm vendor/bin/phpunit --exclude-group internet
