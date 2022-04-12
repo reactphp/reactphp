@@ -11,7 +11,7 @@
 <br>
 
 <div align="center">
-    <a href="https://github.com/reactphp/reactphp/actions"><img src="https://github.com/reactphp/reactphp/workflows/CI/badge.svg" alt="Build Status"></a>
+    <a href="https://github.com/reactphp/reactphp/actions"><img src="https://github.com/reactphp/reactphp/actions/workflows/ci.yml/badge.svg" alt="Build Status"></a>
 </div>
 
 <br>
