@@ -43,5 +43,6 @@ jobs:
       - uses: azjezz/setup-hhvm@v1
         with:
           version: lts-3.30
+      - run: composer self-update --2.2 # downgrade Composer for HHVM
       - run: hhvm $(which composer) install
       - run: hhvm vendor/bin/phpunit --exclude-group internet
