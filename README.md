@@ -206,7 +206,7 @@ For example, this may look something like this:
 
 ```bash
 # recommended install: pick required components
-$ composer require react/event-loop react/http
+composer require react/event-loop react/http
 ```
 
 As an alternative, we also provide a meta package that will install all stable
@@ -216,7 +216,7 @@ installed like this:
 
 ```bash
 # quick protoyping only: install all stable components
-$ composer require react/react:^1.2
+composer require react/react:^1.2
 ```
 
 For more details, check out [ReactPHP's homepage](https://reactphp.org) for
@@ -269,13 +269,13 @@ To run the test suite, you first need to clone this repo and then install all
 dependencies [through Composer](https://getcomposer.org):
 
 ```bash
-$ composer install
+composer install
 ```
 
 To run the test suite, go to the project root and run:
 
 ```bash
-$ php vendor/bin/phpunit
+vendor/bin/phpunit
 ```
 
 The test suite also contains a number of functional integration tests that rely
@@ -284,7 +284,7 @@ these are skipped by default during CI runs. If you also do not want to run thes
 they can simply be skipped like this:
 
 ```bash
-$ php vendor/bin/phpunit --exclude-group internet
+vendor/bin/phpunit --exclude-group internet
 ```
 
 ## License
