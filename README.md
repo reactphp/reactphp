@@ -83,6 +83,9 @@ Node.js (V8).
   Promises/A implementation for PHP.
   [Read the documentation](https://github.com/reactphp/promise)
 
+* **Async**
+  Async utilities and fibers for ReactPHP.
+  [Read the documentation](https://github.com/reactphp/async)
 
 ## Network Components
 
