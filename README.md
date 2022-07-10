@@ -23,6 +23,13 @@ client/server and interaction with processes. Third-party libraries can use thes
 components to create async network clients/servers and more.
 
 ```php
+<?php
+
+// $ composer require react/http react/socket # install example using Composer
+// $ php example.php # run example on command line, requires no additional web server
+
+require __DIR__ . '/vendor/autoload.php';
+
 $server = new React\Http\HttpServer(function (Psr\Http\Message\ServerRequestInterface $request) {
     return React\Http\Message\Response::plaintext(
         "Hello World!\n"
@@ -94,15 +101,9 @@ Node.js (V8).
   Event-driven UDP client and server sockets for ReactPHP.
   [Read the documentation](https://github.com/reactphp/datagram)
 
-## Protocol Components
-
 * **HTTP**
-  Event-driven, streaming plaintext HTTP and secure HTTPS server for ReactPHP.
+  Event-driven, streaming HTTP client and server implementation for ReactPHP.
   [Read the documentation](https://github.com/reactphp/http)
-
-* **HTTPClient**
-  Event-driven, streaming HTTP client for ReactPHP.
-  [Read the documentation](https://github.com/reactphp/http-client)
 
 * **DNS**
   Async DNS resolver for ReactPHP.
@@ -125,7 +126,6 @@ Node.js (V8).
 * **PromiseStream**
   The missing link between Promise-land and Stream-land, built on top of ReactPHP.
   [Read the documentation](https://github.com/reactphp/promise-stream)
-
 
 ## Built with ReactPHP
 
