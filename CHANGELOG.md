@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.3.0 (2022-07-11)
+
+A major new feature release, see [**release announcement**](https://clue.engineering/2022/announcing-reactphp-async).
+
+*   Feature: Add new Async component to core components.
+    (#458 by @clue)
+
+*   Feature: Support PHP 8.1 release.
+    (#451 by @clue)
+
+*   Improve documentation, update HTTP server example for reactphp/http v1.6.0 release.
+    (#449 and #459 by @clue and #457 by @nhedger)
+
+*   Improve test suite, support PHPUnit 9 and update dependencies to avoid skipping tests.
+    (#450 and #454 by @clue and #455 by @SimonFrings)
+
 ## 1.2.0 (2021-07-11)
 
 A major new feature release, see [**release announcement**](https://clue.engineering/2021/announcing-reactphp-default-loop).

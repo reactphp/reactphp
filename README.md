@@ -202,8 +202,8 @@ This means that instead of installing something like a "ReactPHP framework", you
 pick only the components that you need.
 
 This project follows [SemVer](https://semver.org/) for all its stable components.
-The recommended way to install these components is [through Composer](https://getcomposer.org).
-[New to Composer?](http://getcomposer.org/doc/00-intro.md)
+The recommended way to install these components is [through Composer](https://getcomposer.org/).
+[New to Composer?](https://getcomposer.org/doc/00-intro.md)
 
 For example, this may look something like this:
 
@@ -219,10 +219,10 @@ installed like this:
 
 ```bash
 # quick protoyping only: install all stable components
-composer require react/react:^1.2
+composer require react/react:^1.3
 ```
 
-For more details, check out [ReactPHP's homepage](https://reactphp.org) for
+For more details, check out [ReactPHP's homepage](https://reactphp.org/) for
 quickstart examples and usage details.
 
 See also the combined [changelog for all ReactPHP components](https://reactphp.org/changelog.html)
@@ -269,7 +269,7 @@ Thank you!
 ## Tests
 
 To run the test suite, you first need to clone this repo and then install all
-dependencies [through Composer](https://getcomposer.org):
+dependencies [through Composer](https://getcomposer.org/):
 
 ```bash
 composer install
