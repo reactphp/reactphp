@@ -44,5 +44,5 @@ jobs:
         with:
           version: lts-3.30
       - run: composer self-update --2.2 # downgrade Composer for HHVM
-      - run: hhvm $(which composer) require react/async:^2 # downgrade Async component for HHVM
+      - run: hhvm $(which composer) require react/async:^2 react/promise:^2 # downgrade Async and Promise for HHVM
       - run: hhvm vendor/bin/phpunit --exclude-group internet
