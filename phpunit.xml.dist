@@ -9,9 +9,9 @@
          convertDeprecationsToExceptions="true">
     <testsuites>
         <testsuite name="ReactPHP Test Suite">
+            <!-- explicitly run EventLoop tests first to avoid resetting default loop -->
+            <directory>./vendor/react/event-loop/tests/</directory>
             <directory>./vendor/react/*/tests/</directory>
-            <!-- temporarily skip broken und unneeded tests, see https://github.com/reactphp/http/pull/440 -->
-            <exclude>./vendor/react/http/tests/HttpServerTest.php</exclude>
         </testsuite>
     </testsuites>
     <coverage>
