@@ -13,10 +13,10 @@
         "react/cache": "^1.1",
         "react/dns": "^1.10",
         "react/event-loop": "^1.3",
-        "react/http": "^1.7",
-        "react/promise": "^2.9 || ^1.2",
+        "react/http": "^1.8",
+        "react/promise": "^3 || ^2.9 || ^1.2",
         "react/promise-stream": "^1.5",
-        "react/promise-timer": "^1.8",
+        "react/promise-timer": "^1.9",
         "react/socket": "^1.12",
         "react/stream": "^1.2"
     },
