@@ -11,18 +11,18 @@
         "php": ">=5.3.8",
         "react/async": "^4 || ^3 || ^2",
         "react/cache": "^1.1",
-        "react/dns": "^1.10",
-        "react/event-loop": "^1.3",
+        "react/dns": "^1.11",
+        "react/event-loop": "^1.4",
         "react/http": "^1.8",
-        "react/promise": "^3 || ^2.9 || ^1.2",
+        "react/promise": "^3 || ^2.10 || ^1.2",
         "react/promise-stream": "^1.5",
         "react/promise-timer": "^1.9",
-        "react/socket": "^1.12",
-        "react/stream": "^1.2"
+        "react/socket": "^1.13",
+        "react/stream": "^1.3"
     },
     "require-dev": {
         "clue/stream-filter": "^1.3",
-        "phpunit/phpunit": "^9.5 || ^5.7 || ^4.8.35"
+        "phpunit/phpunit": "^9.6 || ^5.7 || ^4.8.36"
     },
     "config": {
         "preferred-install": {

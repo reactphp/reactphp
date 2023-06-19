@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- PHPUnit configuration file with old PHPUnit format for PHP < 7.3 -->
+<!-- PHPUnit configuration file with old format for legacy PHPUnit -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/4.8/phpunit.xsd"
          bootstrap="tests/bootstrap.php"
@@ -15,4 +15,12 @@
             <directory>./vendor/react/*/src/</directory>
         </whitelist>
     </filter>
+    <php>
+        <ini name="error_reporting" value="-1" />
+        <!-- Evaluate assertions, requires running with "php -d zend.assertions=1 vendor/bin/phpunit" -->
+        <!-- <ini name="zend.assertions" value="1" /> -->
+        <ini name="assert.active" value="1" />
+        <ini name="assert.exception" value="1" />
+        <ini name="assert.bail" value="0" />
+    </php>
 </phpunit>
