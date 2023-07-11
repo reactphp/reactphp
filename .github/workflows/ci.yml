@@ -47,10 +47,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: cp "$(which composer)" composer.phar && ./composer.phar self-update --2.2 # downgrade Composer for HHVM
-      - name: Run hhvm composer.phar require react/async:^2 react/promise:^2 # downgrade Async and Promise for HHVM
+      - name: Run hhvm composer.phar require --dev react/async:^2 react/promise:^2 phpunit/phpunit:^5.7 # downgrade Async and Promise for HHVM
         uses: docker://hhvm/hhvm:3.30-lts-latest
         with:
-          args: hhvm composer.phar require react/async:^2 react/promise:^2
+          args: hhvm composer.phar require --dev react/async:^2 react/promise:^2 phpunit/phpunit:^5.7
       - name: Run hhvm vendor/bin/phpunit --exclude-group internet
         uses: docker://hhvm/hhvm:3.30-lts-latest
         with:
