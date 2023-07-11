@@ -219,7 +219,7 @@ installed like this:
 
 ```bash
 # quick protoyping only: install all stable components
-composer require react/react:^1.3
+composer require react/react:^1.4
 ```
 
 For more details, check out [ReactPHP's homepage](https://reactphp.org/) for

@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.4.0 (2023-07-11)
+
+A major new feature release, see [**release announcement**](https://clue.engineering/2023/announcing-reactphp-promise-v3).
+
+*   Feature: Add support for new Promise v3 release.
+    (#464 and #524 by @clue)
+
+*   Feature: Support PHP 8.2 release.
+    (#491 by @Nielsvanpach)
+
+*   Improve test suite, update dependencies and report failed assertions.
+    (#462 and #501 by @clue and #466 and #492 by @SimonFrings)
+
 ## 1.3.0 (2022-07-11)
 
 A major new feature release, see [**release announcement**](https://clue.engineering/2022/announcing-reactphp-async).
