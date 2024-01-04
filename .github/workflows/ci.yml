@@ -11,6 +11,7 @@ jobs:
     strategy:
       matrix:
         php:
+          - 8.3
           - 8.2
           - 8.1
           - 8.0
@@ -24,7 +25,7 @@ jobs:
           - 5.4
           - 5.3
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
@@ -45,7 +46,7 @@ jobs:
     runs-on: ubuntu-22.04
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: cp "$(which composer)" composer.phar && ./composer.phar self-update --2.2 # downgrade Composer for HHVM
       - name: Run hhvm composer.phar require --dev react/async:^2 react/promise:^2 phpunit/phpunit:^5.7 # downgrade Async and Promise for HHVM
         uses: docker://hhvm/hhvm:3.30-lts-latest
