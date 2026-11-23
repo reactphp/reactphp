@@ -1,5 +1,5 @@
 <div align="center">
-    <a href="https://reactphp.org"><img src="https://rawgit.com/reactphp/branding/master/reactphp-logo.svg" alt="ReactPHP Logo" width="160"></a>
+    <a href="https://reactphp.org"><img src="https://raw.githubusercontent.com/reactphp/branding/main/reactphp-logo.svg" alt="ReactPHP Logo" width="160"></a>
 </div>
     
 <br>
